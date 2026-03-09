@@ -3,9 +3,7 @@ layout: ../layouts/Layout.astro
 title: "KIWiki"
 ---
 
-import DifficultyContent from "../components/DifficultyContent.tsx";
-import DifficultySelector from "../components/DifficultySelector.tsx";
-import InfoBox from "../components/InfoBox.tsx";
+
 
 <InfoBox type="info" title="Wichtig zu wissen">
   KIWiki wird ständig erweitert. Schau regelmäßig vorbei, um neue Inhalte zu entdecken!
@@ -27,25 +25,20 @@ Am diesem normalerweise oben auf der Seite befindlichen Knopf wird das aktuelle 
 
 Hier kannst du ein Beispiel für die Auswirkungen der Schwierigkeitsstufen sehen:
 
-<DifficultyContent client:load level="easy">
-<div class="p-4 bg-green-100 border-2 border-green-500 rounded-lg text-green-900">
+:::beginner
 Künstliche Intelligenz ist ein Bereich der Informatik, der versucht, Computern Fähigkeiten beizubringen, für die man normalerweise menschliche Intelligenz braucht. 
 Dazu gehören Dinge wie das Verstehen von Sprache, das Erkennen von Bildern oder das Treffen von Entscheidungen. 
 Anstatt dass ein Mensch jeden Schritt einzeln programmiert, lernt die KI aus Beispielen und Erfahrungen.
-</div>
-</DifficultyContent>
+:::
 
-<DifficultyContent client:load level="medium">
-<div class="p-4 bg-blue-100 border-2 border-blue-500 rounded-lg text-blue-900">
+:::medium
 KI bezeichnet Systeme, die kognitive Funktionen simulieren, um komplexe Probleme zu lösen. 
 Im Gegensatz zu klassischer Software, die nach starren „Wenn-Dann“-Regeln funktioniert, nutzt moderne KI meist Maschinelles Lernen. 
 Dabei werden Algorithmen mit großen Datenmengen trainiert, um statistische Muster zu erkennen. 
 So kann das System Vorhersagen treffen oder eigenständig Lösungen für Aufgaben finden, die es vorher noch nie gesehen hat.
-</div>
-</DifficultyContent>
+:::
 
-<DifficultyContent client:load level="hard">
-<div class="p-4 bg-purple-100 border-2 border-purple-500 rounded-lg text-purple-900">
+:::advanced
 Künstliche Intelligenz befasst sich mit der Entwicklung von intelligenten Agenten, die ihre Umgebung wahrnehmen und Handlungen maximieren, um ein definiertes Ziel zu erreichen. 
 
 Das Fundament bilden oft Neuronale Netze, deren Architektur abstrakt dem menschlichen Gehirn nachempfunden ist. 
@@ -54,8 +47,7 @@ Mathematisch gesehen handelt es sich bei modernen Deep-Learning-Verfahren oft um
 Durch Verfahren wie die Backpropagation und den stochastischen Gradientenabstieg werden die Gewichtungen innerhalb des Modells so angepasst, dass eine definierte Verlustfunktion (Loss Function) minimiert wird.
 
 Ziel ist es, eine Hypothesenfunktion $h(x)$ zu finden, die den Eingaberaum möglichst präzise auf den gewünschten Ausgaberaum abbildet.
-</div>
-</DifficultyContent>
+:::
 
 ### Kerntechnologien
 Das Projekt nutzt moderne Web-Technologien wie **Astro 5**, **React 19** und **Nanostores** für das State-Management, um eine performante und interaktive Lernumgebung zu schaffen.

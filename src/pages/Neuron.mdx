@@ -3,8 +3,16 @@ layout: ../layouts/Layout.astro
 title: "Das Neuron"
 ---
 
-import ActivationDemo from "../components/ActivationDemo.tsx";
+
 
 Das Neuron ist die Grundeinheit des Nervensystems. Es ist eine spezialisierte Zelle, die elektrische Signale empfängt, verarbeitet und weiterleitet. 
+
+:::beginner
+Ein Neuron ist wie ein winziger Lichtschalter. Entweder es ist an (feuert) oder aus (ruht).
+:::
+
+:::advanced
+Das Neuron operiert über einen elektrochemischen Gradienten. Wenn der Schwellenwert erreicht wird, öffnet es Ionenkanäle und sendet ein Aktionspotential.
+:::
 
 <ActivationDemo client:load />
