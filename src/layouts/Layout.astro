@@ -1,3 +1,17 @@
+---
+import DifficultyContent from "../components/DifficultyContent.tsx";
+import DifficultySelector from "../components/DifficultySelector.tsx";
+import "../styles/global.css";
+
+interface Props {
+	title?: string;
+	frontmatter?: any;
+}
+
+const { title: propTitle, frontmatter } = Astro.props;
+const title = frontmatter?.title || propTitle || "AI Wiki";
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -6,12 +20,87 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+		/>
+		<title>{title}</title>
 	</head>
-	<body>
-		<slot />
+	<body
+		class="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900"
+	>
+		<nav
+			class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200"
+		>
+			<div
+				class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between"
+			>
+				<a
+					href="/LandingPage"
+					class="font-bold text-slate-800 text-lg tracking-tight hover:text-blue-600 transition-colors"
+					>AI Wiki <span class="text-blue-600">•</span> powered by <span
+						class="text-blue-600">JadeHS</span
+					></a
+				>
+				<div class="flex gap-6 text-sm font-medium text-slate-600">
+					<a
+						href="/LandingPage"
+						class="hover:text-blue-600 transition-colors text-blue-600 font-bold"
+						>LandingPage</a
+					>
+					<a
+						href="/Neuron"
+						class="hover:text-blue-600 transition-colors">Neuron</a
+					>
+				</div>
+			</div>
+		</nav>
+
+		<main class="max-w-7xl mx-auto px-6 py-12 md:py-20">
+			{
+				frontmatter?.title && (
+					<header class="mb-12">
+						<h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+							{frontmatter.title}
+						</h1>
+						<div class="h-1.5 w-20 bg-blue-600 rounded-full" />
+					</header>
+				)
+			}
+
+			<DifficultySelector client:load />
+
+			<article
+				class="prose prose-slate lg:prose-xl prose-headings:text-slate-900 prose-headings:font-bold prose-a:text-blue-600 prose-img:rounded-2xl prose-pre:bg-slate-900 max-w-none"
+			>
+				<slot />
+			</article>
+
+			<footer
+				class="mt-24 pt-8 border-t border-slate-200 text-slate-500 text-sm pb-12"
+			>
+				<p>© 2026 AI Wiki Project • Built with Astro & React</p>
+			</footer>
+		</main>
 	</body>
 </html>
+
+<style is:global>
+	/* Custom scrollbar for premium feel */
+	::-webkit-scrollbar {
+		width: 8px;
+	}
+	::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	::-webkit-scrollbar-thumb {
+		background: #e2e8f0;
+		border-radius: 20px;
+	}
+	::-webkit-scrollbar-thumb:hover {
+		background: #cbd5e1;
+	}
+</style>
 
 <style>
 	html,
