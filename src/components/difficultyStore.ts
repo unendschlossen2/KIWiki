@@ -1,5 +1,5 @@
-import { atom } from 'nanostores';
+import { persistentAtom } from '@nanostores/persistent';
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
-export const difficultyStore = atom<Difficulty>('easy');
+export const difficultyStore = persistentAtom<Difficulty>('kiwiki-difficulty', 'easy');

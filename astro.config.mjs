@@ -1,5 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 
 import react from '@astrojs/react';
 
@@ -11,6 +13,11 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import remarkDirective from 'remark-directive';
 import { visit } from 'unist-util-visit';
+import { katexMacros } from './src/config/katex-macros.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const comp = (/** @type {string} */ name) => path.resolve(__dirname, 'src/components', name).replace(/\\/g, '/');
+
 
 /** @param {Record<string, string>} components */
 function remarkComponentAutoImport(components) {
@@ -90,14 +97,15 @@ export default defineConfig({
         remarkDirective,
         remarkDirectiveTransformer,
         [remarkComponentAutoImport, {
-          DifficultyContent: 'C:/Wiki/Wiki/src/components/DifficultyContent.tsx',
-          InfoBox: 'C:/Wiki/Wiki/src/components/InfoBox.tsx',
-          DifficultySelector: 'C:/Wiki/Wiki/src/components/DifficultySelector.tsx',
-          ActivationDemo: 'C:/Wiki/Wiki/src/components/ActivationDemo.tsx'
+          DifficultyContent: comp('DifficultyContent.tsx'),
+          InfoBox: comp('InfoBox.tsx'),
+          DifficultySelector: comp('DifficultySelector.tsx'),
+          ActivationDemo: comp('ActivationDemo.tsx'),
+          TableOfContents: comp('TableOfContents.tsx'),
         }],
         remarkMath
       ],
-      rehypePlugins: [rehypeKatex],
+      rehypePlugins: [[rehypeKatex, { macros: katexMacros }]],
     })
   ],
 

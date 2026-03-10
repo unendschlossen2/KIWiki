@@ -1,0 +1,23 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const articles = await getCollection("articles");
+  return articles.map((article) => {
+    // Strip file extension from ID
+    const slug = article.id.replace(/\.mdx?$/, "");
+    return {
+      params: { slug },
+      props: { article },
+    };
+  });
+}
+
+const { article } = Astro.props;
+const { Content } = await article.render();
+---
+
+<Layout frontmatter={{ title: article.data.title }}>
+  <Content />
+</Layout>

@@ -1,6 +1,8 @@
 ---
-import DifficultyContent from "../components/DifficultyContent.tsx";
 import DifficultySelector from "../components/DifficultySelector.tsx";
+import TableOfContents from "../components/TableOfContents.tsx";
+import Sidebar from "../components/Sidebar.astro";
+import { ViewTransitions } from "astro:transitions";
 import "../styles/global.css";
 
 interface Props {
@@ -13,7 +15,7 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="de">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -25,6 +27,7 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 			href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
 		/>
 		<title>{title}</title>
+		<ViewTransitions />
 	</head>
 	<body
 		class="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900"
@@ -33,7 +36,7 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 			class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200"
 		>
 			<div
-				class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between"
+				class="max-w-screen-2xl mx-auto px-6 h-16 flex items-center justify-between"
 			>
 				<a
 					href="/KIWiki/LandingPage"
@@ -42,46 +45,42 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 						class="text-blue-600">JadeHS</span
 					></a
 				>
-				<div class="flex gap-6 text-sm font-medium text-slate-600">
-					<a
-						href="/KIWiki/LandingPage"
-						class="hover:text-blue-600 transition-colors text-blue-600 font-bold"
-						>LandingPage</a
-					>
-					<a
-						href="/KIWiki/Neuron"
-						class="hover:text-blue-600 transition-colors">Neuron</a
-					>
-				</div>
+				<DifficultySelector client:load />
 			</div>
 		</nav>
 
-		<main class="max-w-7xl mx-auto px-6 py-12 md:py-20">
-			{
-				frontmatter?.title && (
-					<header class="mb-12">
-						<h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
-							{frontmatter.title}
-						</h1>
-						<div class="h-1.5 w-20 bg-blue-600 rounded-full" />
-					</header>
-				)
-			}
+		<Sidebar />
 
-			<DifficultySelector client:load />
+		<div class="layout-wrapper">
+			<main class="main-content">
+				{
+					frontmatter?.title && (
+						<header class="mb-12">
+							<h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+								{frontmatter.title}
+							</h1>
+							<div class="h-1.5 w-20 bg-blue-600 rounded-full" />
+						</header>
+					)
+				}
 
-			<article
-				class="prose prose-slate lg:prose-xl prose-headings:text-slate-900 prose-headings:font-bold prose-a:text-blue-600 prose-img:rounded-2xl prose-pre:bg-slate-900 max-w-none"
-			>
-				<slot />
-			</article>
+				<article
+					class="prose prose-slate lg:prose-xl prose-headings:text-slate-900 prose-headings:font-bold prose-a:text-blue-600 prose-img:rounded-2xl prose-pre:bg-slate-900 max-w-none"
+				>
+					<slot />
+				</article>
 
-			<footer
-				class="mt-24 pt-8 border-t border-slate-200 text-slate-500 text-sm pb-12"
-			>
-				<p>© 2026 AI Wiki Project • Built with Astro & React</p>
-			</footer>
-		</main>
+				<footer
+					class="mt-24 pt-8 border-t border-slate-200 text-slate-500 text-sm pb-12"
+				>
+					<p>© 2026 AI Wiki Project • Built with Astro & React</p>
+				</footer>
+			</main>
+
+			<aside class="toc-aside">
+				<TableOfContents client:load />
+			</aside>
+		</div>
 	</body>
 </html>
 
@@ -99,6 +98,91 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 	}
 	::-webkit-scrollbar-thumb:hover {
 		background: #cbd5e1;
+	}
+
+	/* Layout: sidebar + main + toc */
+	.layout-wrapper {
+		display: flex;
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 3rem 1.5rem;
+		gap: 2rem;
+	}
+
+	@media (min-width: 1024px) {
+		.layout-wrapper {
+			margin-left: 260px; /* sidebar width */
+			padding: 3rem 2rem;
+		}
+	}
+
+	.main-content {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.toc-aside {
+		display: none;
+	}
+
+	@media (min-width: 1280px) {
+		.toc-aside {
+			display: block;
+			width: 220px;
+			flex-shrink: 0;
+			position: sticky;
+			top: 100px;
+			max-height: calc(100vh - 120px);
+			overflow-y: auto;
+		}
+	}
+
+	/* ToC Styles */
+	.toc-container {
+		font-size: 0.8rem;
+	}
+
+	.toc-header {
+		font-weight: 700;
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: #94a3b8;
+		margin-bottom: 0.75rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 1px solid #f1f5f9;
+	}
+
+	.toc-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.toc-link {
+		display: block;
+		padding: 4px 0 4px 12px;
+		color: #64748b;
+		text-decoration: none;
+		border-left: 2px solid transparent;
+		transition: all 0.15s;
+		line-height: 1.4;
+	}
+
+	.toc-link:hover {
+		color: #1e293b;
+		border-left-color: #cbd5e1;
+	}
+
+	.toc-link.toc-active {
+		color: #2563eb;
+		border-left-color: #2563eb;
+		font-weight: 600;
+	}
+
+	.toc-link.toc-sub {
+		padding-left: 24px;
+		font-size: 0.75rem;
 	}
 </style>
 
