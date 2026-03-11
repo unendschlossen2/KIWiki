@@ -1,0 +1,324 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { slugifyCategory } from "../utils/slugify";
+import { categoryIcons } from "../config/categories";
+
+const articles = (await getCollection("articles")).filter(
+	(a) => !a.id.startsWith("_"),
+);
+
+// Group articles by category
+const groupedArticles = articles.reduce(
+	(acc, article) => {
+		const category = article.data.category;
+		if (!acc[category]) acc[category] = [];
+		acc[category].push(article);
+		return acc;
+	},
+	{} as Record<string, typeof articles>,
+);
+
+const categories = Object.entries(groupedArticles).sort((a, b) =>
+	a[0].localeCompare(b[0]),
+);
+---
+
+<Layout title="Willkommen beim KIWiki">
+	<div class="hero-section">
+		<div class="hero-content">
+			<div class="hero-logo-container">
+				<img
+					src="/KIWiki/assets/logo.png"
+					alt="KIWiki Logo"
+					class="hero-logo"
+				/>
+			</div>
+			<div class="hero-text">
+				<h1>
+					Willkommen beim <span class="text-gradient">KIWiki</span>
+				</h1>
+				<p class="subtitle">
+					Entdecke die Welt der Künstlichen Intelligenz – angepasst an
+					dein Vorwissen.
+				</p>
+			</div>
+		</div>
+		<div class="h-1 w-24 bg-blue-600/30 rounded-full mt-12 mx-auto sm:mx-0">
+		</div>
+	</div>
+
+	<div class="categories-grid">
+		<div class="category-card featured">
+			<div class="category-icon">ℹ️</div>
+			<h2 class="category-title">Über das Projekt</h2>
+			<p class="category-count">JadeHS Wiki</p>
+
+			<div class="article-list-preview">
+				<p class="preview-text">
+					Erfahre mehr über die Vision hinter KIWiki, die Jade
+					Hochschule und wie dieses Projekt Wissen vermittelt.
+				</p>
+			</div>
+
+			<div class="card-footer">
+				<a href="/KIWiki/ueber" class="explore-btn stretched-link">
+					Mehr erfahren →
+				</a>
+			</div>
+		</div>
+
+		{
+			categories.map(([category, items]) => (
+				<div class="category-card">
+					<div class="category-icon">
+						{categoryIcons[category] || "📂"}
+					</div>
+					<h2 class="category-title">{category}</h2>
+					<p class="category-count">{items.length} Artikel</p>
+
+					<div class="article-list-preview">
+						{items.slice(0, 3).map((article) => (
+							<a
+								href={`/KIWiki/articles/${article.id.replace(/\.mdx?$/, "")}`}
+								class="preview-link"
+							>
+								{article.data.title}
+							</a>
+						))}
+						{items.length > 3 && (
+							<span class="more-indicator">
+								+ {items.length - 3} weitere
+							</span>
+						)}
+					</div>
+
+					<div class="card-footer">
+						<a
+							href={`/KIWiki/category/${slugifyCategory(category)}`}
+							class="explore-btn stretched-link"
+						>
+							Erkunden →
+						</a>
+					</div>
+				</div>
+			))
+		}
+	</div>
+</Layout>
+
+<style>
+	.hero-section {
+		padding: 3rem 0 5rem;
+		max-width: 1000px;
+	}
+
+	.hero-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: 2rem;
+	}
+
+	@media (min-width: 640px) {
+		.hero-content {
+			flex-direction: row;
+			text-align: left;
+			gap: 3.5rem;
+		}
+	}
+
+	.hero-logo-container {
+		display: flex;
+		justify-content: center;
+		perspective: 1000px;
+		flex-shrink: 0;
+	}
+
+	.hero-logo {
+		width: 140px;
+		height: auto;
+		filter: drop-shadow(0 15px 20px var(--shadow-color));
+		animation: float 6s ease-in-out infinite;
+		border-radius: 32px;
+		transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+	}
+
+	@media (min-width: 640px) {
+		.hero-logo {
+			width: 170px;
+		}
+	}
+
+	.hero-logo:hover {
+		transform: scale(1.05) rotate(2deg);
+	}
+
+	@keyframes float {
+		0% {
+			transform: translateY(0px) rotate(0deg);
+		}
+		50% {
+			transform: translateY(-10px) rotate(-1deg);
+		}
+		100% {
+			transform: translateY(0px) rotate(0deg);
+		}
+	}
+
+	.hero-text {
+		flex: 1;
+	}
+
+	.text-gradient {
+		background: linear-gradient(135deg, #2563eb, #7c3aed);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.hero-section h1 {
+		font-size: 3rem;
+		font-weight: 900;
+		color: var(--text-primary);
+		line-height: 1.1;
+		margin: 0 0 1rem;
+		letter-spacing: -0.025em;
+	}
+
+	@media (min-width: 640px) {
+		.hero-section h1 {
+			font-size: 3.5rem;
+		}
+	}
+
+	.subtitle {
+		font-size: 1.15rem;
+		color: var(--text-secondary);
+		max-width: 100%;
+		line-height: 1.6;
+		margin: 0;
+	}
+
+	.categories-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+		gap: 2.5rem;
+		margin-top: 2.5rem;
+	}
+
+	.category-card {
+		background: var(--bg-card);
+		border: 1px solid var(--border-color);
+		border-radius: 24px;
+		padding: 2.5rem;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.category-card:hover {
+		transform: translateY(-8px);
+		box-shadow:
+			0 20px 25px -5px var(--shadow-hover),
+			0 8px 10px -6px var(--shadow-hover);
+		border-color: var(--primary-color);
+	}
+
+	.category-card.featured {
+		background: var(--card-featured-bg);
+		border: 2px solid var(--primary-color);
+		box-shadow: 0 10px 30px -10px var(--shadow-color);
+	}
+
+	.category-card.featured .category-title {
+		color: var(--text-primary);
+		font-weight: 800;
+	}
+
+	.preview-text {
+		font-size: 0.95rem;
+		color: var(--text-primary);
+		line-height: 1.6;
+		margin: 0;
+	}
+
+	.category-icon {
+		font-size: 3.5rem;
+		margin-bottom: 1.75rem;
+	}
+
+	.category-title {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: var(--text-primary);
+		margin: 0 0 0.5rem;
+	}
+
+	.category-count {
+		font-size: 0.875rem;
+		color: var(--text-muted);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 1.5rem;
+	}
+
+	.article-list-preview {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		margin-bottom: 2rem;
+		flex-grow: 1;
+		position: relative;
+		z-index: 2;
+	}
+
+	.preview-link {
+		color: var(--text-secondary);
+		text-decoration: none;
+		font-size: 0.95rem;
+		transition: color 0.2s;
+		display: block;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.preview-link:hover {
+		color: var(--primary-color);
+		text-decoration: underline;
+	}
+
+	.more-indicator {
+		font-size: 0.8rem;
+		color: var(--text-muted);
+		font-style: italic;
+	}
+
+	.card-footer {
+		margin-top: auto;
+		padding-top: 1rem;
+		border-top: 1px solid var(--border-color);
+	}
+
+	.explore-btn {
+		color: var(--primary-color);
+		font-weight: 700;
+		font-size: 0.9rem;
+		text-decoration: none;
+	}
+
+	.stretched-link::after {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 1;
+		content: "";
+	}
+</style>

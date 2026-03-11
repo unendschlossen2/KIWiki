@@ -1,0 +1,203 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { slugifyCategory } from "../../utils/slugify";
+import { categoryIcons } from "../../config/categories";
+
+export async function getStaticPaths() {
+  const articles = (await getCollection("articles")).filter(
+    (a) => !a.id.startsWith("_"),
+  );
+
+  const categories = [...new Set(articles.map((a) => a.data.category))];
+
+  return categories.map((category) => ({
+    params: { category: slugifyCategory(category) },
+    props: {
+      category,
+      articles: articles.filter((a) => a.data.category === category),
+    },
+  }));
+}
+
+const { category, articles } = Astro.props;
+---
+
+<Layout title={category}>
+  <div class="category-hero">
+    <div class="category-icon-large">{categoryIcons[category] || "📂"}</div>
+    <h1>{category}</h1>
+    <p class="category-subtitle">
+      {articles.length} Artikel in dieser Kategorie
+    </p>
+    <div class="divider"></div>
+  </div>
+
+  <div class="article-grid">
+    <a href="/KIWiki/" class="article-card featured-back">
+      <div class="article-card-header">
+        <h2 class="article-card-title">🏠 Zurück zur Startseite</h2>
+      </div>
+      <p class="article-card-description">
+        Hier gelangst du zurück zur Übersicht aller Themen und Kategorien.
+      </p>
+      <span class="article-card-cta">Hauptmenü öffnen →</span>
+    </a>
+
+    {
+      articles.map((article) => {
+        const slug = article.id.replace(/\.mdx?$/, "");
+        const difficulties = article.data.difficulties;
+        const isRestricted = difficulties && difficulties.length < 3;
+
+        return (
+          <a href={`/KIWiki/articles/${slug}`} class="article-card">
+            <div class="article-card-header">
+              <h2 class="article-card-title">{article.data.title}</h2>
+              {isRestricted && (
+                <div class="difficulty-badges">
+                  {difficulties.includes("easy") && (
+                    <span class="badge badge-easy" title="Einfach">
+                      E
+                    </span>
+                  )}
+                  {difficulties.includes("medium") && (
+                    <span class="badge badge-medium" title="Mittel">
+                      M
+                    </span>
+                  )}
+                  {difficulties.includes("hard") && (
+                    <span class="badge badge-hard" title="Experte">
+                      X
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            {article.data.description && (
+              <p class="article-card-description">{article.data.description}</p>
+            )}
+            <span class="article-card-cta">Lesen →</span>
+          </a>
+        );
+      })
+    }
+  </div>
+</Layout>
+
+<style>
+  .category-hero {
+    text-align: center;
+    padding: 3rem 0 4rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .back-link {
+    margin-bottom: 2rem;
+  }
+
+  .back-link a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .back-link a:hover {
+    color: var(--primary-color);
+  }
+
+  .category-icon-large {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  .category-hero h1 {
+    font-size: 2.75rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.025em;
+  }
+
+  .category-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0;
+  }
+
+  .divider {
+    width: 3rem;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 2px;
+    margin: 2rem auto 0;
+  }
+
+  .article-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .article-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 1.75rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .article-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 24px -4px var(--shadow-hover);
+    border-color: var(--primary-color);
+  }
+
+  /* Featured Back Card styling */
+  .article-card.featured-back {
+    background: var(--card-featured-bg);
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 10px 30px -10px var(--shadow-color);
+  }
+
+  .article-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .article-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .article-card-description {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    line-height: 1.55;
+    margin: 0;
+    flex-grow: 1;
+  }
+
+  .article-card-cta {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-top: auto;
+  }
+</style>

@@ -5,6 +5,7 @@ const articlesCollection = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
+    aliases: z.array(z.string()).optional(),
     /** The section grouping for this article */
     category: z.string().default('Allgemein'),
     /** Which difficulty levels this article is visible for. Defaults to all. */

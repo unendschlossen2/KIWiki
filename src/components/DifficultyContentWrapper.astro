@@ -1,0 +1,10 @@
+---
+const { level } = Astro.props;
+---
+
+<div
+  class={`difficulty-section section-${level}`}
+  data-difficulty-level={level}
+>
+  <slot />
+</div>

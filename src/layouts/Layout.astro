@@ -1,27 +1,76 @@
 ---
 import DifficultySelector from "../components/DifficultySelector.tsx";
 import TableOfContents from "../components/TableOfContents.tsx";
+import SearchModal from "../components/SearchModal.tsx";
 import Sidebar from "../components/Sidebar.astro";
+import HorizontalCategories from "../components/HorizontalCategories.astro";
 import { ViewTransitions } from "astro:transitions";
 import "../styles/global.css";
 
 interface Props {
 	title?: string;
+	description?: string;
 	frontmatter?: any;
 }
 
-const { title: propTitle, frontmatter } = Astro.props;
-const title = frontmatter?.title || propTitle || "AI Wiki";
+const {
+	title: propTitle,
+	description: propDescription,
+	frontmatter,
+} = Astro.props;
+const title = frontmatter?.title || propTitle || "KIWiki";
+const description =
+	frontmatter?.description ||
+	propDescription ||
+	"Das interaktive Nachschlagewerk für Künstliche Intelligenz";
 ---
 
 <!doctype html>
-<html lang="de">
+<html lang="de" data-difficulty="easy">
 	<head>
+		<script is:inline>
+			// Difficulty persistence — runs on every page load & View Transition
+			(function () {
+				function readDifficulty() {
+					try {
+						var s = localStorage.getItem("kiwiki-difficulty");
+						if (s) {
+							var d = s.replace(/"/g, "");
+							if (d === "easy" || d === "medium" || d === "hard")
+								return d;
+						}
+					} catch (e) {}
+					return "easy";
+				}
+
+				// 1. Apply immediately on every execution (initial load + View Transition re-run)
+				document.documentElement.setAttribute(
+					"data-difficulty",
+					readDifficulty(),
+				);
+
+				// 2. Register astro:before-swap ONCE to patch the incoming document
+				//    before the DOM swap, preventing any flash of wrong content
+				if (!window._kiwikiSwapInit) {
+					window._kiwikiSwapInit = true;
+					document.addEventListener(
+						"astro:before-swap",
+						function (ev) {
+							var d = readDifficulty();
+							ev.newDocument.documentElement.setAttribute(
+								"data-difficulty",
+								d,
+							);
+						},
+					);
+				}
+			})();
+		</script>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" type="image/png" href="/KIWiki/assets/logo.png" />
 		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
 		<link
 			rel="stylesheet"
 			href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
@@ -30,33 +79,87 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 		<ViewTransitions />
 	</head>
 	<body
-		class="min-h-screen bg-slate-50 selection:bg-blue-100 selection:text-blue-900"
+		class="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-blue-900 dark:selection:text-blue-100 transition-colors duration-300"
 	>
 		<nav
-			class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200"
+			class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-300 overflow-hidden"
 		>
+			<!-- Kiwi Cutout Background -->
 			<div
-				class="max-w-screen-2xl mx-auto px-6 h-16 flex items-center justify-between"
+				class="absolute inset-y-0 left-0 w-1/2 opacity-[0.03] dark:opacity-5 pointer-events-none"
+				style="background-image: url('/KIWiki/assets/logo.png'); background-size: cover; background-position: left center; background-repeat: no-repeat; transform: scale(1.5) translate(-10%, 10%);"
 			>
-				<a
-					href="/KIWiki/LandingPage"
-					class="font-bold text-slate-800 text-lg tracking-tight hover:text-blue-600 transition-colors"
-					>AI Wiki <span class="text-blue-600">•</span> powered by <span
-						class="text-blue-600">JadeHS</span
-					></a
-				>
-				<DifficultySelector client:load />
 			</div>
+
+			<div
+				class="max-w-screen-2xl mx-auto px-6 h-20 flex items-center justify-between relative z-10"
+			>
+				<!-- Horizontal Category Shortcuts -->
+				<div class="flex-1 flex items-center h-full overflow-hidden mr-4 sm:mr-8 relative z-10 hidden sm:flex">
+					<HorizontalCategories />
+				</div>
+				<div class="flex items-center gap-3 sm:gap-6">
+					<button
+						onclick="window.openSearchModal && window.openSearchModal()"
+						class="flex items-center gap-3 px-4 sm:px-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 text-base font-medium transition-colors border border-transparent dark:border-slate-700/50 shadow-sm"
+						aria-label="Suchen"
+					>
+						<svg
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="lucide lucide-search"
+							><circle cx="11" cy="11" r="8"></circle><path
+								d="m21 21-4.3-4.3"></path></svg
+						>
+						<span class="hidden sm:inline">Suchen...</span>
+						<kbd
+							class="hidden sm:inline-block font-sans text-sm font-semibold bg-white dark:bg-slate-900 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 shadow-sm"
+							>Ctrl K</kbd
+						>
+					</button>
+					<div
+						class="w-px h-8 bg-slate-200 dark:bg-slate-700 hidden sm:block mx-1"
+					>
+					</div>
+					<DifficultySelector client:load />
+				</div>
+			</div>
+			<!-- Reading Progress (Only on articles) -->
+			{Astro.url.pathname.includes("/KIWiki/articles/") && (
+				<div id="reading-progress" class="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-150 ease-out z-20" style="width: 0%;"></div>
+			)}
 		</nav>
 
-		<Sidebar />
+		<SearchModal client:load />
+		{
+			Astro.url.pathname !== "/KIWiki" &&
+				Astro.url.pathname !== "/KIWiki/" &&
+				!Astro.url.pathname.includes("/KIWiki/ueber") && <Sidebar />
+		}
 
-		<div class="layout-wrapper">
+		<div
+			class:list={[
+				"layout-wrapper",
+				{
+					"has-sidebar":
+						Astro.url.pathname !== "/KIWiki" &&
+						Astro.url.pathname !== "/KIWiki/" &&
+						!Astro.url.pathname.includes("/KIWiki/ueber"),
+					"full-width": Astro.url.pathname === "/KIWiki" || Astro.url.pathname === "/KIWiki/"
+				},
+			]}
+		>
 			<main class="main-content">
 				{
 					frontmatter?.title && (
 						<header class="mb-12">
-							<h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+							<h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
 								{frontmatter.title}
 							</h1>
 							<div class="h-1.5 w-20 bg-blue-600 rounded-full" />
@@ -65,21 +168,25 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 				}
 
 				<article
-					class="prose prose-slate lg:prose-xl prose-headings:text-slate-900 prose-headings:font-bold prose-a:text-blue-600 prose-img:rounded-2xl prose-pre:bg-slate-900 max-w-none"
+					class="prose prose-slate dark:prose-invert lg:prose-xl prose-headings:text-slate-900 dark:prose-headings:text-white prose-headings:font-bold prose-a:text-blue-600 prose-img:rounded-2xl prose-pre:bg-slate-900 max-w-none transition-colors duration-300"
 				>
 					<slot />
 				</article>
 
 				<footer
-					class="mt-24 pt-8 border-t border-slate-200 text-slate-500 text-sm pb-12"
+					class="mt-24 pt-8 border-t border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-sm pb-12 transition-colors duration-300"
 				>
-					<p>© 2026 AI Wiki Project • Built with Astro & React</p>
+					<p>© 2026 KIWiki Project • Built with Astro & React</p>
 				</footer>
 			</main>
 
-			<aside class="toc-aside">
-				<TableOfContents client:load />
-			</aside>
+			{
+				Astro.url.pathname.includes("/KIWiki/articles/") && (
+					<aside class="toc-aside">
+						<TableOfContents client:load />
+					</aside>
+				)
+			}
 		</div>
 	</body>
 </html>
@@ -93,11 +200,11 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 		background: transparent;
 	}
 	::-webkit-scrollbar-thumb {
-		background: #e2e8f0;
+		background: var(--border-color);
 		border-radius: 20px;
 	}
 	::-webkit-scrollbar-thumb:hover {
-		background: #cbd5e1;
+		background: var(--border-hover);
 	}
 
 	/* Layout: sidebar + main + toc */
@@ -110,10 +217,14 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 	}
 
 	@media (min-width: 1024px) {
-		.layout-wrapper {
+		.layout-wrapper.has-sidebar {
 			margin-left: 260px; /* sidebar width */
 			padding: 3rem 2rem;
 		}
+	}
+
+	.layout-wrapper.full-width {
+		max-width: 100%;
 	}
 
 	.main-content {
@@ -147,10 +258,10 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 		font-size: 0.7rem;
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
-		color: #94a3b8;
+		color: var(--text-muted);
 		margin-bottom: 0.75rem;
 		padding-bottom: 0.5rem;
-		border-bottom: 1px solid #f1f5f9;
+		border-bottom: 1px solid var(--border-color);
 	}
 
 	.toc-list {
@@ -162,7 +273,7 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 	.toc-link {
 		display: block;
 		padding: 4px 0 4px 12px;
-		color: #64748b;
+		color: var(--text-secondary);
 		text-decoration: none;
 		border-left: 2px solid transparent;
 		transition: all 0.15s;
@@ -170,13 +281,13 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 	}
 
 	.toc-link:hover {
-		color: #1e293b;
-		border-left-color: #cbd5e1;
+		color: var(--text-primary);
+		border-left-color: var(--border-hover);
 	}
 
 	.toc-link.toc-active {
-		color: #2563eb;
-		border-left-color: #2563eb;
+		color: var(--primary-color);
+		border-left-color: var(--primary-color);
 		font-weight: 600;
 	}
 
@@ -184,7 +295,47 @@ const title = frontmatter?.title || propTitle || "AI Wiki";
 		padding-left: 24px;
 		font-size: 0.75rem;
 	}
+
+	.toc-link.toc-title {
+		font-weight: 700;
+		color: var(--text-primary);
+		padding-left: 0;
+		border-left: none;
+		margin-bottom: 8px;
+		font-size: 0.85rem;
+	}
+	.toc-link.toc-title:hover {
+		color: var(--primary-color);
+	}
+	.toc-link.toc-title.toc-active {
+		color: var(--primary-color);
+		border-left: none;
+	}
 </style>
+
+<script>
+	document.addEventListener('astro:page-load', () => {
+		const progressBar = document.getElementById('reading-progress');
+
+		const updateScroll = () => {
+			const windowHeight = window.innerHeight;
+			const documentHeight = document.documentElement.scrollHeight - windowHeight;
+			const scrollTop = window.scrollY;
+
+			// Reading Progress update
+			if (progressBar && documentHeight > 0) {
+				const progress = Math.min((scrollTop / documentHeight) * 100, 100);
+				progressBar.style.width = `${progress}%`;
+			}
+		};
+
+		// Only bind scroll if there's a progress bar to update
+		if (progressBar) {
+			window.addEventListener('scroll', updateScroll, { passive: true });
+			window.requestAnimationFrame(updateScroll);
+		}
+	});
+</script>
 
 <style>
 	html,

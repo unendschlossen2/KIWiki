@@ -18,9 +18,10 @@ src/
 ├── layouts/
 │   └── Layout.astro       ← Haupt-Layout (Navbar, Sidebar, ToC)
 └── pages/
-    ├── LandingPage.mdx    ← Startseite (kein Artikel!)
+    ├── index.astro        ← Die neue Startseite mit Kategorien
+    ├── ueber.mdx          ← "Über das Projekt" Seite
     └── articles/
-        └── [slug].astro   ← Dynamische Route für alle Artikel
+        └── [...slug].astro ← Dynamische Route für alle Artikel
 ```
 
 ---
@@ -38,16 +39,28 @@ src/content/articles/mein-neuer-artikel.mdx
 > **Wichtig:** Der Dateiname (ohne `.mdx`) wird zur URL.  
 > `mein-neuer-artikel.mdx` → `/KIWiki/articles/mein-neuer-artikel`
 
+> **Tipp:** Wenn du einen Dateinamen mit einem Unterstrich beginnst (z.B. `_entwurf.mdx`), wird dieser Artikel **nicht** in der Seitenleiste angezeigt. Dies ist nützlich für Entwürfe.
+
 ### Schritt 2: Frontmatter schreiben
 
-Jeder Artikel **muss** einen Frontmatter-Block haben:
+Jeder Artikel **muss** einen Frontmatter-Block haben. Neu ist das Feld `category`, um Artikel in der Seitenleiste zu gruppieren:
 
 ```yaml
 ---
 title: "Mein Artikel-Titel"
-description: "Kurze Beschreibung (optional, für SEO und Übersichten)"
+description: "Kurze Beschreibung (optional)"
+category: "Maschinelles Lernen" # Gruppiert den Artikel in der Sidebar
 ---
 ```
+
+> **Hinweis:** Wenn kein `category` angegeben wird, erscheint der Artikel unter "Allgemein".
+
+### Schritt 3: Ordnerstruktur (Optional)
+
+Du kannst Artikel in Unterordnern organisieren, um die Übersicht zu behalten. Das System unterstützt beliebig tiefe Verschachtelungen:
+
+`src/content/articles/grundlagen/neuron.mdx`  
+→ URL: `/KIWiki/articles/grundlagen/neuron`
 
 ### Schritt 3: Inhalt verfassen
 
@@ -252,3 +265,9 @@ Neue Makros können in `katex-macros.js` hinzugefügt werden.
 | Build-Fehler im Frontmatter | Prüfe das Schema in `src/content/config.ts` |
 | Mathe wird nicht gerendert | Verwende `$...$` für Inline und `$$...$$` für Blöcke |
 | `:::` Block funktioniert nicht | Achte auf Leerzeilen vor und nach `:::` Blöcken |
+
+---
+
+## 9. Vorlage (Template) nutzen
+
+Um dir den Start zu erleichtern, haben wir eine Vorlage unter `src/content/articles/_template.mdx` angelegt. Du kannst sie einfach kopieren und als Basis für deinen neuen Artikel nutzen.

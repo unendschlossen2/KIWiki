@@ -15,6 +15,8 @@ import remarkDirective from 'remark-directive';
 import { visit } from 'unist-util-visit';
 import { katexMacros } from './src/config/katex-macros.js';
 
+import { remarkCrossReference } from './src/plugins/remark-cross-reference.ts';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const comp = (/** @type {string} */ name) => path.resolve(__dirname, 'src/components', name).replace(/\\/g, '/');
 
@@ -76,8 +78,7 @@ function remarkDirectiveTransformer() {
           node.type = 'mdxJsxFlowElement';
           node.name = 'DifficultyContent';
           node.attributes = [
-            { type: 'mdxJsxAttribute', name: 'level', value: level },
-            { type: 'mdxJsxAttribute', name: 'client:load', value: null } // Boolean attribute
+            { type: 'mdxJsxAttribute', name: 'level', value: level }
           ];
           // Children remain the same
         }
@@ -94,10 +95,11 @@ export default defineConfig({
     react(),
     mdx({
       remarkPlugins: [
+        remarkCrossReference,
         remarkDirective,
         remarkDirectiveTransformer,
         [remarkComponentAutoImport, {
-          DifficultyContent: comp('DifficultyContent.tsx'),
+          DifficultyContent: comp('DifficultyContentWrapper.astro'),
           InfoBox: comp('InfoBox.tsx'),
           DifficultySelector: comp('DifficultySelector.tsx'),
           ActivationDemo: comp('ActivationDemo.tsx'),

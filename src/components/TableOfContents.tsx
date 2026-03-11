@@ -17,8 +17,19 @@ const TableOfContents: React.FC = () => {
     const article = document.querySelector('article');
     if (!article) return;
 
+    const titleEl = document.querySelector('header h1');
     const elements = article.querySelectorAll('h2, h3');
     const found: Heading[] = [];
+
+    // Add main title first
+    if (titleEl && titleEl.textContent) {
+      if (!titleEl.id) titleEl.id = 'page-title';
+      found.push({
+        id: titleEl.id,
+        text: titleEl.textContent,
+        level: 1,
+      });
+    }
 
     elements.forEach((el) => {
       // Skip headings that are inside hidden difficulty sections
@@ -86,7 +97,7 @@ const TableOfContents: React.FC = () => {
           <li key={h.id}>
             <a
               href={`#${h.id}`}
-              className={`toc-link ${h.level === 3 ? 'toc-sub' : ''} ${activeId === h.id ? 'toc-active' : ''}`}
+              className={`toc-link ${h.level === 1 ? 'toc-title' : ''} ${h.level === 3 ? 'toc-sub' : ''} ${activeId === h.id ? 'toc-active' : ''}`}
               onClick={(e) => {
                 e.preventDefault();
                 document.getElementById(h.id)?.scrollIntoView({ behavior: 'smooth' });

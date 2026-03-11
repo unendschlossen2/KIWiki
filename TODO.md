@@ -1,0 +1,1 @@
+- cooler Effekt für die Startseite die die schwierigkeitsstufe widerspiegelt

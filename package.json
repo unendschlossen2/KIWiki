@@ -18,6 +18,9 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "astro": "^5.17.1",
+    "fuse.js": "^7.1.0",
+    "gray-matter": "^4.0.3",
+    "lucide-react": "^0.577.0",
     "nanostores": "^1.1.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -25,7 +28,8 @@
     "remark-directive": "^4.0.0",
     "remark-math": "^6.0.0",
     "tailwindcss": "^4.2.1",
-    "unist-util-visit": "^5.1.0"
+    "unist-util-visit": "^5.1.0",
+    "unist-util-visit-parents": "^6.0.2"
   },
   "devDependencies": {
     "@types/node": "^25.3.5"
