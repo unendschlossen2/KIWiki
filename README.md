@@ -1,46 +1,19 @@
-# Astro Starter Kit: Basics
+## Was ist KIWiki?
+KIWiki ist ein Projekt der JadeHS, dessen Ziel die Vermittlung von Wissen über Künstliche Intelligenz ist. 
 
-```sh
-npm create astro@latest -- --template basics
-```
+Im Fokus steht dabei die Zugänglichkeit der Informationen.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+### Die Vision
+Wir glauben, dass jeder Mensch KI verstehen kann, wenn die Erklärungen zur Vorkennis passen. 
 
-## 🚀 Project Structure
+Deshalb bieten wir Inhalte in verschiedenen Abstraktionsstufen an.
 
-Inside of your Astro project, you'll see the following folders and files:
+Über den Schwierigkeitsregler oben rechts in der Navigationsleiste kann das aktuelle Niveau eingestellt werden.
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+Dies reguliert den Inhalt, bzw. welche Inhalte angezeigt werden.
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+### Kerntechnologien
+Das Projekt nutzt **Astro 5**, **React 19** und **Nanostores** für das State-Management, um eine inklusive und interaktive Lernumgebung zu schaffen.
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Beteiligung
+Falls ihnen ein Fehler in einem der Artikel auffallen sollte, so öffnen sie doch bitte ein Issue.
