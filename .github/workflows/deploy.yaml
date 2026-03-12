@@ -1,4 +1,4 @@
-name: Deploy NeuronWiki to GitHub Pages
+name: Deploy KIWiki to GitHub Pages
 
 on:
   # Triggers the workflow every time you or your team pushes to the main branch
