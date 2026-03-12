@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Fuse from "fuse.js";
 import { Search, X, FileText, Command } from "lucide-react";
+import { DIFFICULTY_LABELS, DIFFICULTY_SHORT, DIFFICULTIES } from "../../config/difficulty";
 
 interface SearchResult {
   title: string;
@@ -8,6 +9,7 @@ interface SearchResult {
   category: string;
   aliases: string[];
   slug: string;
+  difficulties: string[];
 }
 
 export default function SearchModal() {
@@ -133,9 +135,28 @@ export default function SearchModal() {
                       <FileText className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-slate-800 dark:text-slate-200 mb-0.5 group-hover:text-blue-700 dark:group-hover:text-blue-400 truncate">
-                        {result.title}
-                      </h4>
+                      <div className="flex items-center justify-between gap-2 overflow-hidden mb-0.5">
+                        <h4 className="font-semibold text-slate-800 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 truncate">
+                          {result.title}
+                        </h4>
+
+                        {result.difficulties && result.difficulties.length < 3 && (
+                          <div className="flex gap-1 flex-shrink-0 scale-75 origin-right">
+                            {DIFFICULTIES.map(
+                              (level) =>
+                                result.difficulties.includes(level) && (
+                                  <span
+                                    key={level}
+                                    className={`badge badge-${level} w-5 h-5`}
+                                    title={DIFFICULTY_LABELS[level]}
+                                  >
+                                    {DIFFICULTY_SHORT[level]}
+                                  </span>
+                                ),
+                            )}
+                          </div>
+                        )}
+                      </div>
                       <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
                         {result.category} • {result.description || "Keine Zusammenfassung"}
                       </p>

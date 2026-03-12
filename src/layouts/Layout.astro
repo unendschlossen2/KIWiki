@@ -1,9 +1,9 @@
 ---
-import DifficultySelector from "../components/DifficultySelector.tsx";
-import TableOfContents from "../components/TableOfContents.tsx";
-import SearchModal from "../components/SearchModal.tsx";
-import Sidebar from "../components/Sidebar.astro";
-import HorizontalCategories from "../components/HorizontalCategories.astro";
+import DifficultySelector from "../components/design/DifficultySelector.tsx";
+import TableOfContents from "../components/design/TableOfContents.tsx";
+import SearchModal from "../components/design/SearchModal.tsx";
+import Sidebar from "../components/design/Sidebar.astro";
+import CategoryDropdown from "../components/design/CategoryDropdown.astro";
 import { ViewTransitions } from "astro:transitions";
 import "../styles/global.css";
 
@@ -82,26 +82,54 @@ const description =
 		class="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-blue-900 dark:selection:text-blue-100 transition-colors duration-300"
 	>
 		<nav
-			class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-300 overflow-hidden"
+			class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-300"
 		>
-			<!-- Kiwi Cutout Background -->
-			<div
-				class="absolute inset-y-0 left-0 w-1/2 opacity-[0.03] dark:opacity-5 pointer-events-none"
-				style="background-image: url('/KIWiki/assets/logo.png'); background-size: cover; background-position: left center; background-repeat: no-repeat; transform: scale(1.5) translate(-10%, 10%);"
-			>
+			<!-- Kiwi Cutout Background (Wrapped to prevent overflow while allowing dropdowns) -->
+			<div class="absolute inset-0 overflow-hidden pointer-events-none">
+				<div
+					class="absolute inset-y-0 left-0 w-1/2 opacity-[0.03] dark:opacity-5"
+					style="background-image: url('/KIWiki/assets/logo.png'); background-size: cover; background-position: left center; background-repeat: no-repeat; transform: scale(1.5) translate(-10%, 10%);"
+				>
+				</div>
 			</div>
 
 			<div
-				class="max-w-screen-2xl mx-auto px-6 h-20 flex items-center justify-between relative z-10"
+				class="max-w-screen-2xl mx-auto px-6 h-20 flex items-center gap-6 relative z-10"
 			>
-				<!-- Horizontal Category Shortcuts -->
-				<div class="flex-1 flex items-center h-full overflow-hidden mr-4 sm:mr-8 relative z-10 hidden sm:flex">
-					<HorizontalCategories />
+				<!-- Left Area: Home & Categories -->
+				<div class="flex items-center gap-4 shrink-0">
+					<a
+						href="/KIWiki/"
+						class="flex items-center justify-center w-11 h-11 rounded-xl bg-slate-100 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all border border-transparent dark:border-slate-700/50 shadow-sm hover:shadow group"
+						aria-label="Zur Startseite"
+						title="Startseite"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="group-hover:scale-110 transition-transform duration-200"
+							><path
+								d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+							></path><polyline points="9 22 9 12 15 12 15 22"
+							></polyline></svg
+						>
+					</a>
+
+					<CategoryDropdown />
 				</div>
-				<div class="flex items-center gap-3 sm:gap-6">
+
+				<!-- Center/Right Area: Expanded Search Bar -->
+				<div class="flex-1 flex items-center h-full max-w-3xl">
 					<button
 						onclick="window.openSearchModal && window.openSearchModal()"
-						class="flex items-center gap-3 px-4 sm:px-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 text-base font-medium transition-colors border border-transparent dark:border-slate-700/50 shadow-sm"
+						class="flex items-center gap-3 px-6 py-3 w-full rounded-2xl bg-slate-100/80 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-base font-medium transition-all border border-transparent hover:border-blue-500/30 dark:border-slate-700/50 dark:hover:border-blue-400/30 shadow-sm hover:shadow-md group"
 						aria-label="Suchen"
 					>
 						<svg
@@ -110,30 +138,38 @@ const description =
 							viewBox="0 0 24 24"
 							fill="none"
 							stroke="currentColor"
-							stroke-width="2"
+							stroke-width="2.5"
 							stroke-linecap="round"
 							stroke-linejoin="round"
-							class="lucide lucide-search"
+							class="lucide lucide-search group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
 							><circle cx="11" cy="11" r="8"></circle><path
 								d="m21 21-4.3-4.3"></path></svg
 						>
-						<span class="hidden sm:inline">Suchen...</span>
+						<span class="flex-1 text-left opacity-70"
+							>Suche nach Artikeln, Themen oder Begriffen...</span
+						>
 						<kbd
-							class="hidden sm:inline-block font-sans text-sm font-semibold bg-white dark:bg-slate-900 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 shadow-sm"
+							class="hidden md:inline-block font-sans text-[0.65rem] font-black uppercase tracking-widest bg-white dark:bg-slate-900 px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 shadow-sm"
 							>Ctrl K</kbd
 						>
 					</button>
-					<div
-						class="w-px h-8 bg-slate-200 dark:bg-slate-700 hidden sm:block mx-1"
-					>
-					</div>
+				</div>
+
+				<!-- Right Area: Difficulty -->
+				<div class="flex items-center shrink-0">
 					<DifficultySelector client:load />
 				</div>
 			</div>
 			<!-- Reading Progress (Only on articles) -->
-			{Astro.url.pathname.includes("/KIWiki/articles/") && (
-				<div id="reading-progress" class="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-150 ease-out z-20" style="width: 0%;"></div>
-			)}
+			{
+				Astro.url.pathname.includes("/KIWiki/articles/") && (
+					<div
+						id="reading-progress"
+						class="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-150 ease-out z-20"
+						style="width: 0%;"
+					/>
+				)
+			}
 		</nav>
 
 		<SearchModal client:load />
@@ -151,7 +187,9 @@ const description =
 						Astro.url.pathname !== "/KIWiki" &&
 						Astro.url.pathname !== "/KIWiki/" &&
 						!Astro.url.pathname.includes("/KIWiki/ueber"),
-					"full-width": Astro.url.pathname === "/KIWiki" || Astro.url.pathname === "/KIWiki/"
+					"full-width":
+						Astro.url.pathname === "/KIWiki" ||
+						Astro.url.pathname === "/KIWiki/",
 				},
 			]}
 		>
@@ -314,24 +352,46 @@ const description =
 </style>
 
 <script>
-	document.addEventListener('astro:page-load', () => {
-		const progressBar = document.getElementById('reading-progress');
+	import { difficultyStore } from "../components/design/difficultyStore";
+
+	function initDifficultySync() {
+		// Sync nanostore to document attribute
+		difficultyStore.subscribe((newDifficulty) => {
+			document.documentElement.setAttribute(
+				"data-difficulty",
+				newDifficulty,
+			);
+		});
+	}
+
+	// Initialize on page load and swaps
+	initDifficultySync();
+	document.addEventListener("astro:after-swap", initDifficultySync);
+</script>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		const progressBar = document.getElementById("reading-progress");
 
 		const updateScroll = () => {
 			const windowHeight = window.innerHeight;
-			const documentHeight = document.documentElement.scrollHeight - windowHeight;
+			const documentHeight =
+				document.documentElement.scrollHeight - windowHeight;
 			const scrollTop = window.scrollY;
 
 			// Reading Progress update
 			if (progressBar && documentHeight > 0) {
-				const progress = Math.min((scrollTop / documentHeight) * 100, 100);
+				const progress = Math.min(
+					(scrollTop / documentHeight) * 100,
+					100,
+				);
 				progressBar.style.width = `${progress}%`;
 			}
 		};
 
 		// Only bind scroll if there's a progress bar to update
 		if (progressBar) {
-			window.addEventListener('scroll', updateScroll, { passive: true });
+			window.addEventListener("scroll", updateScroll, { passive: true });
 			window.requestAnimationFrame(updateScroll);
 		}
 	});

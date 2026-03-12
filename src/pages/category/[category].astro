@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { slugifyCategory } from "../../utils/slugify";
 import { categoryIcons } from "../../config/categories";
+import { DIFFICULTY_LABELS, DIFFICULTY_SHORT } from "../../config/difficulty";
 
 export async function getStaticPaths() {
   const articles = (await getCollection("articles")).filter(
@@ -26,14 +27,61 @@ const { category, articles } = Astro.props;
 <Layout title={category}>
   <div class="category-hero">
     <div class="category-icon-large">{categoryIcons[category] || "📂"}</div>
-    <h1>{category}</h1>
+
+    <div
+      class="flex flex-col md:flex-row items-center justify-center gap-6 mb-4"
+    >
+      <h1 class="!mb-0">{category}</h1>
+
+      <div class="difficulty-showcase">
+        <div class="showcase-badge badge-easy">
+          <span class="text-3xl">🌱</span>
+          <div class="text-left">
+            <div
+              class="text-[0.6rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
+            >
+              Modus
+            </div>
+            <div class="text-lg font-black leading-none uppercase">
+              {DIFFICULTY_LABELS.easy}
+            </div>
+          </div>
+        </div>
+        <div class="showcase-badge badge-medium">
+          <span class="text-3xl">🚀</span>
+          <div class="text-left">
+            <div
+              class="text-[0.6rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
+            >
+              Modus
+            </div>
+            <div class="text-lg font-black leading-none uppercase">
+              {DIFFICULTY_LABELS.medium}
+            </div>
+          </div>
+        </div>
+        <div class="showcase-badge badge-hard">
+          <span class="text-3xl">🧠</span>
+          <div class="text-left">
+            <div
+              class="text-[0.6rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
+            >
+              Modus
+            </div>
+            <div class="text-lg font-black leading-none uppercase">{DIFFICULTY_LABELS.hard}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <p class="category-subtitle">
       {articles.length} Artikel in dieser Kategorie
     </p>
+
     <div class="divider"></div>
   </div>
 
-  <div class="article-grid">
+  <div class="article-grid" id="article-grid">
     <a href="/KIWiki/" class="article-card featured-back">
       <div class="article-card-header">
         <h2 class="article-card-title">🏠 Zurück zur Startseite</h2>
@@ -51,24 +99,28 @@ const { category, articles } = Astro.props;
         const isRestricted = difficulties && difficulties.length < 3;
 
         return (
-          <a href={`/KIWiki/articles/${slug}`} class="article-card">
+          <a
+            href={`/KIWiki/articles/${slug}`}
+            class="article-card"
+            data-difficulties={difficulties?.join(",")}
+          >
             <div class="article-card-header">
               <h2 class="article-card-title">{article.data.title}</h2>
               {isRestricted && (
                 <div class="difficulty-badges">
                   {difficulties.includes("easy") && (
-                    <span class="badge badge-easy" title="Einfach">
-                      E
+                    <span class="badge badge-easy" title={DIFFICULTY_LABELS.easy}>
+                      {DIFFICULTY_SHORT.easy}
                     </span>
                   )}
                   {difficulties.includes("medium") && (
-                    <span class="badge badge-medium" title="Mittel">
-                      M
+                    <span class="badge badge-medium" title={DIFFICULTY_LABELS.medium}>
+                      {DIFFICULTY_SHORT.medium}
                     </span>
                   )}
                   {difficulties.includes("hard") && (
-                    <span class="badge badge-hard" title="Experte">
-                      X
+                    <span class="badge badge-hard" title={DIFFICULTY_LABELS.hard}>
+                      {DIFFICULTY_SHORT.hard}
                     </span>
                   )}
                 </div>
@@ -200,4 +252,34 @@ const { category, articles } = Astro.props;
     color: var(--primary-color);
     margin-top: auto;
   }
+
+  .difficulty-hidden {
+    display: none !important;
+  }
 </style>
+
+<script>
+  import { difficultyStore } from "../../components/design/difficultyStore";
+
+  function updateGridVisibility(difficulty: string) {
+    const cards = document.querySelectorAll(
+      ".article-card:not(.featured-back)",
+    );
+    cards.forEach((card) => {
+      const allowed =
+        (card as HTMLElement).dataset.difficulties?.split(",") || [];
+      if (allowed.includes(difficulty)) {
+        card.classList.remove("difficulty-hidden");
+      } else {
+        card.classList.add("difficulty-hidden");
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    // Subscribe to difficulty changes
+    difficultyStore.subscribe((newDifficulty) => {
+      updateGridVisibility(newDifficulty);
+    });
+  });
+</script>

@@ -12,6 +12,7 @@ export async function GET() {
     category: article.data.category,
     aliases: article.data.aliases || [],
     slug: article.id.replace(/\.mdx?$/, ""),
+    difficulties: article.data.difficulties || [],
   }));
 
   return new Response(JSON.stringify(searchIndex), {

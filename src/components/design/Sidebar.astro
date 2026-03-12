@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
-import { slugifyCategory } from "../utils/slugify";
+import { slugifyCategory } from "../../utils/slugify";
+import { DIFFICULTY_LABELS, DIFFICULTY_SHORT } from "../../config/difficulty";
 
 const allArticles = (await getCollection("articles")).filter(
   (a) => !a.id.startsWith("_"),
@@ -136,18 +137,27 @@ const groupedArticles = allArticles.reduce(
                     {isRestricted && (
                       <span class="difficulty-badges">
                         {difficulties.includes("easy") && (
-                          <span class="badge badge-easy" title="Einfach">
-                            E
+                          <span
+                            class="badge badge-easy"
+                            title={DIFFICULTY_LABELS.easy}
+                          >
+                            {DIFFICULTY_SHORT.easy}
                           </span>
                         )}
                         {difficulties.includes("medium") && (
-                          <span class="badge badge-medium" title="Mittel">
-                            M
+                          <span
+                            class="badge badge-medium"
+                            title={DIFFICULTY_LABELS.medium}
+                          >
+                            {DIFFICULTY_SHORT.medium}
                           </span>
                         )}
                         {difficulties.includes("hard") && (
-                          <span class="badge badge-hard" title="Experte">
-                            X
+                          <span
+                            class="badge badge-hard"
+                            title={DIFFICULTY_LABELS.hard}
+                          >
+                            {DIFFICULTY_SHORT.hard}
                           </span>
                         )}
                       </span>

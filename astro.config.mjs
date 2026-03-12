@@ -99,11 +99,11 @@ export default defineConfig({
         remarkDirective,
         remarkDirectiveTransformer,
         [remarkComponentAutoImport, {
-          DifficultyContent: comp('DifficultyContentWrapper.astro'),
-          InfoBox: comp('InfoBox.tsx'),
-          DifficultySelector: comp('DifficultySelector.tsx'),
-          ActivationDemo: comp('ActivationDemo.tsx'),
-          TableOfContents: comp('TableOfContents.tsx'),
+          DifficultyContent: comp('design/DifficultyContentWrapper.astro'),
+          InfoBox: comp('design/InfoBox.tsx'),
+          DifficultySelector: comp('design/DifficultySelector.tsx'),
+          ActivationDemo: comp('demos/ActivationDemo.tsx'),
+          TableOfContents: comp('design/TableOfContents.tsx'),
         }],
         remarkMath
       ],

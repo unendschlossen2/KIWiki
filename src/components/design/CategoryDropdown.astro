@@ -1,0 +1,214 @@
+---
+import { getCollection } from "astro:content";
+import { slugifyCategory } from "../../utils/slugify";
+
+const articles = (await getCollection("articles")).filter(
+	(a) => !a.id.startsWith("_"),
+);
+
+const categories = [...new Set(articles.map((a) => a.data.category))].sort();
+
+const grouped = categories.reduce(
+	(acc, cat) => {
+		acc[cat] = articles.filter((a) => a.data.category === cat);
+		return acc;
+	},
+	{} as Record<string, typeof articles>,
+);
+---
+
+<div class="relative flex items-center h-full">
+	<button
+		id="category-dropdown-btn"
+		class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold transition-all border border-transparent dark:border-slate-700/50 shadow-sm whitespace-nowrap"
+		aria-expanded="false"
+	>
+		<span>Kategorien</span>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="16"
+			height="16"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+			class="transition-transform duration-200"
+			><path d="m6 9 6 6 6-6"></path></svg
+		>
+	</button>
+
+	<!-- The Dropdown Panel -->
+	<div
+		id="category-dropdown-panel"
+		class="absolute left-0 top-[calc(100%+0.5rem)] w-[90vw] max-w-6xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-8 opacity-0 translate-y-2 pointer-events-none transition-all duration-300 z-50 overflow-y-auto max-h-[80vh]"
+	>
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+			{
+				categories.map((cat) => (
+					<div class="category-group">
+						<div
+							class="category-header flex items-center justify-between mb-3 group/header cursor-pointer"
+							data-cat={cat}
+						>
+							<a
+								href={`/KIWiki/category/${slugifyCategory(cat)}`}
+								class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 group-hover/header:text-blue-600 dark:group-hover/header:text-blue-400 transition-colors"
+								onclick="event.stopPropagation()"
+							>
+								{cat}
+							</a>
+							<div class="text-slate-400 group-hover/header:text-blue-500 transition-all">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="3"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="chevron transition-transform duration-300"
+								>
+									<path d="m6 9 6 6 6-6" />
+								</svg>
+							</div>
+						</div>
+
+						<ul class="article-list space-y-2 hidden overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-top-1">
+							{grouped[cat].map((art) => (
+								<li>
+									<a
+										href={`/KIWiki/articles/${art.id.replace(/\.mdx?$/, "")}`}
+										class="flex items-center justify-between gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 py-1 transition-colors border-l-2 border-transparent hover:border-blue-500 pl-3 -ml-3"
+									>
+										<span class="truncate">
+											{art.data.title}
+										</span>
+										{art.data.difficulties &&
+											art.data.difficulties.length <
+												3 && (
+												<div class="difficulty-badges scale-[0.65] origin-right mr-1">
+													{art.data.difficulties.includes(
+														"easy",
+													) && (
+														<span
+															class="badge badge-easy"
+															title="Einsteiger"
+														/>
+													)}
+													{art.data.difficulties.includes(
+														"medium",
+													) && (
+														<span
+															class="badge badge-medium"
+															title="Fortgeschritten"
+														/>
+													)}
+													{art.data.difficulties.includes(
+														"hard",
+													) && (
+														<span
+															class="badge badge-hard"
+															title="Experte"
+														/>
+													)}
+												</div>
+											)}
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</div>
+
+<script>
+	function setupDropdown() {
+		const btn = document.getElementById("category-dropdown-btn");
+		const panel = document.getElementById("category-dropdown-panel");
+
+		if (!btn || !panel) return;
+
+		// Toggle Dropdown Main
+		btn.addEventListener("click", (e) => {
+			e.stopPropagation();
+			const isExpanded = btn.getAttribute("aria-expanded") === "true";
+			btn.setAttribute("aria-expanded", String(!isExpanded));
+
+			if (!isExpanded) {
+				panel.classList.remove(
+					"opacity-0",
+					"translate-y-2",
+					"pointer-events-none",
+				);
+				panel.classList.add(
+					"opacity-100",
+					"translate-y-0",
+					"pointer-events-auto",
+				);
+				btn.querySelector("svg")?.classList.add("rotate-180");
+			} else {
+				panel.classList.add(
+					"opacity-0",
+					"translate-y-2",
+					"pointer-events-none",
+				);
+				panel.classList.remove(
+					"opacity-100",
+					"translate-y-0",
+					"pointer-events-auto",
+				);
+				btn.querySelector("svg")?.classList.remove("rotate-180");
+			}
+		});
+
+		// Toggle Articles in Columns
+		const headers = document.querySelectorAll(".category-header");
+		headers.forEach((header) => {
+			header.addEventListener("click", () => {
+				const list = header
+					.closest(".category-group")
+					?.querySelector(".article-list");
+				const chevron = header.querySelector(".chevron");
+				if (list) {
+					const isHidden = list.classList.contains("hidden");
+					if (isHidden) {
+						list.classList.remove("hidden");
+						chevron?.classList.add("rotate-180");
+					} else {
+						list.classList.add("hidden");
+						chevron?.classList.remove("rotate-180");
+					}
+				}
+			});
+		});
+
+		// Close when clicking outside
+		document.addEventListener("click", (e) => {
+			if (!panel.contains(e.target as Node) && e.target !== btn) {
+				btn.setAttribute("aria-expanded", "false");
+				panel.classList.add(
+					"opacity-0",
+					"translate-y-2",
+					"pointer-events-none",
+				);
+				panel.classList.remove(
+					"opacity-100",
+					"translate-y-0",
+					"pointer-events-auto",
+				);
+				btn.querySelector("svg")?.classList.remove("rotate-180");
+			}
+		});
+	}
+
+	// Run on initial load and swap
+	setupDropdown();
+	document.addEventListener("astro:after-swap", setupDropdown);
+</script>

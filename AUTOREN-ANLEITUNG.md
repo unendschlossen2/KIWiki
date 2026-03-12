@@ -54,6 +54,20 @@ category: "Maschinelles Lernen" # Gruppiert den Artikel in der Sidebar
 ```
 
 > **Hinweis:** Wenn kein `category` angegeben wird, erscheint der Artikel unter "Allgemein".
+> 
+> ### Schritt 3: Neue Kategorien und Icons
+> 
+> Kategorien und ihre Icons werden zentral in `src/config/categories.ts` verwaltet. Wenn du eine neue Kategorie im Frontmatter nutzt, die dort nicht definiert ist, wird sie zwar angezeigt, hat aber kein Icon.
+> 
+> Um ein Icon für eine Kategorie festzulegen, bearbeite `src/config/categories.ts`:
+> 
+> ```typescript
+> export const categoryIcons: Record<string, string> = {
+>   "Maschinelles Lernen": "🤖",
+>   "Deine neue Kategorie": "✨", // Hier Icon hinzufügen
+>   // ...
+> };
+> ```
 
 ### Schritt 3: Ordnerstruktur (Optional)
 
@@ -89,7 +103,7 @@ angepasst.
 
 :::advanced
 Formal berechnet die Backpropagation $\frac{\partial \loss}{\partial w_{ij}}$
-mittels der Kettenregel. Für eine Schicht $l$ gilt:
+Fortgeschrittens der Kettenregel. Für eine Schicht $l$ gilt:
 
 $$\delta^{(l)} = (W^{(l+1)})^T \delta^{(l+1)} \circ \sigmoid'(z^{(l)})$$
 :::
@@ -105,7 +119,7 @@ $$\delta^{(l)} = (W^{(l+1)})^T \delta^{(l+1)} \circ \sigmoid'(z^{(l)})$$
 
 ## 3. Schwierigkeitsstufen (Directives)
 
-Das Wiki hat drei Schwierigkeitsstufen: **Einfach**, **Mittel**, **Experte**.
+Das Wiki hat drei Schwierigkeitsstufen: **Einsteiger**, **Fortgeschritten**, **Experte**.
 
 ### Syntax
 
@@ -113,11 +127,11 @@ Verwende die `:::` Direktiven-Syntax:
 
 ```mdx
 :::beginner
-Text nur für die Stufe "Einfach".
+Text nur für die Stufe "Einsteiger".
 :::
 
 :::medium
-Text nur für die Stufe "Mittel".
+Text nur für die Stufe "Fortgeschritten".
 :::
 
 :::advanced
@@ -129,10 +143,10 @@ Text nur für die Stufe "Experte".
 
 | Schlüsselwort    | Stufe    |
 |------------------|----------|
-| `:::beginner`    | Einfach  |
-| `:::easy`        | Einfach  |
-| `:::medium`      | Mittel   |
-| `:::intermediate`| Mittel   |
+| `:::beginner`    | Einsteiger  |
+| `:::easy`        | Einsteiger  |
+| `:::medium`      | Fortgeschritten   |
+| `:::intermediate`| Fortgeschritten   |
 | `:::advanced`    | Experte  |
 | `:::hard`        | Experte  |
 
@@ -163,7 +177,7 @@ Erlaubte Werte: `easy`, `medium`, `hard`.
 > bei **allen** Stufen sichtbar.
 
 In der Seitenleiste werden Artikel mit eingeschränkter Sichtbarkeit 
-mit farbigen Badges markiert (E = Einfach, M = Mittel, X = Experte).
+mit farbigen Badges markiert (E = Einsteiger, M = Fortgeschritten, X = Experte).
 
 ---
 
@@ -248,6 +262,7 @@ Neue Makros können in `katex-macros.js` hinzugefügt werden.
 - [ ] Datei in `src/content/articles/` erstellt (`.mdx`)
 - [ ] `title` im Frontmatter gesetzt
 - [ ] Optional: `description` hinzugefügt
+- [ ] `category` im Frontmatter gesetzt (und ggf. Icon in `categories.ts` definiert)
 - [ ] Optional: `difficulties` eingeschränkt (wenn nicht für alle Stufen)
 - [ ] Inhalt mit `:::beginner`, `:::medium`, `:::advanced` strukturiert
 - [ ] Mathe-Formeln mit `$...$` oder `$$...$$` geschrieben
@@ -270,4 +285,4 @@ Neue Makros können in `katex-macros.js` hinzugefügt werden.
 
 ## 9. Vorlage (Template) nutzen
 
-Um dir den Start zu erleichtern, haben wir eine Vorlage unter `src/content/articles/_template.mdx` angelegt. Du kannst sie einfach kopieren und als Basis für deinen neuen Artikel nutzen.
+Um dir den Start zu erleichtern, haben wir eine Vorlage unter `src/content/articles/_template.mdx` angelegt. Du kannst sie Einsteiger kopieren und als Basis für deinen neuen Artikel nutzen.

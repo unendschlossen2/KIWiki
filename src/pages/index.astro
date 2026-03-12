@@ -35,9 +35,63 @@ const categories = Object.entries(groupedArticles).sort((a, b) =>
 				/>
 			</div>
 			<div class="hero-text">
-				<h1>
-					Willkommen beim <span class="text-gradient">KIWiki</span>
-				</h1>
+				<div
+					class="flex flex-col xl:flex-row xl:items-center gap-6 xl:gap-12 mb-6"
+				>
+					<h1 class="!mb-0">
+						Willkommen beim <span class="text-gradient">KIWiki</span
+						>
+					</h1>
+
+					<div class="difficulty-showcase">
+						<div class="showcase-badge badge-easy">
+							<span class="text-4xl">🌱</span>
+							<div>
+								<div
+									class="text-[0.75rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
+								>
+									Aktueller Modus
+								</div>
+								<div
+									class="text-2xl font-black leading-none uppercase"
+								>
+									Einsteiger
+								</div>
+							</div>
+						</div>
+						<div class="showcase-badge badge-medium">
+							<span class="text-4xl">🚀</span>
+							<div>
+								<div
+									class="text-[0.75rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
+								>
+									Aktueller Modus
+								</div>
+								<div
+									class="text-2xl font-black leading-none uppercase"
+								>
+									Fortgeschritten
+								</div>
+							</div>
+						</div>
+						<div class="showcase-badge badge-hard">
+							<span class="text-4xl">🧠</span>
+							<div>
+								<div
+									class="text-[0.75rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
+								>
+									Aktueller Modus
+								</div>
+								<div
+									class="text-2xl font-black leading-none uppercase"
+								>
+									Experte
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<p class="subtitle">
 					Entdecke die Welt der Künstlichen Intelligenz – angepasst an
 					dein Vorwissen.
@@ -81,9 +135,46 @@ const categories = Object.entries(groupedArticles).sort((a, b) =>
 						{items.slice(0, 3).map((article) => (
 							<a
 								href={`/KIWiki/articles/${article.id.replace(/\.mdx?$/, "")}`}
-								class="preview-link"
+								class="preview-link flex items-center justify-between gap-2"
 							>
-								{article.data.title}
+								<span class="truncate">
+									{article.data.title}
+								</span>
+								{article.data.difficulties &&
+									article.data.difficulties.length < 3 && (
+										<div class="difficulty-badges scale-75 origin-right">
+											{article.data.difficulties.includes(
+												"easy",
+											) && (
+												<span
+													class="badge badge-easy"
+													title="Einsteiger"
+												>
+													E
+												</span>
+											)}
+											{article.data.difficulties.includes(
+												"medium",
+											) && (
+												<span
+													class="badge badge-medium"
+													title="Fortgeschritten"
+												>
+													F
+												</span>
+											)}
+											{article.data.difficulties.includes(
+												"hard",
+											) && (
+												<span
+													class="badge badge-hard"
+													title="Experte"
+												>
+													X
+												</span>
+											)}
+										</div>
+									)}
 							</a>
 						))}
 						{items.length > 3 && (
@@ -110,7 +201,11 @@ const categories = Object.entries(groupedArticles).sort((a, b) =>
 <style>
 	.hero-section {
 		padding: 3rem 0 5rem;
-		max-width: 1000px;
+		width: 100%;
+	}
+
+	.hero-section h1 {
+		white-space: nowrap;
 	}
 
 	.hero-content {
@@ -312,6 +407,15 @@ const categories = Object.entries(groupedArticles).sort((a, b) =>
 		text-decoration: none;
 	}
 
+	.stretched-link::after {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 1;
+		content: "";
+	}
 	.stretched-link::after {
 		position: absolute;
 		top: 0;
