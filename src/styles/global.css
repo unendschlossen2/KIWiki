@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+}
+
 :root {
   --bg-page: #f8fafc;
   --bg-card: #ffffff;
@@ -76,16 +81,31 @@ html[data-difficulty="easy"] .badge-easy {
   box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.6);
 }
 
+.dark html[data-difficulty="easy"] .badge-easy {
+  background: linear-gradient(135deg, #065f46, #064e3b);
+  box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.2);
+}
+
 html[data-difficulty="medium"] .badge-medium {
   display: flex;
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   box-shadow: 0 12px 30px -10px rgba(59, 130, 246, 0.6);
 }
 
+.dark html[data-difficulty="medium"] .badge-medium {
+  background: linear-gradient(135deg, #1e40af, #1e3a8a);
+  box-shadow: 0 12px 30px -10px rgba(59, 130, 246, 0.2);
+}
+
 html[data-difficulty="hard"] .badge-hard {
   display: flex;
   background: linear-gradient(135deg, #8b5cf6, #6d28d9);
   box-shadow: 0 12px 30px -10px rgba(139, 92, 246, 0.6);
+}
+
+.dark html[data-difficulty="hard"] .badge-hard {
+  background: linear-gradient(135deg, #5b21b6, #4c1d95);
+  box-shadow: 0 12px 30px -10px rgba(139, 92, 246, 0.2);
 }
 
 /* CSS-driven difficulty button highlighting — works before React hydrates */
@@ -139,6 +159,13 @@ html[data-difficulty="hard"] .diff-btn[data-level="hard"] {
     background: #7c3aed;
   }
 
+  /* Selective visibility: only show badges matching the current mode */
+  html[data-difficulty="easy"] .badge:not(.badge-easy),
+  html[data-difficulty="medium"] .badge:not(.badge-medium),
+  html[data-difficulty="hard"] .badge:not(.badge-hard) {
+    display: none !important;
+  }
+
   .difficulty-section {
     padding: 1.5rem;
     border-radius: 1rem;
@@ -189,14 +216,14 @@ html[data-difficulty="hard"] [data-difficulty-level]:not([data-difficulty-level=
 }
 
 .dark {
-  --bg-page: #0f172a;
-  --bg-card: #1e293b;
-  --bg-sidebar: #0f172a;
-  --bg-nav: rgba(15, 23, 42, 0.8);
+  --bg-page: #1e293b;
+  --bg-card: #334155;
+  --bg-sidebar: #1e293b;
+  --bg-nav: rgba(30, 41, 59, 0.8);
 
   --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #64748b;
+  --text-secondary: #e2e8f0;
+  --text-muted: #94a3b8;
 
   --border-color: #334155;
   --border-hover: #475569;

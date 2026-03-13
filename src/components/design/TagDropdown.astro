@@ -1,0 +1,223 @@
+---
+import { getCollection } from "astro:content";
+import { slugifyTag } from "../../utils/slugify";
+
+const articles = (await getCollection("articles")).filter(
+	(a) => !a.id.startsWith("_"),
+);
+
+// Get all unique tags
+const allTags = [...new Set(articles.flatMap((a) => a.data.tags || []))].sort();
+
+// Group articles by tag
+const groupedByTag = allTags.reduce(
+	(acc, tag) => {
+		acc[tag] = articles.filter((a) => a.data.tags?.includes(tag));
+		return acc;
+	},
+	{} as Record<string, typeof articles>,
+);
+---
+
+<div class="relative flex items-center h-full">
+	<button
+		id="tag-dropdown-btn"
+		class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold transition-all border border-transparent dark:border-slate-700/50 shadow-sm whitespace-nowrap"
+		aria-expanded="false"
+	>
+		<span>Tags</span>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="16"
+			height="16"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+			class="transition-transform duration-200"
+			><path d="m6 9 6 6 6-6"></path></svg
+		>
+	</button>
+
+	<!-- The Dropdown Panel -->
+	<div
+		id="tag-dropdown-panel"
+		class="fixed left-1/2 -translate-x-1/2 top-20 w-[95vw] max-w-7xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-b-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] p-6 md:p-10 opacity-0 -translate-y-2 pointer-events-none transition-all duration-300 z-50 overflow-y-auto max-h-[85vh]"
+	>
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+			{
+				allTags.map((tag) => (
+					<div class="category-group">
+						<div
+							class="tag-group-header flex items-center justify-between mb-3 group/header cursor-pointer"
+							data-tag={tag}
+						>
+							<a
+								href={`/KIWiki/tag/${slugifyTag(tag)}`}
+								class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 group-hover/header:text-blue-600 dark:group-hover/header:text-blue-400 transition-colors"
+								onclick="event.stopPropagation()"
+							>
+								#{tag}
+							</a>
+							<div class="text-slate-400 group-hover/header:text-blue-500 transition-all">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="3"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="chevron transition-transform duration-300"
+								>
+									<path d="m6 9 6 6 6-6" />
+								</svg>
+							</div>
+						</div>
+
+						<ul class="tag-article-list article-list space-y-2 hidden overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-top-1">
+							{groupedByTag[tag].map((art) => (
+								<li>
+									<a
+										href={`/KIWiki/articles/${art.id.replace(/\.mdx?$/, "")}`}
+										class="flex items-center justify-between gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 py-1 transition-colors border-l-2 border-transparent hover:border-blue-500 pl-3 -ml-3"
+									>
+										<span class="truncate">
+											{art.data.title}
+										</span>
+										{art.data.difficulties &&
+											art.data.difficulties.length <
+												3 && (
+												<div class="difficulty-badges scale-[0.65] origin-right mr-1">
+													{art.data.difficulties.includes(
+														"easy",
+													) && (
+														<span
+															class="badge badge-easy"
+															title="Einsteiger"
+														/>
+													)}
+													{art.data.difficulties.includes(
+														"medium",
+													) && (
+														<span
+															class="badge badge-medium"
+															title="Fortgeschritten"
+														/>
+													)}
+													{art.data.difficulties.includes(
+														"hard",
+													) && (
+														<span
+															class="badge badge-hard"
+															title="Experte"
+														/>
+													)}
+												</div>
+											)}
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</div>
+
+<script>
+	function setupTagDropdown() {
+		const btn = document.getElementById("tag-dropdown-btn");
+		const panel = document.getElementById("tag-dropdown-panel");
+
+		if (!btn || !panel) return;
+
+		// Toggle Dropdown Main
+		btn.addEventListener("click", (e) => {
+			e.stopPropagation();
+			const isExpanded = btn.getAttribute("aria-expanded") === "true";
+			
+			// Close category dropdown if open
+			const catBtn = document.getElementById("category-dropdown-btn");
+			if (catBtn && catBtn.getAttribute("aria-expanded") === "true") {
+				catBtn.click();
+			}
+
+			btn.setAttribute("aria-expanded", String(!isExpanded));
+
+			if (!isExpanded) {
+				panel.classList.remove(
+					"opacity-0",
+					"-translate-y-2",
+					"pointer-events-none",
+				);
+				panel.classList.add(
+					"opacity-100",
+					"translate-y-0",
+					"pointer-events-auto",
+				);
+				btn.querySelector("svg")?.classList.add("rotate-180");
+			} else {
+				panel.classList.add(
+					"opacity-0",
+					"-translate-y-2",
+					"pointer-events-none",
+				);
+				panel.classList.remove(
+					"opacity-100",
+					"translate-y-0",
+					"pointer-events-auto",
+				);
+				btn.querySelector("svg")?.classList.remove("rotate-180");
+			}
+		});
+
+		// Toggle Articles in Columns
+		const headers = document.querySelectorAll(".tag-group-header");
+		headers.forEach((header) => {
+			header.addEventListener("click", () => {
+				const list = header
+					.closest(".category-group")
+					?.querySelector(".tag-article-list");
+				const chevron = header.querySelector(".chevron");
+				if (list) {
+					const isHidden = list.classList.contains("hidden");
+					if (isHidden) {
+						list.classList.remove("hidden");
+						chevron?.classList.add("rotate-180");
+					} else {
+						list.classList.add("hidden");
+						chevron?.classList.remove("rotate-180");
+					}
+				}
+			});
+		});
+
+		// Close when clicking outside
+		document.addEventListener("click", (e) => {
+			if (!panel.contains(e.target as Node) && e.target !== btn) {
+				btn.setAttribute("aria-expanded", "false");
+				panel.classList.add(
+					"opacity-0",
+					"-translate-y-2",
+					"pointer-events-none",
+				);
+				panel.classList.remove(
+					"opacity-100",
+					"translate-y-0",
+					"pointer-events-auto",
+				);
+				btn.querySelector("svg")?.classList.remove("rotate-180");
+			}
+		});
+	}
+
+	// Run on initial load and swap
+	setupTagDropdown();
+	document.addEventListener("astro:after-swap", setupTagDropdown);
+</script>

@@ -4,6 +4,8 @@ import TableOfContents from "../components/design/TableOfContents.tsx";
 import SearchModal from "../components/design/SearchModal.tsx";
 import Sidebar from "../components/design/Sidebar.astro";
 import CategoryDropdown from "../components/design/CategoryDropdown.astro";
+import TagDropdown from "../components/design/TagDropdown.astro";
+import ThemeToggle from "../components/design/ThemeToggle.tsx";
 import { ViewTransitions } from "astro:transitions";
 import "../styles/global.css";
 
@@ -11,12 +13,14 @@ interface Props {
 	title?: string;
 	description?: string;
 	frontmatter?: any;
+	category?: string;
 }
 
 const {
 	title: propTitle,
 	description: propDescription,
 	frontmatter,
+	category: propCategory,
 } = Astro.props;
 const title = frontmatter?.title || propTitle || "KIWiki";
 const description =
@@ -29,7 +33,7 @@ const description =
 <html lang="de" data-difficulty="easy">
 	<head>
 		<script is:inline>
-			// Difficulty persistence — runs on every page load & View Transition
+			// Persistence — runs on every page load & View Transition
 			(function () {
 				function readDifficulty() {
 					try {
@@ -43,24 +47,43 @@ const description =
 					return "easy";
 				}
 
-				// 1. Apply immediately on every execution (initial load + View Transition re-run)
-				document.documentElement.setAttribute(
-					"data-difficulty",
-					readDifficulty(),
-				);
+				function readTheme() {
+					try {
+						var t = localStorage.getItem("kiwiki-theme");
+						if (t) return t.replace(/"/g, "");
+						if (
+							window.matchMedia("(prefers-color-scheme: dark)")
+								.matches
+						)
+							return "dark";
+					} catch (e) {}
+					return "light";
+				}
 
-				// 2. Register astro:before-swap ONCE to patch the incoming document
-				//    before the DOM swap, preventing any flash of wrong content
+				function applySettings(doc) {
+					var diff = readDifficulty();
+					var theme = readTheme();
+					doc.documentElement.setAttribute("data-difficulty", diff);
+					var favicon = doc.querySelector('link[rel="icon"]');
+					if (theme === "dark") {
+						doc.documentElement.classList.add("dark");
+						if (favicon) favicon.href = "/KIWiki/assets/logo-dark.png";
+					} else {
+						doc.documentElement.classList.remove("dark");
+						if (favicon) favicon.href = "/KIWiki/assets/logo.png";
+					}
+				}
+
+				// 1. Apply immediately
+				applySettings(document);
+
+				// 2. Register astro:before-swap
 				if (!window._kiwikiSwapInit) {
 					window._kiwikiSwapInit = true;
 					document.addEventListener(
 						"astro:before-swap",
 						function (ev) {
-							var d = readDifficulty();
-							ev.newDocument.documentElement.setAttribute(
-								"data-difficulty",
-								d,
-							);
+							applySettings(ev.newDocument);
 						},
 					);
 				}
@@ -79,19 +102,22 @@ const description =
 		<ViewTransitions />
 	</head>
 	<body
-		class="min-h-screen bg-slate-50 dark:bg-slate-950 selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-blue-900 dark:selection:text-blue-100 transition-colors duration-300"
+		class="min-h-screen pt-20 bg-slate-50 dark:bg-slate-800 selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-blue-900 dark:selection:text-blue-100 transition-colors duration-300"
 	>
 		<nav
-			class="sticky top-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-300"
+			id="main-nav"
+			class="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-300"
 		>
-			<!-- Kiwi Cutout Background (Wrapped to prevent overflow while allowing dropdowns) -->
-			<div class="absolute inset-0 overflow-hidden pointer-events-none">
-				<div
-					class="absolute inset-y-0 left-0 w-1/2 opacity-[0.03] dark:opacity-5"
-					style="background-image: url('/KIWiki/assets/logo.png'); background-size: cover; background-position: left center; background-repeat: no-repeat; transform: scale(1.5) translate(-10%, 10%);"
-				>
-				</div>
-			</div>
+			<!-- Reading Progress (Only on articles) -->
+			{
+				Astro.url.pathname.includes("/KIWiki/articles/") && (
+					<div
+						id="reading-progress"
+						class="fixed top-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-150 ease-out z-[60]"
+						style="width: 0%;"
+					/>
+				)
+			}
 
 			<div
 				class="max-w-screen-2xl mx-auto px-6 h-20 flex items-center gap-6 relative z-10"
@@ -122,14 +148,15 @@ const description =
 						>
 					</a>
 
-					<CategoryDropdown />
+					<CategoryDropdown currentCategory={propCategory || frontmatter?.category} />
+					<TagDropdown />
 				</div>
 
-				<!-- Center/Right Area: Expanded Search Bar -->
-				<div class="flex-1 flex items-center h-full max-w-3xl">
+				<!-- Center Area: Search Bar -->
+				<div class="flex-1 flex justify-center max-w-2xl px-4">
 					<button
 						onclick="window.openSearchModal && window.openSearchModal()"
-						class="flex items-center gap-3 px-6 py-3 w-full rounded-2xl bg-slate-100/80 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-base font-medium transition-all border border-transparent hover:border-blue-500/30 dark:border-slate-700/50 dark:hover:border-blue-400/30 shadow-sm hover:shadow-md group"
+						class="flex items-center gap-3 px-6 py-3 w-full rounded-2xl bg-slate-100/80 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-base font-medium transition-all border border-transparent hover:border-blue-500/30 dark:border-slate-700/50 dark:hover:border-blue-400/30 shadow-sm hover:shadow-md group overflow-hidden"
 						aria-label="Suchen"
 					>
 						<svg
@@ -155,28 +182,22 @@ const description =
 					</button>
 				</div>
 
-				<!-- Right Area: Difficulty -->
-				<div class="flex items-center shrink-0">
-					<DifficultySelector client:load />
+				<!-- Right Area: Difficulty & Theme -->
+				<div class="flex items-center gap-4 shrink-0 min-w-[120px] justify-end">
+					<ThemeToggle client:only="react" />
+					<DifficultySelector client:only="react" />
 				</div>
+
 			</div>
-			<!-- Reading Progress (Only on articles) -->
-			{
-				Astro.url.pathname.includes("/KIWiki/articles/") && (
-					<div
-						id="reading-progress"
-						class="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-150 ease-out z-20"
-						style="width: 0%;"
-					/>
-				)
-			}
 		</nav>
 
-		<SearchModal client:load />
+		<SearchModal client:only="react" />
 		{
 			Astro.url.pathname !== "/KIWiki" &&
 				Astro.url.pathname !== "/KIWiki/" &&
-				!Astro.url.pathname.includes("/KIWiki/ueber") && <Sidebar />
+				!Astro.url.pathname.includes("/KIWiki/ueber") &&
+				!Astro.url.pathname.includes("/KIWiki/category/") &&
+				!Astro.url.pathname.includes("/KIWiki/tag/") && <Sidebar />
 		}
 
 		<div
@@ -186,10 +207,14 @@ const description =
 					"has-sidebar":
 						Astro.url.pathname !== "/KIWiki" &&
 						Astro.url.pathname !== "/KIWiki/" &&
-						!Astro.url.pathname.includes("/KIWiki/ueber"),
+						!Astro.url.pathname.includes("/KIWiki/ueber") &&
+						!Astro.url.pathname.includes("/KIWiki/category/") &&
+						!Astro.url.pathname.includes("/KIWiki/tag/"),
 					"full-width":
 						Astro.url.pathname === "/KIWiki" ||
-						Astro.url.pathname === "/KIWiki/",
+						Astro.url.pathname === "/KIWiki/" ||
+						Astro.url.pathname.includes("/KIWiki/category/") ||
+						Astro.url.pathname.includes("/KIWiki/tag/"),
 				},
 			]}
 		>
@@ -214,7 +239,7 @@ const description =
 				<footer
 					class="mt-24 pt-8 border-t border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-sm pb-12 transition-colors duration-300"
 				>
-					<p>© 2026 KIWiki Project • Built with Astro & React</p>
+					<p>© 2026 KIWiki Project • Built by Pero Juric</p>
 				</footer>
 			</main>
 
@@ -354,9 +379,14 @@ const description =
 <script>
 	import { difficultyStore } from "../components/design/difficultyStore";
 
+	let unsubscribe: () => void;
+
 	function initDifficultySync() {
+		// Altes Abonnement aufräumen
+		if (unsubscribe) unsubscribe();
+
 		// Sync nanostore to document attribute
-		difficultyStore.subscribe((newDifficulty) => {
+		unsubscribe = difficultyStore.subscribe((newDifficulty) => {
 			document.documentElement.setAttribute(
 				"data-difficulty",
 				newDifficulty,
@@ -364,9 +394,8 @@ const description =
 		});
 	}
 
-	// Initialize on page load and swaps
-	initDifficultySync();
-	document.addEventListener("astro:after-swap", initDifficultySync);
+	// Initialize on page load (Astro View Transitions handle swap)
+	document.addEventListener("astro:page-load", initDifficultySync);
 </script>
 
 <script>
@@ -402,6 +431,5 @@ const description =
 	body {
 		margin: 0;
 		width: 100%;
-		height: 100%;
 	}
 </style>

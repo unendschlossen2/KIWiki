@@ -1,1 +1,3 @@
-- scrolls a bit to far using right hand section listing
+- dark mode consistency
+- description text in category view
+- add dropdown in dropdown for each category

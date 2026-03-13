@@ -1,20 +1,41 @@
 ---
 import { getCollection } from "astro:content";
 import { slugifyCategory } from "../../utils/slugify";
+import { sortCategories, getCategoryDisplay, getCategoryIcon, HEADER_CATEGORIES } from "../../config/categories";
 
 const articles = (await getCollection("articles")).filter(
 	(a) => !a.id.startsWith("_"),
 );
 
-const categories = [...new Set(articles.map((a) => a.data.category))].sort();
-
-const grouped = categories.reduce(
-	(acc, cat) => {
-		acc[cat] = articles.filter((a) => a.data.category === cat);
+const groupedByCat = articles.reduce(
+	(acc, a) => {
+		const cat = getCategoryDisplay(a.data.category);
+		if (!acc[cat]) acc[cat] = [];
+		acc[cat].push(a);
 		return acc;
 	},
 	{} as Record<string, typeof articles>,
 );
+
+interface Props {
+	currentCategory?: string;
+}
+
+const { currentCategory } = Astro.props;
+const { category: urlCategorySlug } = Astro.params;
+
+// Helper to check if a category is active
+const checkActive = (catDisplay: string) => {
+	const slug = slugifyCategory(catDisplay);
+	if (urlCategorySlug === slug) return true;
+	if (currentCategory) {
+		const normalizedCurrent = currentCategory.toLowerCase();
+		return normalizedCurrent === slug || normalizedCurrent === catDisplay.toLowerCase();
+	}
+	return false;
+};
+
+const anyActive = !!urlCategorySlug || !!currentCategory;
 ---
 
 <div class="relative flex items-center h-full">
@@ -23,7 +44,7 @@ const grouped = categories.reduce(
 		class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold transition-all border border-transparent dark:border-slate-700/50 shadow-sm whitespace-nowrap"
 		aria-expanded="false"
 	>
-		<span>Kategorien</span>
+		<span>Themen</span>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			width="16"
@@ -39,93 +60,65 @@ const grouped = categories.reduce(
 		>
 	</button>
 
-	<!-- The Dropdown Panel -->
 	<div
 		id="category-dropdown-panel"
-		class="absolute left-0 top-[calc(100%+0.5rem)] w-[90vw] max-w-6xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-8 opacity-0 translate-y-2 pointer-events-none transition-all duration-300 z-50 overflow-y-auto max-h-[80vh]"
+		class="fixed left-1/2 -translate-x-1/2 top-20 w-[95vw] max-w-7xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-b-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] p-6 md:p-10 opacity-0 -translate-y-2 pointer-events-none transition-all duration-300 z-50 overflow-y-auto max-h-[85vh]"
 	>
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
 			{
-				categories.map((cat) => (
-					<div class="category-group">
-						<div
-							class="category-header flex items-center justify-between mb-3 group/header cursor-pointer"
-							data-cat={cat}
-						>
-							<a
-								href={`/KIWiki/category/${slugifyCategory(cat)}`}
-								class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 group-hover/header:text-blue-600 dark:group-hover/header:text-blue-400 transition-colors"
-								onclick="event.stopPropagation()"
-							>
-								{cat}
-							</a>
-							<div class="text-slate-400 group-hover/header:text-blue-500 transition-all">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="14"
-									height="14"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="3"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									class="chevron transition-transform duration-300"
-								>
-									<path d="m6 9 6 6 6-6" />
-								</svg>
-							</div>
+				Object.entries(HEADER_CATEGORIES).map(([headerName, categoryKeys]) => (
+					<div class="header-section">
+						<h3 class="text-[0.65rem] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500 mb-4 px-3">
+							{headerName}
+						</h3>
+						
+						<div class="space-y-1">
+							{sortCategories(categoryKeys.map(getCategoryDisplay)).map((cat) => {
+								const catArticles = groupedByCat[cat] || [];
+								const slug = slugifyCategory(cat);
+								const isActive = checkActive(cat);
+								
+								return (
+									<div class="category-item group">
+										<a
+											href={`/KIWiki/category/${slug}`}
+											class:list={[
+												"flex items-start justify-between px-3 py-2.5 rounded-xl transition-all group",
+												isActive 
+													? "bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 ring-1 ring-blue-500/30 shadow-sm" 
+													: "hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400"
+											]}
+										>
+											<div class="flex items-start gap-3">
+												<span class:list={[
+													"text-xl shrink-0 transition-all duration-300",
+													!anyActive 
+														? "grayscale-0" 
+														: (isActive ? "grayscale-0 scale-110" : "grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100")
+												]}>{getCategoryIcon(cat)}</span>
+												<span class="text-sm font-bold leading-tight">
+													{cat}
+												</span>
+											</div>
+											<span class:list={[
+												"shrink-0 text-[0.65rem] font-mono px-1.5 py-0.5 rounded-md transition-colors mt-1",
+												isActive
+													? "bg-blue-500 text-white opacity-100 shadow-sm"
+													: "opacity-40 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 group-hover:bg-white dark:group-hover:bg-slate-900"
+											]}>
+												{catArticles.length}
+											</span>
+										</a>
+									</div>
+								);
+							})}
 						</div>
-
-						<ul class="article-list space-y-2 hidden overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-top-1">
-							{grouped[cat].map((art) => (
-								<li>
-									<a
-										href={`/KIWiki/articles/${art.id.replace(/\.mdx?$/, "")}`}
-										class="flex items-center justify-between gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 py-1 transition-colors border-l-2 border-transparent hover:border-blue-500 pl-3 -ml-3"
-									>
-										<span class="truncate">
-											{art.data.title}
-										</span>
-										{art.data.difficulties &&
-											art.data.difficulties.length <
-												3 && (
-												<div class="difficulty-badges scale-[0.65] origin-right mr-1">
-													{art.data.difficulties.includes(
-														"easy",
-													) && (
-														<span
-															class="badge badge-easy"
-															title="Einsteiger"
-														/>
-													)}
-													{art.data.difficulties.includes(
-														"medium",
-													) && (
-														<span
-															class="badge badge-medium"
-															title="Fortgeschritten"
-														/>
-													)}
-													{art.data.difficulties.includes(
-														"hard",
-													) && (
-														<span
-															class="badge badge-hard"
-															title="Experte"
-														/>
-													)}
-												</div>
-											)}
-									</a>
-								</li>
-							))}
-						</ul>
 					</div>
 				))
 			}
 		</div>
 	</div>
+
 </div>
 
 <script>
@@ -139,12 +132,19 @@ const grouped = categories.reduce(
 		btn.addEventListener("click", (e) => {
 			e.stopPropagation();
 			const isExpanded = btn.getAttribute("aria-expanded") === "true";
+			
+			// Close tag dropdown if open
+			const tagBtn = document.getElementById("tag-dropdown-btn");
+			if (tagBtn && tagBtn.getAttribute("aria-expanded") === "true") {
+				tagBtn.click();
+			}
+
 			btn.setAttribute("aria-expanded", String(!isExpanded));
 
 			if (!isExpanded) {
 				panel.classList.remove(
 					"opacity-0",
-					"translate-y-2",
+					"-translate-y-2",
 					"pointer-events-none",
 				);
 				panel.classList.add(
@@ -156,7 +156,7 @@ const grouped = categories.reduce(
 			} else {
 				panel.classList.add(
 					"opacity-0",
-					"translate-y-2",
+					"-translate-y-2",
 					"pointer-events-none",
 				);
 				panel.classList.remove(
@@ -195,7 +195,7 @@ const grouped = categories.reduce(
 				btn.setAttribute("aria-expanded", "false");
 				panel.classList.add(
 					"opacity-0",
-					"translate-y-2",
+					"-translate-y-2",
 					"pointer-events-none",
 				);
 				panel.classList.remove(

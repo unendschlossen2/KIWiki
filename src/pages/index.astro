@@ -2,7 +2,14 @@
 import Layout from "../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { slugifyCategory } from "../utils/slugify";
-import { categoryIcons } from "../config/categories";
+import {
+	categoryIcons,
+	getCategoryDisplay,
+	getCategoryIcon,
+	HEADER_CATEGORIES,
+	sortCategories,
+	CATEGORIES,
+} from "../config/categories";
 
 const articles = (await getCollection("articles")).filter(
 	(a) => !a.id.startsWith("_"),
@@ -11,83 +18,58 @@ const articles = (await getCollection("articles")).filter(
 // Group articles by category
 const groupedArticles = articles.reduce(
 	(acc, article) => {
-		const category = article.data.category;
+		const category = getCategoryDisplay(article.data.category);
 		if (!acc[category]) acc[category] = [];
 		acc[category].push(article);
 		return acc;
 	},
 	{} as Record<string, typeof articles>,
 );
-
-const categories = Object.entries(groupedArticles).sort((a, b) =>
-	a[0].localeCompare(b[0]),
-);
 ---
 
 <Layout title="Willkommen beim KIWiki">
-	<div class="hero-section">
-		<div class="hero-content">
+	<section class="hero-welcome">
+		<div class="hero-main">
 			<div class="hero-logo-container">
 				<img
 					src="/KIWiki/assets/logo.png"
 					alt="KIWiki Logo"
-					class="hero-logo"
+					class="hero-logo dark:hidden"
+				/>
+				<img
+					src="/KIWiki/assets/logo-dark.png"
+					alt="KIWiki Logo"
+					class="hero-logo hidden dark:block"
 				/>
 			</div>
 			<div class="hero-text">
-				<div
-					class="flex flex-col xl:flex-row xl:items-center gap-6 xl:gap-12 mb-6"
-				>
+				<div class="flex flex-col gap-4 mb-6">
 					<h1 class="!mb-0">
 						Willkommen beim <span class="text-gradient">KIWiki</span
 						>
 					</h1>
 
 					<div class="difficulty-showcase">
-						<div class="showcase-badge badge-easy">
-							<span class="text-4xl">🌱</span>
-							<div>
-								<div
-									class="text-[0.75rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
-								>
-									Aktueller Modus
-								</div>
-								<div
-									class="text-2xl font-black leading-none uppercase"
-								>
-									Einsteiger
-								</div>
-							</div>
+						<div
+							class="showcase-badge badge-easy"
+							data-difficulty="easy"
+						>
+							<span class="text-3xl">🌱</span>
+							<div class="showcase-label">Einsteiger</div>
 						</div>
-						<div class="showcase-badge badge-medium">
-							<span class="text-4xl">🚀</span>
-							<div>
-								<div
-									class="text-[0.75rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
-								>
-									Aktueller Modus
-								</div>
-								<div
-									class="text-2xl font-black leading-none uppercase"
-								>
-									Fortgeschritten
-								</div>
-							</div>
+						<div
+							class="showcase-badge badge-medium"
+							data-difficulty="medium"
+						>
+							<span class="text-3xl">🚀</span>
+							<div class="showcase-label">Fortgeschritten</div>
 						</div>
-						<div class="showcase-badge badge-hard">
-							<span class="text-4xl">🧠</span>
-							<div>
-								<div
-									class="text-[0.75rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
-								>
-									Aktueller Modus
-								</div>
-								<div
-									class="text-2xl font-black leading-none uppercase"
-								>
-									Experte
-								</div>
-							</div>
+						<div
+							class="showcase-badge badge-hard"
+							data-difficulty="hard"
+						>
+							<span class="text-3xl">🧠</span>
+							<div class="showcase-label">Experte</div>
 						</div>
 					</div>
 				</div>
@@ -98,167 +80,165 @@ const categories = Object.entries(groupedArticles).sort((a, b) =>
 				</p>
 			</div>
 		</div>
-		<div class="h-1 w-24 bg-blue-600/30 rounded-full mt-12 mx-auto sm:mx-0">
-		</div>
-	</div>
+	</section>
 
-	<div class="categories-grid">
-		<div class="category-card featured">
-			<div class="category-icon">ℹ️</div>
-			<h2 class="category-title">Über das Projekt</h2>
-			<p class="category-count">JadeHS Wiki</p>
-
-			<div class="article-list-preview">
-				<p class="preview-text">
-					Erfahre mehr über die Vision hinter KIWiki, die Jade
-					Hochschule und wie dieses Projekt Wissen vermittelt.
+	<section class="hero-about">
+		<div
+			class="about-card bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+		>
+			<div class="about-icon bg-white dark:bg-slate-800">ℹ️</div>
+			<div class="about-content">
+				<h3 class="about-title">Über das Projekt</h3>
+				<p class="about-text">
+					Erfahre mehr über die Vision hinter KIWiki und wie dieses
+					Projekt Wissen vermittelt.
 				</p>
-			</div>
-
-			<div class="card-footer">
-				<a href="/KIWiki/ueber" class="explore-btn stretched-link">
+				<a href="/KIWiki/ueber" class="about-link stretched-link">
 					Mehr erfahren →
 				</a>
 			</div>
 		</div>
+	</section>
 
-		{
-			categories.map(([category, items]) => (
-				<div class="category-card">
-					<div class="category-icon">
-						{categoryIcons[category] || "📂"}
+	{
+		Object.entries(HEADER_CATEGORIES).map(
+			([headerName, categoryKeys], index) => (
+				<section
+					class={`library-section section-split-${index % 2 === 0 ? "left" : "right"}`}
+				>
+					<div class="section-decor">
+						<span class="section-index">0{index + 1}</span>
+						<div class="line-glow" />
 					</div>
-					<h2 class="category-title">{category}</h2>
-					<p class="category-count">{items.length} Artikel</p>
 
-					<div class="article-list-preview">
-						{items.slice(0, 3).map((article) => (
-							<a
-								href={`/KIWiki/articles/${article.id.replace(/\.mdx?$/, "")}`}
-								class="preview-link flex items-center justify-between gap-2"
-							>
-								<span class="truncate">
-									{article.data.title}
-								</span>
-								{article.data.difficulties &&
-									article.data.difficulties.length < 3 && (
-										<div class="difficulty-badges scale-75 origin-right">
-											{article.data.difficulties.includes(
-												"easy",
-											) && (
-												<span
-													class="badge badge-easy"
-													title="Einsteiger"
-												>
-													E
-												</span>
-											)}
-											{article.data.difficulties.includes(
-												"medium",
-											) && (
-												<span
-													class="badge badge-medium"
-													title="Fortgeschritten"
-												>
-													F
-												</span>
-											)}
-											{article.data.difficulties.includes(
-												"hard",
-											) && (
-												<span
-													class="badge badge-hard"
-													title="Experte"
-												>
-													X
-												</span>
-											)}
+					<div class="library-content">
+						<header class="library-header">
+							<h2 class="library-title">{headerName}</h2>
+							<div class="title-underline" />
+						</header>
+
+						<div class="library-grid">
+							{sortCategories(
+								categoryKeys.map(getCategoryDisplay),
+							).map((category) => {
+								const items = groupedArticles[category] || [];
+								const categoryKey =
+									Object.keys(CATEGORIES).find(
+										(k) =>
+											CATEGORIES[k].display === category,
+									) || "allgemein";
+
+								return (
+									<div
+										class={`library-tile accent-${categoryKey}`}
+									>
+										<div class="tile-icon-wrap">
+											<span class="tile-emoji">
+												{getCategoryIcon(category)}
+											</span>
 										</div>
-									)}
-							</a>
-						))}
-						{items.length > 3 && (
-							<span class="more-indicator">
-								+ {items.length - 3} weitere
-							</span>
-						)}
-					</div>
+										<div class="tile-main">
+											<div class="tile-top">
+												<h3 class="tile-title">
+													{category}
+												</h3>
+												<span class="tile-count">
+													{items.length}
+												</span>
+											</div>
 
-					<div class="card-footer">
-						<a
-							href={`/KIWiki/category/${slugifyCategory(category)}`}
-							class="explore-btn stretched-link"
-						>
-							Erkunden →
-						</a>
+											<p class="tile-description">
+												{CATEGORIES[categoryKey]?.description || "Entdecke spannende Artikel zu diesem Thema."}
+											</p>
+
+											<a
+												href={`/KIWiki/category/${slugifyCategory(category)}`}
+												class="tile-link stretched-link"
+											>
+												Inhalt ansehen{" "}
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													width="16"
+													height="16"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="2.5"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+												>
+													<line
+														x1="5"
+														y1="12"
+														x2="19"
+														y2="12"
+													/>
+													<polyline points="12 5 19 12 12 19" />
+												</svg>
+											</a>
+										</div>
+									</div>
+								);
+							})}
+						</div>
 					</div>
-				</div>
-			))
-		}
-	</div>
+				</section>
+			),
+		)
+	}
 </Layout>
 
 <style>
-	.hero-section {
-		padding: 3rem 0 5rem;
+	/* --- Hero & Layout --- */
+	.hero-welcome {
+		padding: 4rem 0 2rem;
 		width: 100%;
 	}
 
-	.hero-section h1 {
-		white-space: nowrap;
+	.hero-about {
+		padding: 0 0 6rem;
+		width: 100%;
 	}
 
-	.hero-content {
+	.hero-main {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		text-align: center;
-		gap: 2rem;
+		gap: 2.5rem;
+		max-width: 1300px;
+		margin: 0 auto;
+	}
+
+	.hero-about .about-card {
+		max-width: 1300px;
+		margin: 0 auto;
 	}
 
 	@media (min-width: 640px) {
-		.hero-content {
+		.hero-main {
 			flex-direction: row;
 			text-align: left;
-			gap: 3.5rem;
+			gap: 4rem;
 		}
 	}
 
 	.hero-logo-container {
-		display: flex;
-		justify-content: center;
-		perspective: 1000px;
 		flex-shrink: 0;
+		perspective: 1000px;
 	}
 
 	.hero-logo {
-		width: 140px;
+		width: 320px;
 		height: auto;
-		filter: drop-shadow(0 15px 20px var(--shadow-color));
+		filter: drop-shadow(0 40px 60px var(--shadow-color));
 		animation: float 6s ease-in-out infinite;
-		border-radius: 32px;
-		transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+		border-radius: 64px;
 	}
 
-	@media (min-width: 640px) {
+	@media (min-width: 1280px) {
 		.hero-logo {
-			width: 170px;
-		}
-	}
-
-	.hero-logo:hover {
-		transform: scale(1.05) rotate(2deg);
-	}
-
-	@keyframes float {
-		0% {
-			transform: translateY(0px) rotate(0deg);
-		}
-		50% {
-			transform: translateY(-10px) rotate(-1deg);
-		}
-		100% {
-			transform: translateY(0px) rotate(0deg);
+			width: 420px;
 		}
 	}
 
@@ -266,147 +246,384 @@ const categories = Object.entries(groupedArticles).sort((a, b) =>
 		flex: 1;
 	}
 
+	.hero-section h1 {
+		font-size: clamp(2.5rem, 5vw, 4rem);
+		font-weight: 900;
+		color: var(--text-primary);
+		line-height: 1.1;
+		letter-spacing: -0.04em;
+	}
+
 	.text-gradient {
 		background: linear-gradient(135deg, #2563eb, #7c3aed);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
-		background-clip: text;
-	}
-
-	.hero-section h1 {
-		font-size: 3rem;
-		font-weight: 900;
-		color: var(--text-primary);
-		line-height: 1.1;
-		margin: 0 0 1rem;
-		letter-spacing: -0.025em;
-	}
-
-	@media (min-width: 640px) {
-		.hero-section h1 {
-			font-size: 3.5rem;
-		}
 	}
 
 	.subtitle {
-		font-size: 1.15rem;
+		font-size: 1.25rem;
 		color: var(--text-secondary);
-		max-width: 100%;
 		line-height: 1.6;
-		margin: 0;
+		max-width: 500px;
 	}
 
-	.categories-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-		gap: 2.5rem;
-		margin-top: 2.5rem;
-	}
-
-	.category-card {
-		background: var(--bg-card);
-		border: 1px solid var(--border-color);
-		border-radius: 24px;
-		padding: 2.5rem;
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	/* Difficulty Showcase Fix */
+	.difficulty-showcase {
 		display: flex;
-		flex-direction: column;
-		position: relative;
-		overflow: hidden;
+		gap: 1rem;
+		margin-top: 1rem;
 	}
 
-	.category-card:hover {
-		transform: translateY(-8px);
-		box-shadow:
-			0 20px 25px -5px var(--shadow-hover),
-			0 8px 10px -6px var(--shadow-hover);
-		border-color: var(--primary-color);
-	}
-
-	.category-card.featured {
-		background: var(--card-featured-bg);
-		border: 2px solid var(--primary-color);
-		box-shadow: 0 10px 30px -10px var(--shadow-color);
-	}
-
-	.category-card.featured .category-title {
-		color: var(--text-primary);
-		font-weight: 800;
-	}
-
-	.preview-text {
-		font-size: 0.95rem;
-		color: var(--text-primary);
-		line-height: 1.6;
-		margin: 0;
-	}
-
-	.category-icon {
-		font-size: 3.5rem;
-		margin-bottom: 1.75rem;
-	}
-
-	.category-title {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: var(--text-primary);
-		margin: 0 0 0.5rem;
-	}
-
-	.category-count {
-		font-size: 0.875rem;
-		color: var(--text-muted);
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		margin-bottom: 1.5rem;
-	}
-
-	.article-list-preview {
+	.showcase-badge {
+		padding: 0.6rem 1.25rem;
+		border-radius: 16px;
+		border: 2px solid transparent;
 		display: flex;
-		flex-direction: column;
+		align-items: center;
 		gap: 0.75rem;
-		margin-bottom: 2rem;
-		flex-grow: 1;
-		position: relative;
-		z-index: 2;
-	}
-
-	.preview-link {
+		background: var(--bg-card);
+		font-size: 0.9rem;
+		font-weight: 800;
 		color: var(--text-secondary);
-		text-decoration: none;
-		font-size: 0.95rem;
-		transition: color 0.2s;
-		display: block;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		transition: all 0.3s ease;
+		opacity: 0.5;
 	}
 
-	.preview-link:hover {
-		color: var(--primary-color);
+	.active-badge {
+		opacity: 1 !important;
+		transform: scale(1.05);
+		box-shadow: 0 10px 20px -5px var(--shadow-hover);
+	}
+
+	.showcase-badge.badge-easy {
+		color: #16a34a;
+	}
+	.showcase-badge.badge-medium {
+		color: #2563eb;
+	}
+	.showcase-badge.badge-hard {
+		color: #7c3aed;
+	}
+
+	.active-badge.badge-easy {
+		background: #16a34a !important;
+		color: white !important;
+		border-color: #0d9488;
+		opacity: 1 !important;
+		transform: scale(1.05);
+	}
+	.active-badge.badge-medium {
+		background: #2563eb !important;
+		color: white !important;
+		border-color: #1d4ed8;
+		opacity: 1 !important;
+		transform: scale(1.05);
+	}
+	.active-badge.badge-hard {
+		background: #7c3aed !important;
+		color: white !important;
+		border-color: #6d28d9;
+		opacity: 1 !important;
+		transform: scale(1.05);
+	}
+
+	/* Mode-Specific Colors (Astro Scoped) */
+	:global(html.dark) .showcase-badge {
+		background: rgba(30, 41, 59, 0.5);
+		border-color: rgba(51, 65, 85, 0.5);
+	}
+
+	:global(html.dark) .showcase-badge.badge-easy {
+		color: #4ade80;
+	}
+	:global(html.dark) .showcase-badge.badge-medium {
+		color: #60a5fa;
+	}
+	:global(html.dark) .showcase-badge.badge-hard {
+		color: #a78bfa;
+	}
+
+	:global(html.dark) .active-badge.badge-easy {
+		background: #22c55e !important;
+		color: white !important;
+	}
+	:global(html.dark) .active-badge.badge-medium {
+		background: #3b82f6 !important;
+		color: white !important;
+	}
+	:global(html.dark) .active-badge.badge-hard {
+		background: #9333ea !important;
+		color: white !important;
+	}
+
+	/* Side Card (About KIWiki) */
+	.about-card {
+		background: linear-gradient(135deg, #f8fafc, #eff6ff);
+		border-radius: 32px;
+		padding: 2.5rem;
+		display: flex;
+		gap: 1.5rem;
+		position: relative;
+		box-shadow: 0 25px 50px -12px var(--shadow-color);
+		transition:
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
+	}
+
+	:global(html.dark) .about-card {
+		background: linear-gradient(135deg, #334155, #1e3a8a30);
+	}
+
+	:global(html.dark) .about-icon {
+		background: #1e293b;
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+	}
+
+	:global(html.dark) .about-title {
+		color: white;
+	}
+	:global(html.dark) .about-text {
+		color: #94a3b8;
+	}
+	:global(html.dark) .about-link {
+		color: #60a5fa;
+	}
+
+	.about-icon {
+		font-size: 2.5rem;
+		width: 60px;
+		height: 60px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 20px;
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+		flex-shrink: 0;
+	}
+
+	.about-title {
+		font-size: 1.5rem;
+		font-weight: 900;
+		color: var(--text-primary);
+		margin-bottom: 0.75rem;
+	}
+
+	.about-text {
+		color: var(--text-secondary);
+		font-size: 0.95rem;
+		line-height: 1.6;
+		margin-bottom: 2rem;
+	}
+
+	.about-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: #2563eb;
+		font-weight: 800;
+		text-decoration: none;
+		font-size: 0.9rem;
+	}
+
+	.about-link:hover {
 		text-decoration: underline;
 	}
 
-	.more-indicator {
-		font-size: 0.8rem;
-		color: var(--text-muted);
-		font-style: italic;
+	.tile-description {
+		font-size: 0.95rem;
+		color: var(--text-secondary);
+		line-height: 1.6;
+		margin: 1.5rem 0 2rem 0;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		min-height: 3em;
 	}
 
-	.card-footer {
-		margin-top: auto;
-		padding-top: 1rem;
-		border-top: 1px solid var(--border-color);
+	/* --- Library Layout --- */
+	.library-section {
+		display: grid;
+		grid-template-columns: 100px 1fr;
+		gap: 4rem;
+		margin-bottom: 8rem;
+		position: relative;
 	}
 
-	.explore-btn {
+	@media (max-width: 768px) {
+		.library-section {
+			grid-template-columns: 1fr;
+			gap: 2rem;
+		}
+	}
+
+	.section-decor {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		padding-top: 0.5rem;
+	}
+
+	.section-index {
+		font-family: var(--font-mono);
+		font-weight: 800;
+		font-size: 1.25rem;
 		color: var(--primary-color);
+		opacity: 0.3;
+	}
+
+	.line-glow {
+		width: 2px;
+		flex-grow: 1;
+		background: linear-gradient(
+			to bottom,
+			var(--primary-color),
+			transparent
+		);
+		border-radius: 2px;
+		opacity: 0.2;
+	}
+
+	.library-header {
+		margin-bottom: 3rem;
+	}
+
+	.library-title {
+		font-size: 2.25rem;
+		font-weight: 900;
+		color: var(--text-primary);
+		letter-spacing: -0.02em;
+		margin: 0 0 0.75rem;
+	}
+
+	.title-underline {
+		width: 60px;
+		height: 4px;
+		background: var(--primary-color);
+		border-radius: 2px;
+	}
+
+	.library-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+		gap: 2rem;
+	}
+
+	@media (max-width: 480px) {
+		.library-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.library-tile {
+		background: var(--bg-card);
+		border: 1px solid var(--border-color);
+		border-radius: 24px;
+		padding: 2rem;
+		display: flex;
+		gap: 1.5rem;
+		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.library-tile:hover {
+		transform: translateY(-8px) scale(1.02);
+		border-color: var(--primary-color);
+		box-shadow: 0 20px 40px -10px var(--shadow-hover);
+	}
+
+	.tile-icon-wrap {
+		width: 64px;
+		height: 64px;
+		background: var(--bg-page);
+		border-radius: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 2.25rem;
+		flex-shrink: 0;
+		transition: transform 0.3s ease;
+	}
+
+	.library-tile:hover .tile-icon-wrap {
+		transform: rotate(-5deg) scale(1.1);
+	}
+
+	.tile-main {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.tile-top {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: 1rem;
+	}
+
+	.tile-title {
+		font-size: 1.25rem;
+		font-weight: 800;
+		color: var(--text-primary);
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	.tile-count {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
 		font-weight: 700;
+		background: var(--primary-color-alpha);
+		color: var(--primary-color);
+		padding: 2px 8px;
+		border-radius: 6px;
+	}
+
+	.tile-previews {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.tile-art-link {
+		font-size: 0.85rem;
+		color: var(--text-secondary);
+		text-decoration: none;
+		opacity: 0.7;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		transition: opacity 0.2s;
+	}
+
+	.tile-art-link:hover {
+		opacity: 1;
+		color: var(--primary-color);
+	}
+
+	.tile-link {
+		margin-top: auto;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 		font-size: 0.9rem;
+		font-weight: 700;
+		color: var(--primary-color);
 		text-decoration: none;
 	}
 
+	.tile-link svg {
+		transition: transform 0.2s;
+	}
+
+	.library-tile:hover .tile-link svg {
+		transform: translateX(4px);
+	}
+
 	.stretched-link::after {
 		position: absolute;
 		top: 0;
@@ -416,13 +633,64 @@ const categories = Object.entries(groupedArticles).sort((a, b) =>
 		z-index: 1;
 		content: "";
 	}
-	.stretched-link::after {
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		z-index: 1;
-		content: "";
+
+	.difficulty-hidden {
+		display: none !important;
 	}
 </style>
+
+<script>
+	import { difficultyStore } from "../components/design/difficultyStore";
+
+	function updatePreviewVisibility(difficulty: string) {
+		const links = document.querySelectorAll(
+			".tile-art-link, .preview-link",
+		);
+		links.forEach((link) => {
+			const badgeContainer = link.querySelector(
+				".article-preview-badge-container",
+			);
+			if (badgeContainer) {
+				const allowed =
+					(badgeContainer as HTMLElement).dataset.difficulties?.split(
+						",",
+					) || [];
+				if (allowed.includes(difficulty)) {
+					link.classList.remove("difficulty-hidden");
+				} else {
+					link.classList.add("difficulty-hidden");
+				}
+			}
+		});
+	}
+
+	function updateHeroBadges(difficulty: string) {
+		const badges = document.querySelectorAll(".showcase-badge");
+		badges.forEach((badge) => {
+			if ((badge as HTMLElement).dataset.difficulty === difficulty) {
+				badge.classList.add("active-badge");
+			} else {
+				badge.classList.remove("active-badge");
+			}
+		});
+	}
+
+	// Variable zum Speichern der Kündigung des Abonnements
+	let unsubscribe: () => void;
+
+	document.addEventListener("astro:page-load", () => {
+		// Altes Abonnement aufräumen
+		if (unsubscribe) unsubscribe();
+
+		unsubscribe = difficultyStore.subscribe((newDifficulty) => {
+			// Trigger immediate update
+			updatePreviewVisibility(newDifficulty);
+			updateHeroBadges(newDifficulty);
+		});
+
+		// Initial sweep
+		const currentDifficulty = difficultyStore.get();
+		updatePreviewVisibility(currentDifficulty);
+		updateHeroBadges(currentDifficulty);
+	});
+</script>

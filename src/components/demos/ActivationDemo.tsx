@@ -168,7 +168,6 @@ export default function App() {
                             &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">return</span> y
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

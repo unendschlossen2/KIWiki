@@ -49,22 +49,55 @@ Jeder Artikel **muss** einen Frontmatter-Block haben. Neu ist das Feld `category
 ---
 title: "Mein Artikel-Titel"
 description: "Kurze Beschreibung (optional)"
-category: "Maschinelles Lernen" # Gruppiert den Artikel in der Sidebar
+category: "ml" # Kurze Keys (ml, dl, genai, etc.) oder voller Name
+tags: ["Deep Learning", "Attention"] # Optionale Tags für quergelagerte Themen
 ---
 ```
 
 > **Hinweis:** Wenn kein `category` angegeben wird, erscheint der Artikel unter "Allgemein".
 > 
-> ### Schritt 3: Neue Kategorien und Icons
+> ### Schritt 3: Verfügbare Kategorien (Keys)
 > 
-> Kategorien und ihre Icons werden zentral in `src/config/categories.ts` verwaltet. Wenn du eine neue Kategorie im Frontmatter nutzt, die dort nicht definiert ist, wird sie zwar angezeigt, hat aber kein Icon.
+> Um das Schreiben zu erleichtern, kannst du kurze Keys im Frontmatter nutzen. Das System ordnet sie automatisch dem richtigen Namen und Icon zu:
 > 
-> Um ein Icon für eine Kategorie festzulegen, bearbeite `src/config/categories.ts`:
+> | Key | Anzeige-Name | Icon |
+> | :--- | :--- | :--- |
+> | `core` | Grundlagen & Mathematische Theorie | 📕 |
+> | `ml` | Klassisches Maschinelles Lernen (ML) | 🤖 |
+> | `dl` | Deep Learning & Neuronale Netze | 🧬 |
+> | `genai` | Generative KI & Foundation Models | 🎨 |
+> | `nlp` | Natural Language Processing (NLP) | 💬 |
+> | `cv` | Computer Vision & Bildverarbeitung | 👁️ |
+> | `robotics` | Robotik & Embodied AI | 🦾 |
+> | `data` | Daten, Datensätze & Infrastruktur | 📊 |
+> | `deployment` | MLOps, Engineering & Hardware | 🏗️ |
+> | `ethics` | Ethik, Sicherheit & KI-Alignment | ⚖️ |
+> | `history` | Geschichte, Akteure & Organisationen | 📜 |
+> | `allgemein` | Allgemein | 📦 |
+> 
+> ### Schritt 3: Tags (Optional)
+> 
+> Tags erlauben es, Artikel über Kategorien hinweg zu verknüpfen. Im Gegensatz zu Kategorien kann ein Artikel **beliebig viele** Tags haben. Sie erscheinen als Badges am Anfang des Artikels und in einem eigenen Dropdown in der Navigation.
+> 
+> ### Schritt 4: Aliases (Optional für die Suche)
+> 
+> Aliases sind alternative Namen oder Schreibweisen für denselben Artikel (z.B. "Transformer" -> `["Transformers", "LLM"]`). 
+> 
+> *   **Zweck**: Sie helfen dabei, den Artikel über die Suchfunktion zu finden, auch wenn der Nutzer nicht den exakten Titel eingibt.
+> *   **Unterschied zu Tags**: Aliases sind **unsichtbar** (nur für die Suche), während Tags **sichtbar** sind und zur Navigation dienen.
+> 
+### Schritt 5: Kategorien verwalten
+> 
+> Kategorien, Icons und die Sortierung werden zentral in `src/config/categories.ts` verwaltet.
+> 
+> Um eine neue Kategorie hinzuzufügen oder ein Icon zu ändern, bearbeite `CATEGORIES` in `src/config/categories.ts`:
 > 
 > ```typescript
-> export const categoryIcons: Record<string, string> = {
->   "Maschinelles Lernen": "🤖",
->   "Deine neue Kategorie": "✨", // Hier Icon hinzufügen
+> export const CATEGORIES: Record<string, { display: string; icon: string }> = {
+>   ml: {
+>     display: "Machine Learning",
+>     icon: "🤖"
+>   },
 >   // ...
 > };
 > ```
@@ -73,8 +106,8 @@ category: "Maschinelles Lernen" # Gruppiert den Artikel in der Sidebar
 
 Du kannst Artikel in Unterordnern organisieren, um die Übersicht zu behalten. Das System unterstützt beliebig tiefe Verschachtelungen:
 
-`src/content/articles/grundlagen/neuron.mdx`  
-→ URL: `/KIWiki/articles/grundlagen/neuron`
+`src/content/articles/1. Grundlagen & Theorie/was-ist-ki.mdx`  
+→ URL: `/KIWiki/articles/1.-grundlagen-&-theorie/was-ist-ki`
 
 ### Schritt 3: Inhalt verfassen
 
@@ -263,6 +296,8 @@ Neue Makros können in `katex-macros.js` hinzugefügt werden.
 - [ ] `title` im Frontmatter gesetzt
 - [ ] Optional: `description` hinzugefügt
 - [ ] `category` im Frontmatter gesetzt (und ggf. Icon in `categories.ts` definiert)
+- [ ] Optional: `tags` für die Navigation hinzugefügt
+- [ ] Optional: `aliases` für eine bessere Suche hinzugefügt
 - [ ] Optional: `difficulties` eingeschränkt (wenn nicht für alle Stufen)
 - [ ] Inhalt mit `:::beginner`, `:::medium`, `:::advanced` strukturiert
 - [ ] Mathe-Formeln mit `$...$` oder `$$...$$` geschrieben

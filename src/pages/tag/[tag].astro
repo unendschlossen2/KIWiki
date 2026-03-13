@@ -1,0 +1,390 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { slugifyTag } from "../../utils/slugify";
+import { DIFFICULTY_LABELS, DIFFICULTY_SHORT } from "../../config/difficulty";
+
+export async function getStaticPaths() {
+	const articles = (await getCollection("articles")).filter(
+		(a) => !a.id.startsWith("_"),
+	);
+
+	const tags = [...new Set(articles.flatMap((a) => a.data.tags || []))];
+
+	return tags.map((tag) => ({
+		params: { tag: slugifyTag(tag) },
+		props: {
+			tag,
+			articles: articles.filter((a) => a.data.tags?.includes(tag)),
+		},
+	}));
+}
+
+const { tag, articles } = Astro.props;
+---
+
+<Layout title={`Tag: #${tag}`}>
+	<div class="category-hero">
+		<div class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-screen-2xl mx-auto mb-4">
+			<h1 class="!mb-0 flex items-center gap-3 text-left">
+				<span class="text-4xl md:text-5xl">🏷️</span>
+				<span class="text-3xl md:text-4xl font-black">#{tag}</span>
+			</h1>
+
+			<div class="difficulty-showcase ml-2 md:ml-8">
+				<div class="showcase-badge badge-easy">
+					<span class="text-3xl">🌱</span>
+					<div class="text-left">
+						<div
+							class="text-[0.6rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
+						>
+							Modus
+						</div>
+						<div class="text-lg font-black leading-none uppercase">
+							{DIFFICULTY_LABELS.easy}
+						</div>
+					</div>
+				</div>
+				<div class="showcase-badge badge-medium">
+					<span class="text-3xl">🚀</span>
+					<div class="text-left">
+						<div
+							class="text-[0.6rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
+						>
+							Modus
+						</div>
+						<div class="text-lg font-black leading-none uppercase">
+							{DIFFICULTY_LABELS.medium}
+						</div>
+					</div>
+				</div>
+				<div class="showcase-badge badge-hard">
+					<span class="text-3xl">🧠</span>
+					<div class="text-left">
+						<div
+							class="text-[0.6rem] uppercase tracking-[0.2em] opacity-80 font-bold mb-1"
+						>
+							Modus
+						</div>
+						<div class="text-lg font-black leading-none uppercase">
+							{DIFFICULTY_LABELS.hard}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="flex flex-col items-start max-w-screen-2xl mx-auto mt-4 px-2">
+			<p class="category-subtitle">
+				{articles.length} Artikel mit diesem Tag
+			</p>
+			<div class="divider ml-0"></div>
+		</div>
+	</div>
+
+	<section class="library-section">
+		<div class="section-decor">
+			<span class="section-index">01</span>
+			<div class="line-glow"></div>
+		</div>
+
+		<div class="library-content w-full">
+			<div class="article-grid" id="article-grid">
+				<div class="library-tile featured-back-tile">
+					<div class="tile-icon-wrap">
+						<span class="tile-emoji">🏠</span>
+					</div>
+					<div class="tile-main">
+						<h3 class="tile-title">Zurück zur Startseite</h3>
+						<p class="tile-description">
+							Hier gelangst du zurück zur Übersicht aller Themen und Kategorien.
+						</p>
+						<a href="/KIWiki/" class="tile-link stretched-link">
+							Hauptmenü öffnen <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+						</a>
+					</div>
+				</div>
+
+				{
+					articles.map((article) => {
+						const slug = article.id.replace(/\.mdx?$/, "");
+						const difficulties = article.data.difficulties;
+						const isRestricted = difficulties && difficulties.length < 3;
+
+						return (
+							<div class="library-tile" data-difficulties={difficulties?.join(",")}>
+								<div class="tile-icon-wrap">
+									<span class="tile-emoji">📄</span>
+								</div>
+								<div class="tile-main">
+									<div class="tile-top">
+										<h3 class="tile-title flex-1">{article.data.title}</h3>
+										{isRestricted && (
+											<div class="difficulty-badges">
+												{difficulties.includes("easy") && (
+													<span class="badge badge-easy" title={DIFFICULTY_LABELS.easy}>
+														{DIFFICULTY_SHORT.easy}
+													</span>
+												)}
+												{difficulties.includes("medium") && (
+													<span class="badge badge-medium" title={DIFFICULTY_LABELS.medium}>
+														{DIFFICULTY_SHORT.medium}
+													</span>
+												)}
+												{difficulties.includes("hard") && (
+													<span class="badge badge-hard" title={DIFFICULTY_LABELS.hard}>
+														{DIFFICULTY_SHORT.hard}
+													</span>
+												)}
+											</div>
+										)}
+									</div>
+									
+									{article.data.description && (
+										<p class="tile-description">{article.data.description}</p>
+									)}
+									
+									<a href={`/KIWiki/articles/${slug}`} class="tile-link stretched-link">
+										Artikel lesen <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+									</a>
+								</div>
+							</div>
+						);
+					})
+				}
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.category-hero {
+		padding: 3rem 0 2rem;
+		width: 100%;
+	}
+
+	.category-subtitle {
+		color: var(--text-muted);
+		font-size: 0.9rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		margin: 0;
+	}
+
+	.divider {
+		width: 4rem;
+		height: 4px;
+		background: var(--primary-color);
+		border-radius: 2px;
+		margin: 1.5rem 0 0;
+	}
+
+	/* Layout-Struktur für die Seite mit linker Dekoration */
+	.library-section {
+		display: grid;
+		grid-template-columns: 100px 1fr;
+		gap: 4rem;
+		margin-top: 2rem;
+		position: relative;
+		max-width: screen-2xl;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	@media (max-width: 768px) {
+		.library-section {
+			grid-template-columns: 1fr;
+			gap: 2rem;
+		}
+	}
+
+	.section-decor {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		padding-top: 0.5rem;
+	}
+
+	.section-index {
+		font-family: var(--font-mono, monospace);
+		font-weight: 800;
+		font-size: 1.25rem;
+		color: var(--primary-color);
+		opacity: 0.3;
+	}
+
+	.line-glow {
+		width: 2px;
+		flex-grow: 1;
+		background: linear-gradient(to bottom, var(--primary-color), transparent);
+		border-radius: 2px;
+		opacity: 0.2;
+	}
+
+	.library-content {
+		min-width: 0;
+	}
+
+	.article-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+		gap: 2rem;
+	}
+
+	/* Library-tile styles from index.astro */
+	.library-tile {
+		background: var(--bg-card);
+		border: 1px solid var(--border-color);
+		border-radius: 24px;
+		padding: 2rem;
+		display: flex;
+		gap: 1.5rem;
+		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.library-tile:hover {
+		transform: translateY(-8px) scale(1.02);
+		border-color: var(--primary-color);
+		box-shadow: 0 20px 40px -10px var(--shadow-hover);
+	}
+
+	.tile-icon-wrap {
+		width: 64px;
+		height: 64px;
+		background: var(--bg-page);
+		border-radius: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 2.25rem;
+		flex-shrink: 0;
+		transition: transform 0.3s ease;
+	}
+
+	.library-tile:hover .tile-icon-wrap {
+		transform: rotate(-5deg) scale(1.1);
+	}
+
+	.tile-main {
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.tile-top {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: 1rem;
+		gap: 1rem;
+	}
+
+	.tile-title {
+		font-size: 1.25rem;
+		font-weight: 800;
+		color: var(--text-primary);
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	.tile-description {
+		color: var(--text-secondary);
+		font-size: 0.9rem;
+		line-height: 1.55;
+		margin-bottom: 2rem;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.tile-link {
+		margin-top: auto;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.9rem;
+		font-weight: 700;
+		color: var(--primary-color);
+		text-decoration: none;
+	}
+
+	.tile-link svg {
+		transition: transform 0.2s;
+	}
+
+	.library-tile:hover .tile-link svg {
+		transform: translateX(4px);
+	}
+
+	.stretched-link::after {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		z-index: 1;
+		content: "";
+	}
+
+	.featured-back-tile {
+		background: var(--card-featured-bg);
+		border: 2px solid var(--primary-color);
+		box-shadow: 0 10px 30px -10px var(--shadow-color);
+	}
+
+	@media (max-width: 640px) {
+		.article-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.difficulty-hidden {
+		display: none !important;
+	}
+</style>
+
+<script>
+	import { difficultyStore } from "../../components/design/difficultyStore";
+
+	function updateGridVisibility(difficulty: string) {
+		// 1. Spezifischerer Selektor: Suche nur im Grid der jeweiligen Unterseite
+		const cards = document.querySelectorAll(
+			"#article-grid .library-tile:not(.featured-back-tile)",
+		);
+
+		cards.forEach((card) => {
+			const diffData = (card as HTMLElement).dataset.difficulties;
+
+			// 2. Sicherheits-Check: Kacheln ohne Schwierigkeits-Daten ignorieren
+			if (!diffData) return;
+
+			const allowed = diffData.split(",");
+			if (allowed.includes(difficulty)) {
+				card.classList.remove("difficulty-hidden");
+			} else {
+				card.classList.add("difficulty-hidden");
+			}
+		});
+	}
+
+	// Variable zum Speichern der Kündigung des Abonnements
+	let unsubscribe: () => void;
+
+	document.addEventListener("astro:page-load", () => {
+		// Altes Abonnement aufräumen, falls existent (verhindert Memory Leaks)
+		if (unsubscribe) {
+			unsubscribe();
+		}
+
+		// Subscribe to difficulty changes
+		unsubscribe = difficultyStore.subscribe((newDifficulty) => {
+			updateGridVisibility(newDifficulty);
+		});
+		updateGridVisibility(difficultyStore.get());
+	});
+</script>
