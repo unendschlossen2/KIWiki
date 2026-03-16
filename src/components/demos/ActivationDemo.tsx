@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import MathField from '../design/Math';
+import InfoTooltip from '../design/InfoTooltip';
 
 // Interaktive Demo: Zeigt, wie ein einzelnes Neuron eine Eingabe transformiert.
 export default function App() {
@@ -38,14 +39,14 @@ export default function App() {
     }, [weight, bias, activation]);
 
     return (
-        <div className="not-prose max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden font-sans my-8">
+        <div className="not-prose max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 font-sans my-8">
             {/* Demo Header */}
-            <div className="bg-slate-800 dark:bg-slate-900 text-white px-6 py-4 border-b border-slate-700 dark:border-slate-600 flex justify-between items-center">
-                <div>
-                    <h3 className="font-bold text-lg">Interaktive Demo: Das Neuron</h3>
-                    <p className="text-slate-400 text-sm mt-1">
-                        <strong>Was zeigt der Graph?</strong> Die x-Achse ist das einkommende Signal (<MathField math="x" />). Die y-Achse ist das endgültige Ausgangssignal (<MathField math="y" />), das das Neuron an die nächste Schicht weitergibt. Ein <MathField math="y" /> von 0 bedeutet: "Das Neuron schweigt". Ein hohes <MathField math="y" /> bedeutet: "Das Neuron feuert stark".
-                    </p>
+            <div className="bg-slate-800 dark:bg-slate-900 text-white px-6 py-4 rounded-t-xl border-b border-slate-700 dark:border-slate-600 flex justify-between items-center z-20 relative">
+                <div className="flex items-center">
+                    <h3 className="flex items-center font-bold text-lg" data-toc-skip>
+                        Interaktive Demo: Das Neuron
+                        <InfoTooltip position="bottom" content={<><strong>Was zeigt der Graph?</strong> Die x-Achse ist das einkommende Signal (<MathField math="x" />). Die y-Achse ist das endgültige Ausgangssignal (<MathField math="y" />), das das Neuron an die nächste Schicht weitergibt. Ein <MathField math="y" /> von 0 bedeutet: "Das Neuron schweigt". Ein hohes <MathField math="y" /> bedeutet: "Das Neuron feuert stark".</>} />
+                    </h3>
                 </div>
                 <div className="flex space-x-1">
                     <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -56,12 +57,15 @@ export default function App() {
 
             <div className="flex flex-col md:flex-row">
                 {/* Left Side: Controls */}
-                <div className="w-full md:w-1/3 p-6 bg-slate-50 dark:bg-slate-800/50 border-r border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+                <div className="w-full md:w-1/3 p-6 bg-slate-50 dark:bg-slate-800/50 border-r border-slate-200 dark:border-slate-700 flex flex-col justify-between md:rounded-bl-xl">
                     <div className="space-y-6">
                         {/* Weight Slider */}
                         <div>
                             <div className="flex justify-between mb-2">
-                                <label className="text-sm font-bold text-slate-700 dark:text-slate-200">Gewicht (<MathField math="w" />)</label>
+                                <label className="flex items-center text-sm font-bold text-slate-700 dark:text-slate-200">
+                                    Gewicht (<MathField math="w" />)
+                                    <InfoTooltip content={<>Die <strong>Wichtigkeit</strong> der Eingabe. Ein hohes Gewicht (steile Kurve) bedeutet: Schon eine winzige Änderung im Eingangssignal (<MathField math="x" />) ändert das Ausgangssignal (<MathField math="y" />) extrem.</>} />
+                                </label>
                                 <span className="text-sm font-mono bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded">{weight.toFixed(1)}</span>
                             </div>
                             <input
@@ -71,13 +75,15 @@ export default function App() {
                                 onChange={(e) => setWeight(parseFloat(e.target.value))}
                                 className="w-full accent-blue-600"
                             />
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Die <strong>Wichtigkeit</strong> der Eingabe. Ein hohes Gewicht (steile Kurve) bedeutet: Schon eine winzige Änderung im Eingangssignal (<MathField math="x" />) ändert das Ausgangssignal (<MathField math="y" />) extrem.</p>
                         </div>
 
                         {/* Bias Slider */}
                         <div>
                             <div className="flex justify-between mb-2">
-                                <label className="text-sm font-bold text-slate-700 dark:text-slate-200">Bias (<MathField math="b" />)</label>
+                                <label className="flex items-center text-sm font-bold text-slate-700 dark:text-slate-200">
+                                    Bias (<MathField math="b" />)
+                                    <InfoTooltip content={<>Die <strong>Trägheit</strong>. Ein negativer Bias verschiebt die Kurve nach rechts: Das Neuron braucht ein viel stärkeres Eingangssignal (<MathField math="x" />), bevor es anfängt zu feuern (<MathField math="y > 0" />).</>} />
+                                </label>
                                 <span className="text-sm font-mono bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300 px-2 py-0.5 rounded">{bias.toFixed(1)}</span>
                             </div>
                             <input
@@ -87,7 +93,6 @@ export default function App() {
                                 onChange={(e) => setBias(parseFloat(e.target.value))}
                                 className="w-full accent-purple-600"
                             />
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Die <strong>Trägheit</strong>. Ein negativer Bias verschiebt die Kurve nach rechts: Das Neuron braucht ein viel stärkeres Eingangssignal (<MathField math="x" />), bevor es anfängt zu feuern (<MathField math="y > 0" />).</p>
                         </div>
 
                         {/* Activation Toggle */}
@@ -124,10 +129,10 @@ export default function App() {
                 </div>
 
                 {/* Right Side: Graph & Math */}
-                <div className="w-full md:w-2/3 p-6 flex flex-col items-center justify-center relative">
+                <div className="w-full md:w-2/3 p-6 flex flex-col items-center justify-center relative rounded-b-xl md:rounded-bl-none">
 
                     {/* Math Equation Display */}
-                    <div className="absolute top-6 left-6 bg-white/90 dark:bg-slate-800/90 backdrop-blur px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 shadow-sm z-10 min-w-[120px] text-center">
+                    <div className="w-full max-w-[400px] mb-6 bg-white dark:bg-slate-800 px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm flex justify-center items-center">
                         <MathField math={`y = ${activation === 'linear' ? '' : activation === 'sigmoid' ? '\\sigmoid(' : activation === 'tanh' ? '\\tanh(' : '\\relu('}${weight.toFixed(1)}x + ${bias.toFixed(1)}${activation === 'linear' ? '' : ')'}`} />
                     </div>
 

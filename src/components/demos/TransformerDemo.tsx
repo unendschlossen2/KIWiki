@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import MathField from '../design/Math';
+import InfoTooltip from '../design/InfoTooltip';
 
 /* ─── Preset sentences ─── */
 const SENTENCES = [
@@ -80,23 +81,23 @@ export default function TransformerDemo() {
   const labelH = 32;
   const matrixW = cellSize * n;
   const matrixH = cellSize * n;
-  const svgW = labelW + matrixW + 2;
-  const svgH = labelH + matrixH + 2;
+  const svgW = labelW + matrixW + 10;
+  const svgH = labelH + matrixH + 25;
 
   /* ── Arc constants ── */
   const arcTokenGap = 56;
   const arcSvgW = Math.max(n * arcTokenGap + 40, 240);
-  const arcSvgH = 120;
+  const arcSvgH = 140;
 
   return (
-    <div className="not-prose max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden font-sans my-8">
+    <div className="not-prose max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 font-sans my-8">
       {/* Header */}
-      <div className="bg-slate-800 dark:bg-slate-900 text-white px-6 py-4 border-b border-slate-700 dark:border-slate-600 flex justify-between items-center">
-        <div>
-          <h3 className="font-bold text-lg">Interaktive Demo: Self-Attention</h3>
-          <p className="text-slate-400 text-sm mt-1">
-            <strong>Der Effekt:</strong> Wenn das Wort „sie“ 80% Aufmerksamkeit auf „Katze“ richtet, mischt der Transformer 80% der Bedeutung von „Katze“ in das Wort „sie“. Die Werte (<MathField math="y" />-Achse zu <MathField math="x" />-Achse) zeigen also konkret, woraus das Modell Kontext zieht.
-          </p>
+      <div className="bg-slate-800 dark:bg-slate-900 text-white px-6 py-4 rounded-t-xl border-b border-slate-700 dark:border-slate-600 flex justify-between items-center z-20 relative">
+        <div className="flex items-center">
+          <h3 className="flex items-center font-bold text-lg" data-toc-skip>
+            Interaktive Demo: Self-Attention
+            <InfoTooltip position="bottom" content={<><strong>Der Effekt:</strong> Wenn das Wort „sie“ 80% Aufmerksamkeit auf „Katze“ richtet, mischt der Transformer 80% der Bedeutung von „Katze“ in das Wort „sie“. Die Werte (<MathField math="y" />-Achse zu <MathField math="x" />-Achse) zeigen also konkret, woraus das Modell Kontext zieht.</>} />
+          </h3>
         </div>
         <div className="flex space-x-1">
           <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -107,7 +108,7 @@ export default function TransformerDemo() {
 
       <div className="flex flex-col md:flex-row">
         {/* ── Left panel: controls ── */}
-        <div className="w-full md:w-1/3 p-6 bg-slate-50 dark:bg-slate-800/50 border-r border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+        <div className="w-full md:w-1/3 p-6 bg-slate-50 dark:bg-slate-800/50 border-r border-slate-200 dark:border-slate-700 flex flex-col justify-between md:rounded-bl-xl">
           <div className="space-y-6">
             {/* Sentence selector */}
             <div>
@@ -122,11 +123,10 @@ export default function TransformerDemo() {
                       setSentenceIdx(idx);
                       setSelectedToken(null);
                     }}
-                    className={`px-3 py-2 text-sm rounded-md border text-left transition-colors ${
-                      sentenceIdx === idx
+                    className={`px-3 py-2 text-sm rounded-md border text-left transition-colors ${sentenceIdx === idx
                         ? 'bg-blue-600 text-white border-blue-600'
                         : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600'
-                    }`}
+                      }`}
                   >
                     {s.join(' ')}
                   </button>
@@ -137,8 +137,9 @@ export default function TransformerDemo() {
             {/* Temperature slider */}
             <div>
               <div className="flex justify-between mb-2">
-                <label className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                <label className="flex items-center text-sm font-bold text-slate-700 dark:text-slate-200">
                   Temperatur
+                  <InfoTooltip content={<><strong>Praktische Folge:</strong> Niedrig = Das Modell ist "sicher" und zieht Bedeutung fast 100% aus wenigen Wörtern. Hoch = Unsicherer, Bedeutungen vieler Wörter werden diffus gemischt.</>} />
                 </label>
                 <span className="text-sm font-mono bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded">
                   {temperature.toFixed(1)}
@@ -153,89 +154,17 @@ export default function TransformerDemo() {
                 onChange={e => setTemperature(parseFloat(e.target.value))}
                 className="w-full accent-blue-600"
               />
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                <strong>Praktische Folge:</strong> Niedrig = Das Modell ist "sicher" und zieht Bedeutung fast 100% aus wenigen Wörtern. Hoch = Unsicherer, Bedeutungen vieler Wörter werden diffus gemischt.
-              </p>
             </div>
           </div>
         </div>
 
-        <div className="w-full md:w-2/3 p-6 flex flex-col items-center justify-center space-y-6 relative">
+        <div className="w-full md:w-2/3 p-6 flex flex-col items-center justify-center space-y-6 relative rounded-b-xl md:rounded-bl-none">
           {/* Math Equation Display */}
-          <div className="absolute top-6 left-6 bg-white/90 dark:bg-slate-800/90 backdrop-blur px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 shadow-sm z-10 hidden md:block">
+          <div className="w-full max-w-[460px] bg-white dark:bg-slate-800 px-6 py-4 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm hidden md:flex items-center justify-center">
             <MathField math={`A = \\softmax\\left(\\frac{QK^T}{\\sqrt{d_k} \\cdot ${temperature.toFixed(1)}}\\right)`} />
           </div>
 
-          {/* ── Attention Arcs (shown when a token is selected) ── */}
-          {selectedToken !== null && (
-            <div className="w-full flex flex-col items-center">
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-                So viel Bedeutung nimmt das Token <span className="font-bold text-blue-500">"{tokens[selectedToken]}"</span> aus den anderen Tokens auf:
-              </p>
-              <svg
-                width={arcSvgW}
-                height={arcSvgH}
-                viewBox={`0 0 ${arcSvgW} ${arcSvgH}`}
-                className="overflow-visible"
-              >
-                {/* Token labels at bottom */}
-                {tokens.map((tok, j) => {
-                  const x = (arcSvgW - (n - 1) * arcTokenGap) / 2 + j * arcTokenGap;
-                  const y = arcSvgH - 10;
-                  return (
-                    <text
-                      key={j}
-                      x={x}
-                      y={y}
-                      textAnchor="middle"
-                      fontSize="13"
-                      fontWeight={j === selectedToken ? 700 : 400}
-                      fill={j === selectedToken ? '#3b82f6' : 'var(--text-secondary, #94a3b8)'}
-                      fontFamily="ui-monospace, monospace"
-                    >
-                      {tok}
-                    </text>
-                  );
-                })}
 
-                {/* Arcs */}
-                {tokens.map((_, j) => {
-                  if (j === selectedToken) return null;
-                  const w = attention[selectedToken][j];
-                  const xi =
-                    (arcSvgW - (n - 1) * arcTokenGap) / 2 +
-                    selectedToken * arcTokenGap;
-                  const xj =
-                    (arcSvgW - (n - 1) * arcTokenGap) / 2 + j * arcTokenGap;
-                  const midX = (xi + xj) / 2;
-                  const dist = Math.abs(xi - xj);
-                  const cpY = arcSvgH - 20 - dist * 0.55;
-                  return (
-                    <g key={j}>
-                      <path
-                        d={`M ${xi} ${arcSvgH - 18} Q ${midX} ${cpY} ${xj} ${arcSvgH - 18}`}
-                        fill="none"
-                        stroke="#3b82f6"
-                        strokeWidth={1 + w * 5}
-                        opacity={0.25 + w * 0.75}
-                        strokeLinecap="round"
-                      />
-                      <text
-                        x={midX}
-                        y={cpY - 4}
-                        textAnchor="middle"
-                        fontSize="10"
-                        fill="var(--text-secondary, #94a3b8)"
-                        fontFamily="ui-monospace, monospace"
-                      >
-                        {(w * 100).toFixed(0)}%
-                      </text>
-                    </g>
-                  );
-                })}
-              </svg>
-            </div>
-          )}
 
           {/* ── Attention Heatmap ── */}
           <svg
@@ -319,7 +248,7 @@ export default function TransformerDemo() {
             {/* Axis labels */}
             <text
               x={labelW + matrixW / 2}
-              y={svgH - 0}
+              y={svgH - 8}
               textAnchor="middle"
               fontSize="11"
               fill="var(--text-secondary, #94a3b8)"
@@ -329,18 +258,99 @@ export default function TransformerDemo() {
               Keys (K)
             </text>
             <text
-              x={10}
+              x={12}
               y={labelH + matrixH / 2}
               textAnchor="middle"
               fontSize="11"
               fill="var(--text-secondary, #94a3b8)"
               fontFamily="serif"
               fontStyle="italic"
-              transform={`rotate(-90, 10, ${labelH + matrixH / 2})`}
+              transform={`rotate(-90, 12, ${labelH + matrixH / 2})`}
             >
               Queries (Q)
             </text>
           </svg>
+
+          {/* ── Attention Arcs (shown when a token is selected) ── */}
+          {selectedToken !== null && (
+            <div className="w-full flex flex-col items-center mt-4 border-t border-slate-100 dark:border-slate-700/50 pt-6">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                So viel Bedeutung nimmt das Token <span className="font-bold text-blue-500">"{tokens[selectedToken]}"</span> aus den anderen Tokens auf:
+              </p>
+              <svg
+                width={arcSvgW}
+                height={arcSvgH}
+                viewBox={`0 0 ${arcSvgW} ${arcSvgH}`}
+                className="overflow-visible"
+              >
+                {/* Token labels and percentages */}
+                {tokens.map((tok, j) => {
+                  const x = (arcSvgW - (n - 1) * arcTokenGap) / 2 + j * arcTokenGap;
+                  const wordY = arcSvgH - 30;
+                  const percentY = arcSvgH - 10;
+                  const w = selectedToken !== null ? attention[selectedToken][j] : 0;
+
+                  return (
+                    <g key={`tok-${j}`}>
+                      <text
+                        x={x}
+                        y={wordY}
+                        textAnchor="middle"
+                        fontSize="13"
+                        fontWeight={j === selectedToken ? 700 : 400}
+                        fill={j === selectedToken ? '#3b82f6' : 'var(--text-secondary, #94a3b8)'}
+                        fontFamily="ui-monospace, monospace"
+                      >
+                        {tok}
+                      </text>
+                      {selectedToken !== null && (
+                        <text
+                          x={x}
+                          y={percentY}
+                          textAnchor="middle"
+                          fontSize="10"
+                          fontWeight={j === selectedToken ? 600 : 400}
+                          fill={j === selectedToken ? '#3b82f6' : 'var(--text-secondary, #94a3b8)'}
+                          fontFamily="ui-monospace, monospace"
+                          opacity={w > 0.05 ? 1 : 0.6}
+                        >
+                          {(w * 100).toFixed(0)}%
+                        </text>
+                      )}
+                    </g>
+                  );
+                })}
+
+                {/* Arcs */}
+                {tokens.map((_, j) => {
+                  if (j === selectedToken) return null;
+                  const w = attention[selectedToken][j];
+                  const xi =
+                    (arcSvgW - (n - 1) * arcTokenGap) / 2 +
+                    selectedToken * arcTokenGap;
+                  const xj =
+                    (arcSvgW - (n - 1) * arcTokenGap) / 2 + j * arcTokenGap;
+                  const midX = (xi + xj) / 2;
+                  const dist = Math.abs(xi - xj);
+                  // Scaled distance to prevent arcs from "shooting up" too high
+                  const cpY = arcSvgH - 40 - Math.min(dist * 0.4, 60);
+                  return (
+                    <g key={`arc-${j}`}>
+                      <path
+                        d={`M ${xi} ${arcSvgH - 38} Q ${midX} ${cpY} ${xj} ${arcSvgH - 38}`}
+                        fill="none"
+                        stroke="#3b82f6"
+                        strokeWidth={1 + w * 5}
+                        opacity={0.25 + w * 0.75}
+                        strokeLinecap="round"
+                      />
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          )}
+
 
           {/* ── Live code snippet ── */}
           <div className="w-full max-w-[460px]">

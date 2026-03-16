@@ -18,7 +18,7 @@ const TableOfContents: React.FC = () => {
     if (!article) return;
 
     const titleEl = document.querySelector('header h1');
-    const elements = article.querySelectorAll('h2, h3');
+    const elements = Array.from(article.querySelectorAll('h2, h3')).filter(el => !el.hasAttribute('data-toc-skip'));
     const found: Heading[] = [];
 
     // Add main title first

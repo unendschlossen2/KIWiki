@@ -53,12 +53,15 @@ function buildDictionary() {
   // Sort by keyword length descending (longest first)
   dict.sort((a, b) => b.keyword.length - a.keyword.length);
 
+  console.log(`[CrossReference] Built dictionary with ${dict.length} entries.`);
+
   // Precompile regexes for each keyword
   dictionaryCache = dict.map((entry) => {
     // Escape regex special chars
     const escapedKeyword = entry.keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    // Match word boundaries considering German umlauts
-    const regex = new RegExp(`(^|[^a-zA-ZäöüÄÖÜß])(${escapedKeyword})([^a-zA-ZäöüÄÖÜß]|$)`, "iu");
+    // Match word boundaries considering German umlauts and numbers
+    // Using lookarounds for better multi-match support
+    const regex = new RegExp(`(?<=^|[^a-zA-Z0-9äöüÄÖÜß])(${escapedKeyword})(?=[^a-zA-Z0-9äöüÄÖÜß]|$)`, "iu");
     return { ...entry, regex };
   });
 
@@ -86,8 +89,6 @@ export function remarkCrossReference() {
       "inlineCode",
       "code",
       "html",
-      "mdxJsxFlowElement",
-      "mdxJsxTextElement",
     ]);
 
     visitParents(tree, "text", (node, ancestors) => {
@@ -100,52 +101,76 @@ export function remarkCrossReference() {
       if (!parent || !parent.children) return;
 
       const text = String(node.value);
+      const matches: { start: number; end: number; entry: typeof dict[0] }[] = [];
+      const occupiedRanges: [number, number][] = [];
 
-      let matchInfo = null;
+      // Find all matches for all dictionary entries
       for (const entry of dict) {
-        // Prevent an article from linking to itself
         if (entry.url === currentUrl) continue;
 
-        // Find match using the precompiled regex
-        const match = entry.regex.exec(text);
-        if (match) {
-          // match[1] is the prefix boundary, match[2] is the exact word, match[3] is the suffix
-          const indexOffset = match.index + match[1].length;
-          const matchLength = match[2].length;
-          
-          matchInfo = {
-            entry,
-            index: indexOffset,
-            length: matchLength,
-          };
-          break; // Since dict is sorted by length, longest match is taken
+        // Use a loop to find all occurrences of this regex in the text
+        // Note: The regex is precompiled with 'iu' but NO 'g' flag currently.
+        // We shouldn't modify the cached regex, so we'll clone it or use it carefully.
+        const regex = new RegExp(entry.regex.source, entry.regex.flags + "g");
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+          // match[0] is the keyword now because we used lookarounds
+          const indexOffset = match.index;
+          const matchLength = match[0].length;
+          const matchEnd = indexOffset + matchLength;
+
+          // Check for overlap with already found matches
+          const isOverlapping = occupiedRanges.some(([start, end]) =>
+            (indexOffset >= start && indexOffset < end) ||
+            (matchEnd > start && matchEnd <= end) ||
+            (indexOffset <= start && matchEnd >= end)
+          );
+
+          if (!isOverlapping) {
+            matches.push({ start: indexOffset, end: matchEnd, entry });
+            occupiedRanges.push([indexOffset, matchEnd]);
+          }
         }
       }
 
-      if (matchInfo) {
-        const { entry, index, length } = matchInfo;
-
-        const beforeText = text.slice(0, index);
-        const matchText = text.slice(index, index + length);
-        const afterText = text.slice(index + length);
+      if (matches.length > 0) {
+        // Sort matches by start index
+        matches.sort((a, b) => a.start - b.start);
 
         const newNodes = [];
-        if (beforeText) newNodes.push({ type: "text", value: beforeText });
+        let lastIndex = 0;
 
-        newNodes.push({
-          type: "link",
-          url: entry.url,
-          title: null,
-          children: [{ type: "text", value: matchText }],
-        });
+        for (const match of matches) {
+          // Add text before the match
+          if (match.start > lastIndex) {
+            newNodes.push({ type: "text", value: text.slice(lastIndex, match.start) });
+          }
 
-        if (afterText) newNodes.push({ type: "text", value: afterText });
+          // Add the link node
+          newNodes.push({
+            type: "link",
+            url: match.entry.url,
+            title: null,
+            data: {
+              hProperties: {
+                className: ["cross-reference"],
+              },
+            },
+            children: [{ type: "text", value: text.slice(match.start, match.end) }],
+          });
+
+          lastIndex = match.end;
+        }
+
+        // Add remaining text
+        if (lastIndex < text.length) {
+          newNodes.push({ type: "text", value: text.slice(lastIndex) });
+        }
 
         // Replace this node in the parent
         const parentIndex = parent.children.indexOf(node);
         if (parentIndex !== -1) {
           parent.children.splice(parentIndex, 1, ...newNodes);
-          
           return [SKIP, parentIndex + newNodes.length];
         }
       }
