@@ -7,6 +7,7 @@ import CategoryDropdown from "../components/design/CategoryDropdown.astro";
 import TagDropdown from "../components/design/TagDropdown.astro";
 import ThemeToggle from "../components/design/ThemeToggle.tsx";
 import { ViewTransitions } from "astro:transitions";
+import { resolvePath } from "../utils/path";
 import "../styles/global.css";
 
 interface Props {
@@ -27,10 +28,20 @@ const description =
 	frontmatter?.description ||
 	propDescription ||
 	"Das interaktive Nachschlagewerk für Künstliche Intelligenz";
+
+const basePath = import.meta.env.BASE_URL;
+const isRoot = Astro.url.pathname === basePath || Astro.url.pathname === `${basePath}/`;
+const isArticle = Astro.url.pathname.includes(`${basePath}/articles/`);
+const isUeber = Astro.url.pathname.includes(`${basePath}/ueber`);
+const isCategory = Astro.url.pathname.includes(`${basePath}/category/`);
+const isTag = Astro.url.pathname.includes(`${basePath}/tag/`);
+
+const showSidebar = !isRoot && !isUeber && !isCategory && !isTag;
+const isFullWidth = isRoot || isCategory || isTag;
 ---
 
 <!doctype html>
-<html lang="de" data-difficulty="easy">
+<html lang="de" data-difficulty="easy" data-base={basePath}>
 	<head>
 		<script is:inline>
 			// Persistence — runs on every page load & View Transition
@@ -51,11 +62,6 @@ const description =
 					try {
 						var t = localStorage.getItem("kiwiki-theme");
 						if (t) return t.replace(/"/g, "");
-						if (
-							window.matchMedia("(prefers-color-scheme: dark)")
-								.matches
-						)
-							return "dark";
 					} catch (e) {}
 					return "light";
 				}
@@ -65,12 +71,15 @@ const description =
 					var theme = readTheme();
 					doc.documentElement.setAttribute("data-difficulty", diff);
 					var favicon = doc.querySelector('link[rel="icon"]');
+					var basePath = doc.documentElement.dataset.base || '/';
+					var cleanBase = basePath.endsWith('/') ? basePath.slice(0, -1) : basePath;
 					if (theme === "dark") {
 						doc.documentElement.classList.add("dark");
-						if (favicon) favicon.href = "/KIWiki/assets/logo-dark.png";
+						if (favicon)
+							favicon.href = cleanBase + "/assets/logo-dark.png";
 					} else {
 						doc.documentElement.classList.remove("dark");
-						if (favicon) favicon.href = "/KIWiki/assets/logo.png";
+						if (favicon) favicon.href = cleanBase + "/assets/logo.png";
 					}
 				}
 
@@ -91,7 +100,7 @@ const description =
 		</script>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/png" href="/KIWiki/assets/logo.png" />
+		<link rel="icon" type="image/png" href={resolvePath("/assets/logo.png")} />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<link
@@ -110,7 +119,7 @@ const description =
 		>
 			<!-- Reading Progress (Only on articles) -->
 			{
-				Astro.url.pathname.includes("/KIWiki/articles/") && (
+				isArticle && (
 					<div
 						id="reading-progress"
 						class="fixed top-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-150 ease-out z-[60]"
@@ -125,7 +134,7 @@ const description =
 				<!-- Left Area: Home & Categories -->
 				<div class="flex items-center gap-4 shrink-0">
 					<a
-						href="/KIWiki/"
+						href={resolvePath("/")}
 						class="flex items-center justify-center w-11 h-11 rounded-xl bg-slate-100 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all border border-transparent dark:border-slate-700/50 shadow-sm hover:shadow group"
 						aria-label="Zur Startseite"
 						title="Startseite"
@@ -148,7 +157,9 @@ const description =
 						>
 					</a>
 
-					<CategoryDropdown currentCategory={propCategory || frontmatter?.category} />
+					<CategoryDropdown
+						currentCategory={propCategory || frontmatter?.category}
+					/>
 					<TagDropdown />
 				</div>
 
@@ -156,6 +167,8 @@ const description =
 				<div class="flex-1 flex justify-center max-w-2xl px-4">
 					<button
 						onclick="window.openSearchModal && window.openSearchModal()"
+						onmouseover="window.prefetchSearchIndex && window.prefetchSearchIndex()"
+						onpointerenter="window.prefetchSearchIndex && window.prefetchSearchIndex()"
 						class="flex items-center gap-3 px-6 py-3 w-full rounded-2xl bg-slate-100/80 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-base font-medium transition-all border border-transparent hover:border-blue-500/30 dark:border-slate-700/50 dark:hover:border-blue-400/30 shadow-sm hover:shadow-md group overflow-hidden"
 						aria-label="Suchen"
 					>
@@ -183,38 +196,24 @@ const description =
 				</div>
 
 				<!-- Right Area: Difficulty & Theme -->
-				<div class="flex items-center gap-4 shrink-0 min-w-[120px] justify-end">
+				<div
+					class="flex items-center gap-4 shrink-0 min-w-[120px] justify-end"
+				>
 					<ThemeToggle client:only="react" />
 					<DifficultySelector client:only="react" />
 				</div>
-
 			</div>
 		</nav>
 
 		<SearchModal client:only="react" />
-		{
-			Astro.url.pathname !== "/KIWiki" &&
-				Astro.url.pathname !== "/KIWiki/" &&
-				!Astro.url.pathname.includes("/KIWiki/ueber") &&
-				!Astro.url.pathname.includes("/KIWiki/category/") &&
-				!Astro.url.pathname.includes("/KIWiki/tag/") && <Sidebar />
-		}
+		{showSidebar && <Sidebar />}
 
 		<div
 			class:list={[
 				"layout-wrapper",
 				{
-					"has-sidebar":
-						Astro.url.pathname !== "/KIWiki" &&
-						Astro.url.pathname !== "/KIWiki/" &&
-						!Astro.url.pathname.includes("/KIWiki/ueber") &&
-						!Astro.url.pathname.includes("/KIWiki/category/") &&
-						!Astro.url.pathname.includes("/KIWiki/tag/"),
-					"full-width":
-						Astro.url.pathname === "/KIWiki" ||
-						Astro.url.pathname === "/KIWiki/" ||
-						Astro.url.pathname.includes("/KIWiki/category/") ||
-						Astro.url.pathname.includes("/KIWiki/tag/"),
+					"has-sidebar": showSidebar,
+					"full-width": isFullWidth,
 				},
 			]}
 		>
@@ -244,7 +243,7 @@ const description =
 			</main>
 
 			{
-				Astro.url.pathname.includes("/KIWiki/articles/") && (
+				isArticle && (
 					<aside class="toc-aside">
 						<TableOfContents client:load />
 					</aside>

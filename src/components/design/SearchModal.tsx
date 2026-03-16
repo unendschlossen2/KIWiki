@@ -36,36 +36,45 @@ export default function SearchModal() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  // Expose global open function for the Navbar button
+  const getBase = () => {
+    const base = import.meta.env.BASE_URL || "/";
+    return base.endsWith("/") ? base.slice(0, -1) : base;
+  };
+
+  const fetchIndex = () => {
+    if (fuse || isLoading) return;
+    setIsLoading(true);
+    fetch(`${getBase()}/api/search.json`)
+      .then((res) => res.json())
+      .then((data: SearchResult[]) => {
+        const fuseInstance = new Fuse(data, {
+          keys: ["title", "aliases", "description", "category"],
+          threshold: 0.3,
+          ignoreLocation: true,
+        });
+        setFuse(fuseInstance);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch search index:", err);
+        setIsLoading(false);
+      });
+  };
+
+  // Expose global open/prefetch functions for the Navbar buttons
   useEffect(() => {
     (window as any).openSearchModal = () => setIsOpen(true);
+    (window as any).prefetchSearchIndex = fetchIndex;
     return () => {
       delete (window as any).openSearchModal;
+      delete (window as any).prefetchSearchIndex;
     };
-  }, []);
+  }, [fuse, isLoading]); // Update bindings if state changes
 
   // Fetch index exactly once when modal opens for the first time
   useEffect(() => {
-    if (isOpen && !fuse && !isLoading) {
-      setIsLoading(true);
-      fetch("/KIWiki/api/search.json")
-        .then((res) => res.json())
-        .then((data: SearchResult[]) => {
-          const fuseInstance = new Fuse(data, {
-            keys: ["title", "aliases", "description", "category"],
-            threshold: 0.3,
-            ignoreLocation: true,
-          });
-          setFuse(fuseInstance);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch search index:", err);
-          setIsLoading(false);
-        });
-    }
-
     if (isOpen) {
+      if (!fuse && !isLoading) fetchIndex();
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen, fuse, isLoading]);
@@ -128,7 +137,7 @@ export default function SearchModal() {
               {results.map((result) => (
                 <li key={result.slug}>
                   <a
-                    href={`/KIWiki/articles/${result.slug}`}
+                    href={`${getBase()}/articles/${result.slug}`}
                     className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 px-4 py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-slate-800/80 hover:text-blue-700 dark:hover:text-blue-400 transition-colors group"
                   >
                     <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-white dark:group-hover:bg-slate-900 group-hover:text-blue-600 dark:group-hover:text-blue-400 shrink-0 shadow-sm transition-colors">

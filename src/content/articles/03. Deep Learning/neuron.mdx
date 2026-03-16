@@ -1,22 +1,250 @@
 ---
 title: "Neuron"
-description: "Die Grundeinheit des Nervensystems – von Einsteiger bis komplex erklärt."
+description: "Die Grundeinheit neuronaler Netze — vom biologischen Vorbild zum mathematischen Modell."
 category: "dl"
-tags: ["Biologie", "Grundlagen", "Netzwerk"]
+tags: ["Grundlagen", "Netzwerk", "Aktivierungsfunktion"]
+aliases: ["Perzeptron", "Künstliches Neuron", "Perceptron", "Neurons", "Neuronen"]
 ---
 
-Das Neuron ist die Grundeinheit des Nervensystems. Moderne Modelle wie eine Transformer-Architektur basieren auf diesem grundlegenden Netzaufbau.
+# Das Neuron
+
+Neuronale Netze sind heute die Grundlage fast jeder modernen KI — von Bildklassifikation bis hin zu ChatGPT. Doch das kleinste Puzzleteil eines solchen Netzes ist erstaunlich simpel: **das Neuron**. In diesem Artikel schauen wir uns an, wie es funktioniert, woher die Idee kommt und warum selbst ein einzelnes Neuron schon etwas lernen kann.
+
+---
+
+## Was ist ein Neuron?
 
 :::beginner
-Ein Neuron ist wie ein winziger Lichtschalter. Entweder es ist an (feuert) oder aus (ruht).
+Stell dir einen winzigen Entscheider vor. Er bekommt mehrere Informationen gleichzeitig (z. B. „Wie warm ist es?", „Regnet es?"), denkt kurz nach und gibt dann **eine einzige Antwort**: Ja oder Nein — zum Beispiel „Nimm einen Regenschirm mit".
+
+Das ist im Kern, was ein künstliches Neuron tut: Es empfängt Eingaben, verrechnet sie und gibt ein Ergebnis aus.
 :::
 
 :::medium
-Ein Neuron empfängt Signale über seine Dendriten, verarbeitet sie im Zellkörper und leitet sie über das Axon weiter, wenn die Summe der Eingangssignale einen bestimmten Schwellenwert überschreitet.
+Ein künstliches Neuron (auch **Perzeptron** genannt) ist eine mathematische Funktion, die mehrere numerische Eingaben zu einer einzigen Ausgabe zusammenfasst. Es bildet damit die kleinste Recheneinheit in einem neuronalen Netz. Die Idee wurde 1943 von McCulloch & Pitts eingeführt und 1958 von Frank Rosenblatt zum lernfähigen Perzeptron weiterentwickelt.
 :::
 
 :::advanced
-Das Neuron operiert über einen elektrochemischen Gradienten. Wenn der Schwellenwert erreicht wird, öffnet es Ionenkanäle und sendet ein Aktionspotential.
+Formal ist ein Neuron eine parametrisierte Funktion $f: \R^n \to \R$. Es berechnet zunächst eine affine Transformation der Eingabe und wendet anschließend eine nichtlineare Aktivierungsfunktion an:
+
+$$
+y = \sigma\!\left(\sum_{i=1}^{n} w_i x_i + b\right) = \sigma(\wvec^T \xvec + b)
+$$
+
+wobei $\wvec \in \R^n$ der Gewichtsvektor, $b \in \R$ der Bias und $\sigma$ die Aktivierungsfunktion ist. Ohne die Nichtlinearität von $\sigma$ wäre jede Hintereinanderschaltung von Neuronen wieder eine lineare Abbildung — das Netz könnte nichts Komplexeres lernen als eine einzelne Schicht.
 :::
 
+---
+
+## Vom biologischen zum künstlichen Neuron
+
+:::beginner
+Unser Gehirn besteht aus rund 86 Milliarden Nervenzellen — den **biologischen Neuronen**. Jede Zelle hat:
+
+- **Dendriten** — die „Antennen", die Signale von anderen Zellen empfangen
+- **Zellkörper** — die „Zentrale", die entscheidet, ob das Signal weitergegeben wird
+- **Axon** — das „Kabel", das das Signal an die nächsten Zellen sendet
+
+Ein künstliches Neuron übernimmt genau diese Struktur: Eingaben kommen rein (wie bei Dendriten), werden verrechnet (Zellkörper) und ein Ergebnis wird ausgegeben (Axon).
+:::
+
+:::medium
+Die Analogie lässt sich präzisieren:
+
+| Biologisch | Künstlich | Rolle |
+|---|---|---|
+| Dendriten | Eingaben $x_1, x_2, \ldots, x_n$ | Empfang von Signalen |
+| Synaptische Stärke | Gewichte $w_1, w_2, \ldots, w_n$ | Relative Wichtigkeit |
+| Zellkörper | Summation $z = \sum w_i x_i + b$ | Integration |
+| Aktionspotential | Aktivierungsfunktion $\sigma(z)$ | Feuer-Entscheidung |
+| Axon | Ausgabe $y$ | Weiterleitung |
+
+In der Biologie feuert ein Neuron, wenn die Summe der eingehenden Signale einen Schwellenwert (**Threshold**) überschreitet. Genau dasselbe Prinzip steckt im Bias $b$: Er verschiebt den Schwellenwert.
+:::
+
+:::advanced
+Der Vergleich hat klare Grenzen. Biologische Neuronen feuern mit zeitversetzten Spike-Trains und nutzen verschiedenste Neurotransmitter, was in klassischen ANNs nicht modelliert wird. Ansätze wie **Spiking Neural Networks (SNNs)** versuchen dies nachzubilden, spielen aber im Deep-Learning-Mainstream kaum eine Rolle. Das McCulloch-Pitts-Neuron (1943) war bewusst als logische Abstraktion konzipiert — nicht als biologisch akkurates Modell.
+:::
+
+---
+
+## Das mathematische Modell
+
+:::beginner
+Ein Neuron rechnet in zwei Schritten:
+
+1. **Mischen**: Nimm alle Eingaben, gewichte sie (manche sind wichtiger als andere) und addiere sie zusammen.
+2. **Entscheiden**: Das Ergebnis wird durch eine „Entscheidungsfunktion" geschickt, die z. B. nur Werte zwischen 0 und 1 zulässt.
+
+Stell dir vor, du bewertest, ob du heute ins Freibad gehst. Die Temperatur hat ein hohes Gewicht (sehr wichtig), ob dein Lieblingslied im Radio läuft eher nicht. Alles zusammen ergibt: Ja (1) oder Nein (0).
+:::
+
+:::medium
+Der Berechnungsablauf im Detail:
+
+**Schritt 1 — Linearkombination:**
+
+$$
+z = w_1 x_1 + w_2 x_2 + \cdots + w_n x_n + b = \wvec^T \xvec + b
+$$
+
+Jede Eingabe $x_i$ wird mit ihrem Gewicht $w_i$ multipliziert, alle Produkte werden aufsummiert und der Bias $b$ addiert.
+
+**Schritt 2 — Aktivierung:**
+
+$$
+y = \sigma(z)
+$$
+
+Die Aktivierungsfunktion $\sigma$ entscheidet, wie stark das Neuron „feuert". Ohne sie wäre die gesamte Berechnung rein linear.
+:::
+
+:::advanced
+In Vektornotation lässt sich ein einzelnes Neuron als Komposition schreiben:
+
+$$
+y = (\sigma \circ L)(\xvec), \quad L(\xvec) = \wvec^T \xvec + b
+$$
+
+Für eine ganze Schicht mit $m$ Neuronen wird daraus eine Matrixoperation:
+
+$$
+\mathbf{z} = W\xvec + \bvec, \quad \mathbf{y} = \sigma(\mathbf{z})
+$$
+
+wobei $W \in \R^{m \times n}$ die Gewichtsmatrix und $\bvec \in \R^m$ der Bias-Vektor ist. Die Aktivierung $\sigma$ wird elementweise angewendet.
+:::
+
+---
+
+## Aktivierungsfunktionen
+
+:::beginner
+Die Aktivierungsfunktion ist das, was das Neuron „nichtlinear" macht — also fähig, komplizierte Zusammenhänge zu erkennen. Ohne sie wäre selbst ein riesiges Netz nur eine einfache Gerade.
+
+Die bekanntesten sind:
+
+- **Sigmoid** — quetscht alles auf einen Wert zwischen 0 und 1 (gut für Wahrscheinlichkeiten)
+- **ReLU** — lässt positive Werte durch, setzt negative auf 0 (einfach und effizient)
+- **Tanh** — wie Sigmoid, aber zwischen -1 und 1
+:::
+
+:::medium
+| Funktion | Formel | Wertebereich | Typischer Einsatz |
+|---|---|---|---|
+| Sigmoid | $\sigmoid(z) = \frac{1}{1+e^{-z}}$ | $(0, 1)$ | Binäre Klassifikation (Ausgabeschicht) |
+| ReLU | $\relu(z) = \max(0, z)$ | $[0, \infty)$ | Hidden Layers (Standard im Deep Learning) |
+| Tanh | $\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}$ | $(-1, 1)$ | Hidden Layers (zentrierte Ausgabe) |
+
+ReLU hat sich im Deep Learning durchgesetzt, weil es **schnell zu berechnen** ist und das sogenannte **Vanishing-Gradient-Problem** abschwächt — die Ableitung ist für positive Werte konstant 1.
+:::
+
+:::advanced
+**Vanishing Gradients:** Sigmoid und Tanh haben gesättigte Bereiche, in denen $\sigma'(z) \approx 0$. Bei tiefen Netzen werden die Gradienten dadurch exponentiell klein, was das Lernen zum Stillstand bringt.
+
+**Varianten von ReLU:**
+- **Leaky ReLU**: $f(z) = \max(\alpha z, z)$ mit kleinem $\alpha > 0$ — verhindert „tote Neuronen"
+- **GELU** (Gaussian Error Linear Unit): $f(z) = z \cdot \Phi(z)$ — Standard in Transformer-Architekturen
+- **Swish/SiLU**: $f(z) = z \cdot \sigmoid(z)$ — glatt, selbst-gated
+
+Die Wahl der Aktivierungsfunktion beeinflusst sowohl die Konvergenzgeschwindigkeit als auch die Expressivität des Modells.
+:::
+
+<InfoBox type="info" title="Interaktiv ausprobieren">
+  Die Demo zeigt dir, wie ein einzelnes Neuron arbeitet. Dreh am **Gewicht**, um zu sehen, wie stark die Eingabe verstärkt wird. Verschieb den **Bias**, um den Punkt zu ändern, ab dem das Neuron „feuert". Und probier verschiedene **Aktivierungsfunktionen** aus — du wirst sehen, wie Sigmoid alles zwischen 0 und 1 quetscht, während ReLU einfach alles Negative abschneidet.
+</InfoBox>
+
 <ActivationDemo client:load />
+
+---
+
+## Lernen: Wie passt sich ein Neuron an?
+
+:::beginner
+Ein Neuron „lernt", indem es seine Gewichte und seinen Bias Stück für Stück anpasst. Der Ablauf ist immer gleich:
+
+1. **Vorhersage machen** — das Neuron berechnet eine Ausgabe
+2. **Fehler messen** — wie weit liegt die Ausgabe vom richtigen Ergebnis entfernt?
+3. **Gewichte anpassen** — drehe an den Stellschrauben, damit der Fehler kleiner wird
+4. **Wiederholen** — bis die Vorhersagen gut genug sind
+
+Das ist wie beim Darts: Du wirfst, schaust wo du getroffen hast und korrigierst beim nächsten Wurf.
+:::
+
+:::medium
+Das Lernen basiert auf **Gradientenabstieg** (Gradient Descent). Gegeben eine Verlustfunktion $\loss$ (z. B. der mittlere quadratische Fehler), werden die Parameter in die Richtung aktualisiert, die den Verlust am stärksten reduziert:
+
+$$
+w_i \leftarrow w_i - \eta \cdot \frac{\partial \loss}{\partial w_i}
+$$
+
+$$
+b \leftarrow b - \eta \cdot \frac{\partial \loss}{\partial b}
+$$
+
+Dabei ist $\eta$ die **Lernrate** — sie bestimmt, wie groß die Korrekturschritte sind. Zu groß: das Neuron springt über das Optimum hinweg. Zu klein: das Lernen dauert ewig.
+:::
+
+:::advanced
+Für ein einzelnes Neuron mit Sigmoid-Aktivierung und dem quadratischen Verlust $\loss = \frac{1}{2}(y - \hat{y})^2$ ergibt die Kettenregel:
+
+$$
+\frac{\partial \loss}{\partial w_i} = (y - \hat{y}) \cdot \sigmoid'(z) \cdot x_i
+$$
+
+wobei $\sigmoid'(z) = \sigmoid(z)(1 - \sigmoid(z))$. In Matrixnotation für eine ganze Schicht führt dies zur **Backpropagation**:
+
+$$
+\delta^{(l)} = \left((W^{(l+1)})^T \delta^{(l+1)}\right) \circ \sigma'(\mathbf{z}^{(l)})
+$$
+
+$$
+\frac{\partial \loss}{\partial W^{(l)}} = \delta^{(l)} (\mathbf{a}^{(l-1)})^T
+$$
+
+wobei $\circ$ das Hadamard-Produkt (elementweise Multiplikation) und $\mathbf{a}^{(l-1)}$ die Aktivierungen der vorherigen Schicht bezeichnen.
+:::
+
+---
+
+## Vom Neuron zum Netz
+
+:::beginner
+Ein einzelnes Neuron ist ziemlich begrenzt — es kann nur einfache Ja-Nein-Entscheidungen treffen (wie „Ist die Linie oben oder unten?"). Aber wenn man **viele Neuronen zusammenschaltet**, entstehen neuronale Netze, die erstaunlich komplexe Muster erkennen können: Gesichter, Sprache, Schachzüge.
+
+Man ordnet die Neuronen in **Schichten** (Layers) an:
+
+1. **Eingabeschicht** — empfängt die Rohdaten (z. B. Pixelwerte eines Bildes)
+2. **Verborgene Schichten** — hier passiert die eigentliche „Denkarbeit"
+3. **Ausgabeschicht** — liefert das Ergebnis (z. B. „Katze" oder „Hund")
+
+Je mehr verborgene Schichten, desto „tiefer" das Netz — daher der Name **Deep Learning**.
+:::
+
+:::medium
+Ein Feedforward-Netz mit $L$ Schichten berechnet eine geschachtelte Funktion:
+
+$$
+f(\xvec) = \sigma_L(W_L \cdot \sigma_{L-1}(W_{L-1} \cdots \sigma_1(W_1 \xvec + \bvec_1) \cdots + \bvec_{L-1}) + \bvec_L)
+$$
+
+Jede Schicht transformiert die Ausgabe der vorherigen Schicht. Das **Universal Approximation Theorem** (Cybenko, 1989) besagt, dass bereits ein Netz mit einer einzigen (ausreichend breiten) verborgenen Schicht **jede stetige Funktion** beliebig genau approximieren kann.
+
+In der Praxis nutzt man jedoch tiefe Netze, weil sie die gleiche Funktion mit exponentiell weniger Neuronen darstellen können als flache Netze.
+:::
+
+:::advanced
+Die Schichtung erzeugt eine hierarchische Feature-Extraktion. Niedrige Schichten lernen einfache Merkmale (Kanten, Farben), höhere Schichten zunehmend abstrakte Konzepte (Gesichtsform, Identität). Dies wurde empirisch durch Visualisierungstechniken wie **Gradient-weighted Class Activation Maps (Grad-CAM)** und **Feature Visualization** bestätigt.
+
+Moderne Architekturen gehen über reine Feedforward-Netze hinaus:
+- **Convolutional Neural Networks (CNNs)** — gewichtsteilende Faltungsschichten für räumliche Daten
+- **Recurrent Neural Networks (RNNs)** — Rückkopplungen für sequentielle Daten
+- **Transformer** — Self-Attention statt Rekurrenz (→ siehe Transformer-Modell)
+- **Graph Neural Networks (GNNs)** — Nachrichtenweiterleitung auf Graphstrukturen
+
+All diese Architekturen bauen letztlich auf dem gleichen Grundbaustein auf: dem Neuron.
+:::
+
+<InfoBox type="note" title="Weiterführend">
+  Wie viele Neuronen in einem Transformer zusammenarbeiten und dabei den Attention-Mechanismus nutzen, erfährst du im Artikel zur Transformer-Architektur.
+</InfoBox>

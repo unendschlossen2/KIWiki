@@ -2,7 +2,11 @@
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { slugifyCategory } from "../../utils/slugify";
-import { getCategoryDisplay, getCategoryIcon } from "../../config/categories";
+import {
+  getCategoryDisplay,
+  getCategoryIcon,
+  CATEGORIES,
+} from "../../config/categories";
 import { DIFFICULTY_LABELS, DIFFICULTY_SHORT } from "../../config/difficulty";
 
 export async function getStaticPaths() {
@@ -26,11 +30,18 @@ export async function getStaticPaths() {
 }
 
 const { category, articles } = Astro.props;
+
+const categoryKey = Object.keys(CATEGORIES).find(
+  (k) => CATEGORIES[k].display === category,
+);
+const catData = categoryKey ? CATEGORIES[categoryKey] : null;
 ---
 
 <Layout title={category}>
   <div class="category-hero">
-    <div class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-screen-2xl mx-auto mb-4">
+    <div
+      class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-screen-2xl mx-auto mb-4"
+    >
       <h1 class="!mb-0 flex items-center gap-3 text-left shrink-0">
         <span class="text-4xl md:text-5xl">{getCategoryIcon(category)}</span>
         <span class="text-3xl md:text-4xl font-black">{category}</span>
@@ -92,21 +103,58 @@ const { category, articles } = Astro.props;
       <span class="section-index">01</span>
       <div class="line-glow"></div>
     </div>
-    
+
     <div class="library-content w-full">
       <div class="article-grid" id="article-grid">
-        <div class="library-tile featured-back-tile">
+        <div class="library-tile featured-back-tile h-full">
           <div class="tile-icon-wrap">
             <span class="tile-emoji">🏠</span>
           </div>
           <div class="tile-main">
-            <h3 class="tile-title">Zurück zur Startseite</h3>
+            <div class="tile-top">
+              <h3 class="tile-title">Zurück zur Startseite</h3>
+            </div>
             <p class="tile-description">
               Hier gelangst du zurück zur Übersicht aller Themen und Kategorien.
             </p>
             <a href="/KIWiki/" class="tile-link stretched-link">
-              Hauptmenü öffnen <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><line x1="19" y1="12" x2="5" y2="12"></line><polyline
+                  points="12 19 5 12 12 5"></polyline></svg
+              > Hauptmenü öffnen
             </a>
+          </div>
+        </div>
+
+        <div
+          class="library-tile category-info-tile h-full"
+          data-desc-easy={catData?.descriptions?.easy}
+          data-desc-medium={catData?.descriptions?.medium}
+          data-desc-hard={catData?.descriptions?.hard}
+        >
+          <div class="tile-icon-wrap">
+            <span class="tile-emoji">ℹ️</span>
+          </div>
+          <div class="tile-main">
+            <div class="tile-top">
+              <h3 class="tile-title flex-1">Über diese Kategorie</h3>
+            </div>
+            <p class="tile-description !-webkit-line-clamp-none">
+              {
+                catData?.descriptions?.easy ||
+                  catData?.description ||
+                  "Entdecke verschiedene Artikel und Ressourcen in dieser Kategorie."
+              }
+            </p>
           </div>
         </div>
 
@@ -117,7 +165,10 @@ const { category, articles } = Astro.props;
             const isRestricted = difficulties && difficulties.length < 3;
 
             return (
-              <div class="library-tile" data-difficulties={difficulties?.join(",")}>
+              <div
+                class="library-tile h-full"
+                data-difficulties={difficulties?.join(",")}
+              >
                 <div class="tile-icon-wrap">
                   <span class="tile-emoji">📄</span>
                 </div>
@@ -127,30 +178,58 @@ const { category, articles } = Astro.props;
                     {isRestricted && (
                       <div class="difficulty-badges">
                         {difficulties.includes("easy") && (
-                          <span class="badge badge-easy" title={DIFFICULTY_LABELS.easy}>
+                          <span
+                            class="badge badge-easy"
+                            title={DIFFICULTY_LABELS.easy}
+                          >
                             {DIFFICULTY_SHORT.easy}
                           </span>
                         )}
                         {difficulties.includes("medium") && (
-                          <span class="badge badge-medium" title={DIFFICULTY_LABELS.medium}>
+                          <span
+                            class="badge badge-medium"
+                            title={DIFFICULTY_LABELS.medium}
+                          >
                             {DIFFICULTY_SHORT.medium}
                           </span>
                         )}
                         {difficulties.includes("hard") && (
-                          <span class="badge badge-hard" title={DIFFICULTY_LABELS.hard}>
+                          <span
+                            class="badge badge-hard"
+                            title={DIFFICULTY_LABELS.hard}
+                          >
                             {DIFFICULTY_SHORT.hard}
                           </span>
                         )}
                       </div>
                     )}
                   </div>
-                  
+
                   {article.data.description && (
                     <p class="tile-description">{article.data.description}</p>
                   )}
-                  
-                  <a href={`/KIWiki/articles/${slug}`} class="tile-link stretched-link">
-                    Artikel lesen <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+
+                  <a
+                    href={`/KIWiki/articles/${slug}`}
+                    class="tile-link stretched-link"
+                  >
+                    Artikel lesen{" "}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <>
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                      </>
+                    </svg>
                   </a>
                 </div>
               </div>
@@ -191,10 +270,50 @@ const { category, articles } = Astro.props;
     grid-template-columns: 100px 1fr;
     gap: 4rem;
     margin-top: 2rem;
+    margin-bottom: 8rem;
     position: relative;
     max-width: screen-2xl;
     margin-left: auto;
     margin-right: auto;
+  }
+
+  .category-info-tile {
+    grid-column: span 3;
+    background: var(--bg-card) !important;
+    transition: border-color 0.4s ease;
+  }
+
+  /* Disable hover animations specifically for this non-clickable tile */
+  .category-info-tile:hover {
+    transform: none;
+    border-color: var(--border-color);
+    box-shadow: none;
+  }
+
+  .category-info-tile:hover .tile-icon-wrap {
+    transform: none;
+  }
+
+  .category-info-tile.accent-easy {
+    border-right: 6px solid #16a34a !important;
+  }
+  .category-info-tile.accent-medium {
+    border-right: 6px solid #2563eb !important;
+  }
+  .category-info-tile.accent-hard {
+    border-right: 6px solid #7c3aed !important;
+  }
+
+  @media (max-width: 1400px) {
+    .category-info-tile {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 1000px) {
+    .category-info-tile {
+      grid-column: span 1;
+    }
   }
 
   @media (max-width: 768px) {
@@ -234,8 +353,20 @@ const { category, articles } = Astro.props;
 
   .article-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 2rem;
+  }
+
+  @media (max-width: 1400px) {
+    .article-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 1000px) {
+    .article-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
   /* Library-tile styles from index.astro */
@@ -298,7 +429,7 @@ const { category, articles } = Astro.props;
 
   .tile-description {
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 1rem;
     line-height: 1.55;
     margin-bottom: 2rem;
     display: -webkit-box;
@@ -324,6 +455,10 @@ const { category, articles } = Astro.props;
 
   .library-tile:hover .tile-link svg {
     transform: translateX(4px);
+  }
+
+  .featured-back-tile:hover .tile-link svg {
+    transform: translateX(-4px);
   }
 
   .stretched-link::after {
@@ -357,15 +492,12 @@ const { category, articles } = Astro.props;
   import { difficultyStore } from "../../components/design/difficultyStore";
 
   function updateGridVisibility(difficulty: string) {
-    // 1. Spezifischerer Selektor: Suche nur im Grid der jeweiligen Unterseite
     const cards = document.querySelectorAll(
-      "#article-grid .library-tile:not(.featured-back-tile)"
+      "#article-grid .library-tile:not(.featured-back-tile):not(.category-info-tile)",
     );
-    
+
     cards.forEach((card) => {
       const diffData = (card as HTMLElement).dataset.difficulties;
-      
-      // 2. Sicherheits-Check: Kacheln ohne Schwierigkeits-Daten ignorieren
       if (!diffData) return;
 
       const allowed = diffData.split(",");
@@ -377,21 +509,36 @@ const { category, articles } = Astro.props;
     });
   }
 
-  // Variable zum Speichern der Kündigung des Abonnements
   let unsubscribe: () => void;
 
   document.addEventListener("astro:page-load", () => {
-    // Altes Abonnement aufräumen, falls existent (verhindert Memory Leaks)
     if (unsubscribe) {
       unsubscribe();
     }
 
-    // Subscribe to difficulty changes
     unsubscribe = difficultyStore.subscribe((newDifficulty) => {
       updateGridVisibility(newDifficulty);
+      updateCategoryInfo(newDifficulty);
     });
-    
-    // Initial update
-    updateGridVisibility(difficultyStore.get());
+
+    const diff = difficultyStore.get();
+    updateGridVisibility(diff);
+    updateCategoryInfo(diff);
   });
+
+  function updateCategoryInfo(difficulty: string) {
+    const infoTile = document.querySelector(".category-info-tile");
+    if (!infoTile) return;
+
+    const descEl = infoTile.querySelector(".tile-description");
+    const newDesc = (infoTile as HTMLElement).getAttribute(
+      `data-desc-${difficulty}`,
+    );
+    if (newDesc && descEl) {
+      descEl.textContent = newDesc;
+    }
+
+    infoTile.classList.remove("accent-easy", "accent-medium", "accent-hard");
+    infoTile.classList.add(`accent-${difficulty}`);
+  }
 </script>

@@ -15,6 +15,7 @@ export async function getStaticPaths() {
 }
 
 import { slugifyTag } from "../../utils/slugify";
+import TagPill from "../../components/design/TagPill.astro";
 
 const { article } = Astro.props;
 const { Content } = await article.render();
@@ -25,13 +26,7 @@ const tags = article.data.tags || [];
   {tags.length > 0 && (
     <div class="flex flex-wrap gap-2 mb-8 -mt-6">
       {tags.map(tag => (
-        <a 
-          href={`/KIWiki/tag/${slugifyTag(tag)}`}
-          class="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[0.7rem] font-black uppercase tracking-wider border border-blue-100 dark:border-blue-800/50 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500 dark:hover:text-white transition-all no-underline shadow-sm"
-        >
-          #{tag}
-        </a>
-
+        <TagPill tag={tag} />
       ))}
     </div>
   )}

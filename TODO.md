@@ -1,3 +1,2 @@
-- dark mode consistency
-- description text in category view
-- add dropdown in dropdown for each category
+- fading on the left side of "über" tile for each category
+- automatic cross-reference for all articles broken

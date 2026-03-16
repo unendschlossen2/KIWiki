@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
+import MathField from '../design/Math';
 
-// This is a standalone interactive demo component that you would embed in your MDX files.
+// Interaktive Demo: Zeigt, wie ein einzelnes Neuron eine Eingabe transformiert.
 export default function App() {
     const [weight, setWeight] = useState(1);
     const [bias, setBias] = useState(0);
@@ -41,8 +42,10 @@ export default function App() {
             {/* Demo Header */}
             <div className="bg-slate-800 dark:bg-slate-900 text-white px-6 py-4 border-b border-slate-700 dark:border-slate-600 flex justify-between items-center">
                 <div>
-                    <h3 className="font-bold text-lg">Interactive Demo: The Neuron</h3>
-                    <p className="text-slate-400 text-sm">Adjust weights and biases to see how the activation function transforms the output.</p>
+                    <h3 className="font-bold text-lg">Interaktive Demo: Das Neuron</h3>
+                    <p className="text-slate-400 text-sm mt-1">
+                        <strong>Was zeigt der Graph?</strong> Die x-Achse ist das einkommende Signal (<MathField math="x" />). Die y-Achse ist das endgültige Ausgangssignal (<MathField math="y" />), das das Neuron an die nächste Schicht weitergibt. Ein <MathField math="y" /> von 0 bedeutet: "Das Neuron schweigt". Ein hohes <MathField math="y" /> bedeutet: "Das Neuron feuert stark".
+                    </p>
                 </div>
                 <div className="flex space-x-1">
                     <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -58,7 +61,7 @@ export default function App() {
                         {/* Weight Slider */}
                         <div>
                             <div className="flex justify-between mb-2">
-                                <label className="text-sm font-bold text-slate-700 dark:text-slate-200">Weight (w)</label>
+                                <label className="text-sm font-bold text-slate-700 dark:text-slate-200">Gewicht (<MathField math="w" />)</label>
                                 <span className="text-sm font-mono bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 px-2 py-0.5 rounded">{weight.toFixed(1)}</span>
                             </div>
                             <input
@@ -68,13 +71,13 @@ export default function App() {
                                 onChange={(e) => setWeight(parseFloat(e.target.value))}
                                 className="w-full accent-blue-600"
                             />
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Controls the steepness of the line.</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Die <strong>Wichtigkeit</strong> der Eingabe. Ein hohes Gewicht (steile Kurve) bedeutet: Schon eine winzige Änderung im Eingangssignal (<MathField math="x" />) ändert das Ausgangssignal (<MathField math="y" />) extrem.</p>
                         </div>
 
                         {/* Bias Slider */}
                         <div>
                             <div className="flex justify-between mb-2">
-                                <label className="text-sm font-bold text-slate-700 dark:text-slate-200">Bias (b)</label>
+                                <label className="text-sm font-bold text-slate-700 dark:text-slate-200">Bias (<MathField math="b" />)</label>
                                 <span className="text-sm font-mono bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300 px-2 py-0.5 rounded">{bias.toFixed(1)}</span>
                             </div>
                             <input
@@ -84,24 +87,24 @@ export default function App() {
                                 onChange={(e) => setBias(parseFloat(e.target.value))}
                                 className="w-full accent-purple-600"
                             />
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Shifts the function left or right.</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Die <strong>Trägheit</strong>. Ein negativer Bias verschiebt die Kurve nach rechts: Das Neuron braucht ein viel stärkeres Eingangssignal (<MathField math="x" />), bevor es anfängt zu feuern (<MathField math="y > 0" />).</p>
                         </div>
 
                         {/* Activation Toggle */}
                         <div>
-                            <label className="text-sm font-bold text-slate-700 dark:text-slate-200 block mb-2">Activation Function</label>
+                            <label className="text-sm font-bold text-slate-700 dark:text-slate-200 block mb-2">Aktivierungsfunktion</label>
                             <div className="flex flex-col space-y-2">
                                 <button
                                     onClick={() => setActivation('linear')}
                                     className={`px-3 py-2 text-sm rounded-md border text-left transition-colors ${activation === 'linear' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600'}`}
                                 >
-                                    Linear (None)
+                                    Linear (keine)
                                 </button>
                                 <button
                                     onClick={() => setActivation('sigmoid')}
                                     className={`px-3 py-2 text-sm rounded-md border text-left transition-colors ${activation === 'sigmoid' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600'}`}
                                 >
-                                    Sigmoid (S-Curve)
+                                    Sigmoid (S-Kurve)
                                 </button>
                                 <button
                                     onClick={() => setActivation('relu')}
@@ -124,12 +127,8 @@ export default function App() {
                 <div className="w-full md:w-2/3 p-6 flex flex-col items-center justify-center relative">
 
                     {/* Math Equation Display */}
-                    <div className="absolute top-6 left-6 bg-white/90 dark:bg-slate-800/90 backdrop-blur px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 shadow-sm z-10">
-                        <span className="font-mono text-lg text-slate-800 dark:text-slate-100">
-                            y = <span className="text-emerald-600 dark:text-emerald-400 font-bold">{activation === 'linear' ? '' : activation === 'sigmoid' ? 'σ(' : 'max(0, '}</span>
-                            <span className="text-blue-600 dark:text-blue-400">{weight.toFixed(1)}</span>x + <span className="text-purple-600 dark:text-purple-400">{bias.toFixed(1)}</span>
-                            <span className="text-emerald-600 dark:text-emerald-400 font-bold">{activation === 'linear' ? '' : ')'}</span>
-                        </span>
+                    <div className="absolute top-6 left-6 bg-white/90 dark:bg-slate-800/90 backdrop-blur px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 shadow-sm z-10 min-w-[120px] text-center">
+                        <MathField math={`y = ${activation === 'linear' ? '' : activation === 'sigmoid' ? '\\sigmoid(' : activation === 'tanh' ? '\\tanh(' : '\\relu('}${weight.toFixed(1)}x + ${bias.toFixed(1)}${activation === 'linear' ? '' : ')'}`} />
                     </div>
 
                     {/* SVG Graph */}
@@ -160,11 +159,11 @@ export default function App() {
                     <div className="mt-6 w-full max-w-[400px]">
                         <div className="bg-slate-900 rounded-lg p-4 shadow-md font-mono text-sm text-slate-300 overflow-x-auto">
                             <span className="text-pink-400">def</span> <span className="text-blue-400">forward</span>(x):<br />
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-500"># 1. Calculate linear combination</span><br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-500"># 1. Linearkombination berechnen</span><br />
                             &nbsp;&nbsp;&nbsp;&nbsp;z = ({weight.toFixed(1)} * x) + {bias.toFixed(1)}<br />
                             <br />
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-500"># 2. Apply activation</span><br />
-                            &nbsp;&nbsp;&nbsp;&nbsp;y = <span className="text-emerald-400">{activation === 'linear' ? 'z' : activation === 'sigmoid' ? '1 / (1 + math.exp(-z))' : 'max(0, z)'}</span><br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-slate-500"># 2. Aktivierung anwenden</span><br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;y = <span className="text-emerald-400">{activation === 'linear' ? 'z' : activation === 'sigmoid' ? '1 / (1 + math.exp(-z))' : activation === 'tanh' ? 'math.tanh(z)' : 'max(0, z)'}</span><br />
                             &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-pink-400">return</span> y
                         </div>
                     </div>

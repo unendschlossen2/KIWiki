@@ -1,21 +1,291 @@
 ---
 title: "Transformer"
-description: "Die Revolution der KI-Architektur"
+description: "Die Architektur hinter ChatGPT, BERT und Co. — von der Intuition bis zur Formel."
 category: "genai"
-tags: ["Attention", "LLM", "Deep Learning"]
+tags: ["Attention", "LLM", "Deep Learning", "NLP"]
 aliases: ["Transformers", "Transformer-Modell", "Transformer-Architektur"]
 ---
 
-Die Transformer-Architektur ist das Fundament moderner Large Language Models (LLMs) wie GPT-4 und Llama. Sie nutzt den Attention-Mechanismus, um komplexe Zusammenhänge in Daten (wie Text) effizient zu verarbeiten.
+# Die Transformer-Architektur
+
+Fast jede bahnbrechende KI der letzten Jahre — **GPT-4, Gemini, LLaMA, BERT** — basiert auf einer einzigen Idee: dem **Transformer**. Vorgestellt 2017 im Paper *„Attention Is All You Need"* (Vaswani et al.), hat diese Architektur die Art und Weise, wie Maschinen Sprache, Bilder und sogar Code verarbeiten, grundlegend verändert.
+
+---
+
+## Was ist ein Transformer?
 
 :::beginner
-Transformer sind wie extrem aufmerksame Leser, die sich nicht nur das aktuelle Wort ansehen, sondern gleichzeitig den gesamten Kontext im Blick behalten.
+Stell dir vor, du liest einen Satz und möchtest verstehen, worauf sich das Wort „es" bezieht:
+
+> *„Der Hund jagte die Katze, weil **es** Hunger hatte."*
+
+Du schaust automatisch zurück und erkennst: „es" bezieht sich auf „der Hund". Genau so arbeitet ein Transformer — er betrachtet **alle Wörter gleichzeitig** und berechnet, welche Wörter füreinander wichtig sind. Das nennt man **Attention** (Aufmerksamkeit).
 :::
 
 :::medium
-Eingeführt im Paper "Attention Is All You Need", ersetzten Transformer rekursive neuronale Netze (RNNs) durch einen parallelisierbaren Self-Attention-Mechanismus, der weitreichende Abhängigkeiten in Texten besser erfasst.
+Der Transformer ist eine neuronale Netzwerk-Architektur, die ausschließlich auf dem **Self-Attention-Mechanismus** basiert — ohne Rekurrenz (wie bei RNNs) und ohne Faltungen (wie bei CNNs). Dadurch kann er alle Positionen einer Eingabesequenz **parallel** verarbeiten, was das Training auf modernen GPUs massiv beschleunigt.
+
+Die Originalarchitektur besteht aus zwei Teilen:
+- **Encoder** — verarbeitet die Eingabe und erzeugt eine kontextreiche Repräsentation
+- **Decoder** — generiert die Ausgabe Token für Token, mit Zugriff auf den Encoder
+
+Modelle wie **BERT** nutzen nur den Encoder, **GPT** nur den Decoder, und Übersetzungsmodelle wie das Original beide.
 :::
 
 :::advanced
-In der Transformer-Architektur wird jeder Token durch Multi-Head Self-Attention in Relation zu allen anderen Token gesetzt. Dies geschieht über Query-, Key- und Value-Vektoren, welche die Relevanz (Weights) zwischen den Positionen berechnen.
+Der Transformer löst das zentrale Problem sequentieller Architekturen: In einem RNN muss Information durch $O(n)$ Rechenschritte fließen, um von Position 1 zu Position $n$ zu gelangen. Dies verursacht sowohl ein **Vanishing-Gradient-Problem** als auch einen **Trainings-Bottleneck** (kein Parallelismus über die Zeitachse). Im Transformer hingegen verbindet Self-Attention **jede Position direkt** mit jeder anderen — die Pfadlänge ist $O(1)$, bei einer Gesamtkomplexität von $O(n^2 \cdot d)$ pro Schicht (wobei $n$ die Sequenzlänge und $d$ die Modelldimension ist).
 :::
+
+---
+
+## Warum nicht RNNs?
+
+:::beginner
+Vor dem Transformer wurden Texte meist **Wort für Wort** verarbeitet — wie wenn du ein Buch nur von links nach rechts lesen darfst und dir zwischendurch nichts zurückblättern kannst. Bei langen Texten vergisst das Modell den Anfang, bis es am Ende angekommen ist.
+
+Der Transformer liest stattdessen **den ganzen Text auf einmal** und kann so viel besser Bezüge über weite Distanzen herstellen.
+:::
+
+:::medium
+RNNs und LSTMs verarbeiten Sequenzen **seriell**: Die Berechnung für Position $t$ hängt von Position $t-1$ ab. Das hat zwei Nachteile:
+
+1. **Kein Parallelismus** — die serielle Natur verhindert die Nutzung moderner GPU-Architekturen
+2. **Vanishing/Exploding Gradients** — bei langen Sequenzen werden die Gradienten instabil
+
+LSTMs und GRUs mildern Problem 2, lösen aber Problem 1 nicht. Der Transformer eliminiert beide, indem er Rekurrenz vollständig durch Attention ersetzt.
+:::
+
+:::advanced
+Quantitativ: Ein bidirektionales LSTM benötigt $O(n)$ sequentielle Operationen und erzielt eine maximale Pfadlänge von $O(n)$. Self-Attention erreicht $O(1)$ Pfadlänge bei $O(n^2)$ Gesamtoperationen. Für typische NLP-Sequenzlängen ($n < 1024$) ist die quadratische Komplexität akzeptabel und wird durch die massive Parallelisierbarkeit auf GPUs mehr als kompensiert.
+
+Für extrem lange Sequenzen existieren effiziente Varianten:
+- **Sparse Attention** (BigBird, Longformer): $O(n\sqrt{n})$
+- **Linear Attention** (Performer): $O(n \cdot d)$
+- **State Space Models** (Mamba, S4): $O(n \cdot d)$ mit Rekurrenz-ähnlicher Inferenz
+:::
+
+---
+
+## Tokenisierung & Embeddings
+
+:::beginner
+Bevor ein Transformer einen Satz verstehen kann, muss dieser in **Zahlen** umgewandelt werden — denn neuronale Netze rechnen nur mit Zahlen.
+
+1. **Tokenisierung** — der Text wird in kleine Stücke (Tokens) zerlegt. Das sind oft Wörter oder Wortteile: „unglaublich" → „un" + „glaub" + „lich"
+2. **Embedding** — jedes Token bekommt einen Zahlenvektor zugewiesen, der seine Bedeutung kodiert. Ähnliche Wörter bekommen ähnliche Vektoren.
+:::
+
+:::medium
+Moderne Tokenizer nutzen **Subword-Verfahren** wie BPE (Byte Pair Encoding) oder SentencePiece. Vorteile:
+- Unbekannte Wörter werden in bekannte Teilstücke zerlegt
+- Das Vokabular bleibt handhabbar (typisch: 30.000–50.000 Tokens)
+
+Die resultierende Token-Sequenz $(t_1, t_2, \ldots, t_n)$ wird über eine **Embedding-Matrix** $E \in \R^{V \times d}$ (Vokabulargröße $V$, Modelldimension $d$) in Vektoren umgewandelt:
+
+$$
+\xvec_i = E[t_i] \in \R^d
+$$
+
+Diese Vektoren sind trainierbar — das Modell lernt während des Trainings, welche Wörter semantisch ähnlich sind.
+:::
+
+:::advanced
+Das Embedding kann als Lookup in einer trainierbaren Matrix oder äquivalent als Multiplikation mit einem One-Hot-Vektor aufgefasst werden: $\xvec_i = E^T \mathbf{e}_{t_i}$. In der Praxis wird die Embedding-Matrix in Decoder-Only-Modellen (GPT) oft mit der finalen Ausgabe-Projektionsmatrix **geteilt** (Weight Tying), was die Parameterzahl reduziert und die Leistung stabilisiert.
+
+Tokenizer-Qualität beeinflusst direkt die Modellleistung. BPE-basierte Tokenizer (GPT-2/3/4) und Unigram-Modelle (SentencePiece, verwendet in LLaMA/Gemma) unterscheiden sich in ihrer Behandlung von Morphologie und mehrsprachigen Texten.
+:::
+
+---
+
+## Positional Encoding
+
+:::beginner
+Da der Transformer alle Wörter **gleichzeitig** sieht (nicht nacheinander), weiß er zunächst nicht, welches Wort an welcher Stelle steht. Deswegen bekommt jedes Wort zusätzlich eine Art „Positionsnummer" aufgedrückt — das **Positional Encoding**.
+
+Das ist wie bei einem Buch: Der Inhalt allein reicht nicht — du brauchst auch die Seitenzahlen, um die richtige Reihenfolge zu kennen.
+:::
+
+:::medium
+Im originalen Transformer werden sinusförmige Funktionen unterschiedlicher Frequenzen verwendet:
+
+$$
+PE_{(pos, 2i)} = \sin\!\left(\frac{pos}{10000^{2i/d}}\right), \quad PE_{(pos, 2i+1)} = \cos\!\left(\frac{pos}{10000^{2i/d}}\right)
+$$
+
+wobei $pos$ die Token-Position und $i$ die Dimension ist. Der Vorteil: Das Modell kann relative Positionen aus den Vektoren ableiten, weil $PE_{pos+k}$ als lineare Funktion von $PE_{pos}$ darstellbar ist.
+
+Das Positional Encoding wird **addiert** (nicht konkateniert) zum Token-Embedding:
+
+$$
+\xvec_i' = \xvec_i + PE_i
+$$
+:::
+
+:::advanced
+Modernere Modelle verwenden alternative Positionskodierungen:
+
+- **Lernbare Positional Embeddings** (BERT, GPT): Trainierbare Vektoren $\mathbf{p}_i \in \R^d$ — flexibler, aber auf die maximale Traininglänge beschränkt
+- **RoPE** (Rotary Position Embedding, LLaMA/Gemma): Rotation der Q/K-Vektoren im komplexen Raum — ermöglicht natürliche Extrapolation über die Traininglänge hinaus
+- **ALiBi** (Attention with Linear Biases): Positionsabhängiger Bias direkt auf die Attention-Scores — kein separates Encoding nötig
+
+RoPE hat sich als de-facto-Standard in modernen Open-Source-LLMs etabliert, da es mit Techniken wie YaRN und NTK-Aware Scaling auch für Kontextlängen jenseits der Trainingsverteilung funktioniert.
+:::
+
+---
+
+## Self-Attention: Wer ist für wen wichtig?
+
+:::beginner
+Das Herzstück des Transformers ist die **Self-Attention**. Die Idee ist simpel: Für jedes Wort im Satz berechnet das Modell, wie viel Aufmerksamkeit es jedem anderen Wort schenken soll.
+
+Im Satz *„Die Katze saß auf der Matte, weil sie müde war"* sollte das Modell erkennen, dass „sie" sich auf „Katze" bezieht — nicht auf „Matte". Self-Attention berechnet genau solche Beziehungen.
+:::
+
+:::medium
+Self-Attention funktioniert über drei Vektoren pro Token:
+
+- **Query (Q)** — „Wonach suche ich?"
+- **Key (K)** — „Was biete ich an?"
+- **Value (V)** — „Welche Information trage ich?"
+
+Für jedes Token wird die Ähnlichkeit seines Query-Vektors mit den Key-Vektoren **aller** anderen Tokens berechnet. Die Ergebnisse werden normalisiert (Softmax) und als Gewichte genutzt, um die Value-Vektoren zu einem neuen Ausgabevektor zu mischen.
+
+Je ähnlicher Query und Key, desto mehr Aufmerksamkeit bekommt das entsprechende Token.
+:::
+
+:::advanced
+Formal: Gegeben Eingabe $X \in \R^{n \times d}$, werden Q, K, V über lineare Projektionen erzeugt:
+
+$$
+Q = XW^Q, \quad K = XW^K, \quad V = XW^V
+$$
+
+mit $W^Q, W^K \in \R^{d \times d_k}$ und $W^V \in \R^{d \times d_v}$. Scaled Dot-Product Attention berechnet:
+
+$$
+\text{Attention}(Q, K, V) = \softmax\!\left(\frac{QK^T}{\sqrt{d_k}}\right) V
+$$
+
+Die Skalierung mit $\frac{1}{\sqrt{d_k}}$ verhindert, dass die Dot-Products bei hoher Dimension in die Sättigungsbereiche der Softmax-Funktion fallen. Im Decoder wird zusätzlich eine **kausale Maske** angewendet, die verhindert, dass Token auf zukünftige Positionen zugreifen (wichtig für auto-regressives Generieren).
+:::
+
+<InfoBox type="info" title="Interaktiv ausprobieren">
+  Die Demo unten zeigt, wie Self-Attention funktioniert. Die **Heatmap** visualisiert, wie stark jedes Wort auf jedes andere achtet — je heller die Zelle, desto mehr Aufmerksamkeit. Klick auf ein Wort, um seine Verbindungen als **Bögen** zu sehen. Mit dem **Temperatur-Regler** steuerst du, ob sich das Modell stark auf wenige Wörter konzentriert (niedrig) oder die Aufmerksamkeit breit streut (hoch).
+</InfoBox>
+
+<TransformerDemo client:load />
+
+---
+
+## Multi-Head Attention
+
+:::beginner
+Statt nur auf **eine** Art hinzuschauen, nutzt der Transformer mehrere **Aufmerksamkeits-Köpfe** gleichzeitig. Das ist wie bei einer Gruppe von Lesern, die denselben Text lesen: Einer achtet auf die Grammatik, ein anderer auf die Bedeutung, ein dritter auf den Stil. Zusammen ergibt sich ein vollständigeres Bild.
+:::
+
+:::medium
+Multi-Head Attention führt Self-Attention **parallel** in $h$ unabhängigen „Heads" aus, jeweils mit eigenen Projektionsmatrizen:
+
+$$
+\text{head}_i = \text{Attention}(QW_i^Q,\; KW_i^K,\; VW_i^V)
+$$
+
+Die Ergebnisse werden konkateniert und durch eine weitere lineare Projektion geschickt:
+
+$$
+\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h) \cdot W^O
+$$
+
+Typische Werte: GPT-3 nutzt $h = 96$ Heads bei $d = 12288$, also $d_k = d_v = 128$ pro Head.
+:::
+
+:::advanced
+Empirisch spezialisieren sich verschiedene Heads auf unterschiedliche linguistische Phänomene. Analyse-Tools wie **BertViz** zeigen, dass Heads in niedrigen Schichten oft syntaktische Beziehungen (Subjekt-Verb-Übereinstimmung) erfassen, während Heads in höheren Schichten semantische Ähnlichkeit kodieren.
+
+**Multi-Query Attention (MQA)** und **Grouped-Query Attention (GQA)** sind Optimierungen, bei denen K und V über mehrere Q-Heads geteilt werden. GQA (verwendet in LLaMA 2/3, Gemma) reduziert den KV-Cache-Speicher bei der Inferenz um den Faktor der Gruppengröße, mit minimalem Qualitätsverlust.
+:::
+
+---
+
+## Encoder & Decoder
+
+:::beginner
+Der Transformer besteht aus zwei großen Blöcken, die wie ein Team arbeiten:
+
+- **Encoder** — der „Versteher": Er liest die gesamte Eingabe und baut ein tiefes Verständnis auf
+- **Decoder** — der „Schreiber": Er erzeugt die Ausgabe Wort für Wort, wobei er jederzeit den Encoder fragen kann
+
+Bei einer Übersetzung liest der Encoder z. B. den deutschen Satz und der Decoder schreibt die englische Übersetzung.
+:::
+
+:::medium
+Jede Encoder-Schicht besteht aus:
+1. **Multi-Head Self-Attention**
+2. **Feed-Forward Network** (FFN) — zwei lineare Schichten mit Aktivierung dazwischen
+3. **Residualverbindungen** + **Layer Normalization** um jede Unterkomponente
+
+Jede Decoder-Schicht enthält zusätzlich:
+- **Masked Self-Attention** — kausale Maske verhindert „Vorausschauen"
+- **Cross-Attention** — Queries kommen vom Decoder, Keys/Values vom Encoder
+
+Das originale Modell stapelt je 6 Encoder- und 6 Decoder-Schichten.
+:::
+
+:::advanced
+**Pre-Norm vs. Post-Norm:** Das originale Paper nutzt Post-NormLayer Normalization (nach der Residualverbindung). Moderne Modelle verwenden fast ausschließlich **Pre-Norm** (vor der Attention/FFN), weil es die Trainingstabilität verbessert und warmup-freies Training ermöglicht.
+
+**FFN-Varianten:** Das Standard-FFN verwendet:
+
+$$
+\text{FFN}(\xvec) = W_2 \cdot \relu(W_1 \xvec + \bvec_1) + \bvec_2
+$$
+
+Moderne Modelle ersetzen dies durch **SwiGLU** (LLaMA, Gemma):
+
+$$
+\text{SwiGLU}(\xvec) = (W_1 \xvec \circ \text{SiLU}(W_3 \xvec)) W_2
+$$
+
+wobei SiLU = Swish-Aktivierung. Dies erhöht zwar die Parameterzahl (drei Matrizen statt zwei), verbessert aber konsistent die Modellqualität.
+
+**Decoder-Only-Dominanz:** GPT, LLaMA, Gemini, Claude und nahezu alle aktuellen LLMs verwenden reine Decoder-Architekturen. Encoder-Decoder (T5, BART) und reine Encoder (BERT) werden heute hauptsächlich für spezialisierte Aufgaben (Embedding, Klassifikation) eingesetzt.
+:::
+
+---
+
+## Training & Anwendungen
+
+:::beginner
+Ein Transformer lernt, indem er **massiv viel Text** liest und dabei immer das **nächste Wort vorhersagen** muss. Aus Milliarden von Sätzen lernt er Grammatik, Fakten und sogar logisches Denken — alles nur aus dem Muster der Wörter.
+
+Nach diesem „Grundtraining" (Pre-Training) kann er durch **Fine-Tuning** auf spezielle Aufgaben angepasst werden: Übersetzung, Zusammenfassung, Code schreiben oder als Chatbot.
+:::
+
+:::medium
+Das Training verläuft typischerweise in zwei Phasen:
+
+**Pre-Training:** Das Modell wird auf riesigen Textkorpora trainiert (hunderte Milliarden Tokens). Die Trainingsstrategie hängt von der Architektur ab:
+- **Causal Language Modeling** (GPT): Vorhersage des nächsten Tokens — $p(x_t | x_1, \ldots, x_{t-1})$
+- **Masked Language Modeling** (BERT): Zufällig maskierte Tokens vorhersagen — $p(x_t | x_{\setminus t})$
+
+**Fine-Tuning:** Anpassung an spezifische Aufgaben mit gelabelten Datensätzen. Varianten:
+- **Supervised Fine-Tuning (SFT)** — Lernen aus Beispielantworten
+- **RLHF** (Reinforcement Learning from Human Feedback) — menschliche Bewertungen als Belohnungssignal
+- **DPO** (Direct Preference Optimization) — vereinfachte Alternative zu RLHF
+:::
+
+:::advanced
+**Skalierungsgesetze (Scaling Laws):** Kaplan et al. (2020) und Hoffmann et al. (2022, „Chinchilla") zeigten, dass die Modellleistung vorhersagbar mit Parameterzahl $N$, Datenmenge $D$ und Rechenbudget $C$ skaliert:
+
+$$
+\loss(N, D) \approx \left(\frac{N_c}{N}\right)^{\alpha_N} + \left(\frac{D_c}{D}\right)^{\alpha_D} + \loss_\infty
+$$
+
+Chinchilla-optimal ist ein Modell, wenn $N$ und $D$ in einem festen Verhältnis (etwa $D \approx 20N$) skaliert werden. In der Praxis wird heute oft über-trainiert (mehr Daten als Chinchilla-optimal), da die Inferenzkosten bei kleineren Modellen geringer sind (LLaMA-3-Strategie).
+
+**Emergente Fähigkeiten:** Bei ausreichender Skalierung zeigen LLMs Fähigkeiten, die nicht explizit trainiert wurden: Few-Shot Learning, Chain-of-Thought-Reasoning und Tool-Nutzung. Ob diese Fähigkeiten wirklich „emergent" sind oder ein Messartefakt, ist weiterhin Gegenstand aktiver Forschung.
+:::
+
+<InfoBox type="note" title="Vertiefung">
+  Der Transformer baut auf dem Konzept des Neurons auf — jede Schicht besteht aus vielen tausend Neuronen, die gemeinsam arbeiten.
+</InfoBox>

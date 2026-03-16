@@ -244,6 +244,14 @@ Typen: `info`, `warning`, `success`, `danger`, `note`
 
 > Interaktive Demo für Aktivierungsfunktionen.
 
+### TransformerDemo
+
+```mdx
+<TransformerDemo client:load />
+```
+
+> Interaktive Self-Attention-Demo: Visualisiert Aufmerksamkeitsgewichte als Heatmap und Bögen zwischen Tokens.
+
 ### Wichtig: `client:load`
 
 Interaktive Komponenten (React) brauchen immer `client:load`, damit sie 

@@ -5,8 +5,16 @@ import Layout from "../layouts/Layout.astro";
 <Layout title="404: Seite nicht gefunden">
   <div class="error-container">
     <div class="logo-container">
-      <img src="/KIWiki/assets/logo.png" alt="KIWiki Logo" class="error-logo dark:hidden" />
-      <img src="/KIWiki/assets/logo-dark.png" alt="KIWiki Logo" class="error-logo hidden dark:block" />
+      <img
+        src="/KIWiki/assets/logo.png"
+        alt="KIWiki Logo"
+        class="error-logo dark:hidden"
+      />
+      <img
+        src="/KIWiki/assets/logo-dark.png"
+        alt="KIWiki Logo"
+        class="error-logo hidden dark:block"
+      />
     </div>
     <div class="error-code">404</div>
     <h1>Ups! Seite nicht gefunden.</h1>
@@ -46,8 +54,13 @@ import Layout from "../layouts/Layout.astro";
   }
 
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
   }
 
   .error-code {

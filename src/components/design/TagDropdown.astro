@@ -1,6 +1,8 @@
 ---
 import { getCollection } from "astro:content";
 import { slugifyTag } from "../../utils/slugify";
+import { resolvePath } from "../../utils/path";
+import { DIFFICULTY_LABELS, DIFFICULTY_SHORT } from "../../config/difficulty";
 
 const articles = (await getCollection("articles")).filter(
 	(a) => !a.id.startsWith("_"),
@@ -46,7 +48,7 @@ const groupedByTag = allTags.reduce(
 		id="tag-dropdown-panel"
 		class="fixed left-1/2 -translate-x-1/2 top-20 w-[95vw] max-w-7xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-b-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] p-6 md:p-10 opacity-0 -translate-y-2 pointer-events-none transition-all duration-300 z-50 overflow-y-auto max-h-[85vh]"
 	>
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
 			{
 				allTags.map((tag) => (
 					<div class="category-group">
@@ -54,14 +56,30 @@ const groupedByTag = allTags.reduce(
 							class="tag-group-header flex items-center justify-between mb-3 group/header cursor-pointer"
 							data-tag={tag}
 						>
-							<a
-								href={`/KIWiki/tag/${slugifyTag(tag)}`}
-								class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 group-hover/header:text-blue-600 dark:group-hover/header:text-blue-400 transition-colors"
-								onclick="event.stopPropagation()"
-							>
-								#{tag}
-							</a>
-							<div class="text-slate-400 group-hover/header:text-blue-500 transition-all">
+							<div class="flex items-center gap-2">
+								<a
+									href={resolvePath(`/tag/${slugifyTag(tag)}`)}
+									class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 group-hover/header:text-blue-600 dark:group-hover/header:text-blue-400 transition-colors"
+									onclick="event.stopPropagation()"
+								>
+									#{tag}
+								</a>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="3"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="opacity-0 -translate-x-1 group-hover/header:opacity-100 group-hover/header:translate-x-0 transition-all duration-300 text-blue-500"
+								>
+									<polyline points="9 18 15 12 9 6"></polyline>
+								</svg>
+							</div>
+							<div class="text-slate-500 group-hover/header:text-blue-500 transition-all">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									width="14"
@@ -83,7 +101,7 @@ const groupedByTag = allTags.reduce(
 							{groupedByTag[tag].map((art) => (
 								<li>
 									<a
-										href={`/KIWiki/articles/${art.id.replace(/\.mdx?$/, "")}`}
+										href={resolvePath(`/articles/${art.id.replace(/\.mdx?$/, "")}`)}
 										class="flex items-center justify-between gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 py-1 transition-colors border-l-2 border-transparent hover:border-blue-500 pl-3 -ml-3"
 									>
 										<span class="truncate">
@@ -92,30 +110,21 @@ const groupedByTag = allTags.reduce(
 										{art.data.difficulties &&
 											art.data.difficulties.length <
 												3 && (
-												<div class="difficulty-badges scale-[0.65] origin-right mr-1">
-													{art.data.difficulties.includes(
-														"easy",
-													) && (
-														<span
-															class="badge badge-easy"
-															title="Einsteiger"
-														/>
+												<div class="flex gap-1 scale-[0.65] origin-right mr-1">
+													{art.data.difficulties.includes("easy") && (
+														<span class="badge badge-easy" title={DIFFICULTY_LABELS.easy}>
+															{DIFFICULTY_SHORT.easy}
+														</span>
 													)}
-													{art.data.difficulties.includes(
-														"medium",
-													) && (
-														<span
-															class="badge badge-medium"
-															title="Fortgeschritten"
-														/>
+													{art.data.difficulties.includes("medium") && (
+														<span class="badge badge-medium" title={DIFFICULTY_LABELS.medium}>
+															{DIFFICULTY_SHORT.medium}
+														</span>
 													)}
-													{art.data.difficulties.includes(
-														"hard",
-													) && (
-														<span
-															class="badge badge-hard"
-															title="Experte"
-														/>
+													{art.data.difficulties.includes("hard") && (
+														<span class="badge badge-hard" title={DIFFICULTY_LABELS.hard}>
+															{DIFFICULTY_SHORT.hard}
+														</span>
 													)}
 												</div>
 											)}

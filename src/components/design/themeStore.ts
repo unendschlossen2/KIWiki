@@ -8,8 +8,6 @@ if (typeof localStorage !== 'undefined') {
   const saved = localStorage.getItem('kiwiki-theme') as Theme;
   if (saved) {
     themeStore.set(saved);
-  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    themeStore.set('dark');
   }
 }
 

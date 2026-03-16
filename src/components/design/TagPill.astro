@@ -1,0 +1,19 @@
+---
+import { slugifyTag } from "../../utils/slugify";
+import { resolvePath } from "../../utils/path";
+
+interface Props {
+  tag: string;
+}
+
+const { tag } = Astro.props;
+const tagSlug = slugifyTag(tag);
+const tagUrl = resolvePath(`/tag/${tagSlug}`);
+---
+
+<a 
+  href={tagUrl}
+  class="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[0.7rem] font-black uppercase tracking-wider border border-blue-100 dark:border-blue-800/50 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500 dark:hover:text-white transition-all no-underline shadow-sm"
+>
+  #{tag}
+</a>

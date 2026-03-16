@@ -10,6 +10,7 @@ import {
 	sortCategories,
 	CATEGORIES,
 } from "../config/categories";
+import { resolvePath } from "../utils/path";
 
 const articles = (await getCollection("articles")).filter(
 	(a) => !a.id.startsWith("_"),
@@ -32,12 +33,12 @@ const groupedArticles = articles.reduce(
 		<div class="hero-main">
 			<div class="hero-logo-container">
 				<img
-					src="/KIWiki/assets/logo.png"
+					src={resolvePath("/assets/logo.png")}
 					alt="KIWiki Logo"
 					class="hero-logo dark:hidden"
 				/>
 				<img
-					src="/KIWiki/assets/logo-dark.png"
+					src={resolvePath("/assets/logo-dark.png")}
 					alt="KIWiki Logo"
 					class="hero-logo hidden dark:block"
 				/>
@@ -93,7 +94,7 @@ const groupedArticles = articles.reduce(
 					Erfahre mehr über die Vision hinter KIWiki und wie dieses
 					Projekt Wissen vermittelt.
 				</p>
-				<a href="/KIWiki/ueber" class="about-link stretched-link">
+				<a href={resolvePath("/ueber")} class="about-link stretched-link">
 					Mehr erfahren →
 				</a>
 			</div>
@@ -152,7 +153,7 @@ const groupedArticles = articles.reduce(
 											</p>
 
 											<a
-												href={`/KIWiki/category/${slugifyCategory(category)}`}
+												href={resolvePath(`/category/${slugifyCategory(category)}`)}
 												class="tile-link stretched-link"
 											>
 												Inhalt ansehen{" "}
@@ -430,7 +431,7 @@ const groupedArticles = articles.reduce(
 	}
 
 	.tile-description {
-		font-size: 0.95rem;
+		font-size: 1rem;
 		color: var(--text-secondary);
 		line-height: 1.6;
 		margin: 1.5rem 0 2rem 0;
@@ -582,29 +583,6 @@ const groupedArticles = articles.reduce(
 		border-radius: 6px;
 	}
 
-	.tile-previews {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.tile-art-link {
-		font-size: 0.85rem;
-		color: var(--text-secondary);
-		text-decoration: none;
-		opacity: 0.7;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		transition: opacity 0.2s;
-	}
-
-	.tile-art-link:hover {
-		opacity: 1;
-		color: var(--primary-color);
-	}
-
 	.tile-link {
 		margin-top: auto;
 		display: flex;
@@ -642,28 +620,6 @@ const groupedArticles = articles.reduce(
 <script>
 	import { difficultyStore } from "../components/design/difficultyStore";
 
-	function updatePreviewVisibility(difficulty: string) {
-		const links = document.querySelectorAll(
-			".tile-art-link, .preview-link",
-		);
-		links.forEach((link) => {
-			const badgeContainer = link.querySelector(
-				".article-preview-badge-container",
-			);
-			if (badgeContainer) {
-				const allowed =
-					(badgeContainer as HTMLElement).dataset.difficulties?.split(
-						",",
-					) || [];
-				if (allowed.includes(difficulty)) {
-					link.classList.remove("difficulty-hidden");
-				} else {
-					link.classList.add("difficulty-hidden");
-				}
-			}
-		});
-	}
-
 	function updateHeroBadges(difficulty: string) {
 		const badges = document.querySelectorAll(".showcase-badge");
 		badges.forEach((badge) => {
@@ -684,13 +640,11 @@ const groupedArticles = articles.reduce(
 
 		unsubscribe = difficultyStore.subscribe((newDifficulty) => {
 			// Trigger immediate update
-			updatePreviewVisibility(newDifficulty);
 			updateHeroBadges(newDifficulty);
 		});
 
 		// Initial sweep
 		const currentDifficulty = difficultyStore.get();
-		updatePreviewVisibility(currentDifficulty);
 		updateHeroBadges(currentDifficulty);
 	});
 </script>

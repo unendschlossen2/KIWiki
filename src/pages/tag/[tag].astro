@@ -25,7 +25,9 @@ const { tag, articles } = Astro.props;
 
 <Layout title={`Tag: #${tag}`}>
 	<div class="category-hero">
-		<div class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-screen-2xl mx-auto mb-4">
+		<div
+			class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-screen-2xl mx-auto mb-4"
+		>
 			<h1 class="!mb-0 flex items-center gap-3 text-left">
 				<span class="text-4xl md:text-5xl">🏷️</span>
 				<span class="text-3xl md:text-4xl font-black">#{tag}</span>
@@ -74,7 +76,9 @@ const { tag, articles } = Astro.props;
 			</div>
 		</div>
 
-		<div class="flex flex-col items-start max-w-screen-2xl mx-auto mt-4 px-2">
+		<div
+			class="flex flex-col items-start max-w-screen-2xl mx-auto mt-4 px-2"
+		>
 			<p class="category-subtitle">
 				{articles.length} Artikel mit diesem Tag
 			</p>
@@ -95,12 +99,28 @@ const { tag, articles } = Astro.props;
 						<span class="tile-emoji">🏠</span>
 					</div>
 					<div class="tile-main">
-						<h3 class="tile-title">Zurück zur Startseite</h3>
+						<div class="tile-top">
+							<h3 class="tile-title">Zurück zur Startseite</h3>
+						</div>
 						<p class="tile-description">
-							Hier gelangst du zurück zur Übersicht aller Themen und Kategorien.
+							Hier gelangst du zurück zur Übersicht aller Themen
+							und Kategorien.
 						</p>
 						<a href="/KIWiki/" class="tile-link stretched-link">
-							Hauptmenü öffnen <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								><line x1="19" y1="12" x2="5" y2="12"
+								></line><polyline points="12 19 5 12 12 5"
+								></polyline></svg
+							> Hauptmenü öffnen
 						</a>
 					</div>
 				</div>
@@ -109,43 +129,98 @@ const { tag, articles } = Astro.props;
 					articles.map((article) => {
 						const slug = article.id.replace(/\.mdx?$/, "");
 						const difficulties = article.data.difficulties;
-						const isRestricted = difficulties && difficulties.length < 3;
+						const isRestricted =
+							difficulties && difficulties.length < 3;
 
 						return (
-							<div class="library-tile" data-difficulties={difficulties?.join(",")}>
+							<div
+								class="library-tile"
+								data-difficulties={difficulties?.join(",")}
+							>
 								<div class="tile-icon-wrap">
 									<span class="tile-emoji">📄</span>
 								</div>
 								<div class="tile-main">
 									<div class="tile-top">
-										<h3 class="tile-title flex-1">{article.data.title}</h3>
+										<h3 class="tile-title flex-1">
+											{article.data.title}
+										</h3>
 										{isRestricted && (
 											<div class="difficulty-badges">
-												{difficulties.includes("easy") && (
-													<span class="badge badge-easy" title={DIFFICULTY_LABELS.easy}>
+												{difficulties.includes(
+													"easy",
+												) && (
+													<span
+														class="badge badge-easy"
+														title={
+															DIFFICULTY_LABELS.easy
+														}
+													>
 														{DIFFICULTY_SHORT.easy}
 													</span>
 												)}
-												{difficulties.includes("medium") && (
-													<span class="badge badge-medium" title={DIFFICULTY_LABELS.medium}>
-														{DIFFICULTY_SHORT.medium}
+												{difficulties.includes(
+													"medium",
+												) && (
+													<span
+														class="badge badge-medium"
+														title={
+															DIFFICULTY_LABELS.medium
+														}
+													>
+														{
+															DIFFICULTY_SHORT.medium
+														}
 													</span>
 												)}
-												{difficulties.includes("hard") && (
-													<span class="badge badge-hard" title={DIFFICULTY_LABELS.hard}>
+												{difficulties.includes(
+													"hard",
+												) && (
+													<span
+														class="badge badge-hard"
+														title={
+															DIFFICULTY_LABELS.hard
+														}
+													>
 														{DIFFICULTY_SHORT.hard}
 													</span>
 												)}
 											</div>
 										)}
 									</div>
-									
+
 									{article.data.description && (
-										<p class="tile-description">{article.data.description}</p>
+										<p class="tile-description">
+											{article.data.description}
+										</p>
 									)}
-									
-									<a href={`/KIWiki/articles/${slug}`} class="tile-link stretched-link">
-										Artikel lesen <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+
+									<a
+										href={`/KIWiki/articles/${slug}`}
+										class="tile-link stretched-link"
+									>
+										Artikel lesen{" "}
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="16"
+											height="16"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2.5"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+										>
+											<>
+												<line
+													x1="5"
+													y1="12"
+													x2="19"
+													y2="12"
+												/>
+												<polyline points="12 5 19 12 12 19" />
+											</>
+										</svg>
 									</a>
 								</div>
 							</div>
@@ -218,7 +293,11 @@ const { tag, articles } = Astro.props;
 	.line-glow {
 		width: 2px;
 		flex-grow: 1;
-		background: linear-gradient(to bottom, var(--primary-color), transparent);
+		background: linear-gradient(
+			to bottom,
+			var(--primary-color),
+			transparent
+		);
 		border-radius: 2px;
 		opacity: 0.2;
 	}
@@ -293,7 +372,7 @@ const { tag, articles } = Astro.props;
 
 	.tile-description {
 		color: var(--text-secondary);
-		font-size: 0.9rem;
+		font-size: 1rem;
 		line-height: 1.55;
 		margin-bottom: 2rem;
 		display: -webkit-box;
@@ -319,6 +398,10 @@ const { tag, articles } = Astro.props;
 
 	.library-tile:hover .tile-link svg {
 		transform: translateX(4px);
+	}
+
+	.featured-back-tile:hover .tile-link svg {
+		transform: translateX(-4px);
 	}
 
 	.stretched-link::after {

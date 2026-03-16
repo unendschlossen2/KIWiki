@@ -18,7 +18,7 @@ import { katexMacros } from './src/config/katex-macros.js';
 import { remarkCrossReference } from './src/plugins/remark-cross-reference.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const comp = (/** @type {string} */ name) => path.resolve(__dirname, 'src/components', name).replace(/\\/g, '/');
+const comp = (/** @type {string} */ name) => `/src/components/${name}`;
 
 
 /** @param {Record<string, string>} components */
@@ -103,6 +103,7 @@ export default defineConfig({
           InfoBox: comp('design/InfoBox.tsx'),
           DifficultySelector: comp('design/DifficultySelector.tsx'),
           ActivationDemo: comp('demos/ActivationDemo.tsx'),
+          TransformerDemo: comp('demos/TransformerDemo.tsx'),
           TableOfContents: comp('design/TableOfContents.tsx'),
         }],
         remarkMath
