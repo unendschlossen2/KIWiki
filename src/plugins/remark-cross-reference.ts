@@ -69,15 +69,20 @@ function buildDictionary() {
 }
 
 export function remarkCrossReference() {
-  return (tree: any, file: any) => {
+  return async (tree: any, file: any) => {
     // Only process pages inside the articles directory (or let it run anywhere, it just links to articles)
     const dict = buildDictionary();
     if (dict.length === 0) return;
 
     // Determine current URL to prevent self-linking
     let currentUrl = "";
-    if (file.path) {
-      const relPath = path.relative(CONTENT_DIR, file.path);
+    let filePath = file.path;
+    if (!filePath && file.history && file.history.length > 0) {
+      filePath = file.history[file.history.length - 1];
+    }
+
+    if (filePath) {
+      const relPath = path.relative(CONTENT_DIR, filePath);
       const slug = relPath.replace(/\\/g, "/").replace(/\.mdx?$/, "");
       currentUrl = `${BASE_URL}/${slug}`;
     }
