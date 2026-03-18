@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 
-let dictionaryCache: { keyword: string; url: string; regex: RegExp }[] | null = null;
+let dictionaryCache: { keyword: string; url: string; regex: RegExp; regexGlobal: RegExp }[] | null = null;
 const CONTENT_DIR = path.resolve(process.cwd(), "src/content/articles");
 const BASE_URL = "/KIWiki/articles";
 
@@ -61,8 +61,10 @@ function buildDictionary() {
     const escapedKeyword = entry.keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     // Match word boundaries considering German umlauts and numbers
     // Using lookarounds for better multi-match support
-    const regex = new RegExp(`(?<=^|[^a-zA-Z0-9äöüÄÖÜß])(${escapedKeyword})(?=[^a-zA-Z0-9äöüÄÖÜß]|$)`, "iu");
-    return { ...entry, regex };
+    const source = `(?<=^|[^a-zA-Z0-9äöüÄÖÜß])(${escapedKeyword})(?=[^a-zA-Z0-9äöüÄÖÜß]|$)`;
+    const regex = new RegExp(source, "iu");
+    const regexGlobal = new RegExp(source, "giu");
+    return { ...entry, regex, regexGlobal };
   });
 
   return dictionaryCache;
@@ -109,9 +111,9 @@ export function remarkCrossReference() {
         if (entry.url === currentUrl) continue;
 
         // Use a loop to find all occurrences of this regex in the text
-        // Note: The regex is precompiled with 'iu' but NO 'g' flag currently.
-        // We shouldn't modify the cached regex, so we'll clone it or use it carefully.
-        const regex = new RegExp(entry.regex.source, entry.regex.flags + "g");
+        // We use the precompiled global regex from the dictionary cache.
+        const regex = entry.regexGlobal;
+        regex.lastIndex = 0; // Reset stateful global regex before use
         let match;
         while ((match = regex.exec(text)) !== null) {
           // match[0] is the keyword now because we used lookarounds
