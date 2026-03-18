@@ -1,77 +1,85 @@
 import { visitParents, SKIP } from "unist-util-visit-parents";
 import fs from "node:fs";
+import fsp from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
 
-let dictionaryCache: { keyword: string; url: string; regex: RegExp }[] | null = null;
+let dictionaryCachePromise: Promise<{ keyword: string; url: string; regex: RegExp }[]> | null = null;
 const CONTENT_DIR = path.resolve(process.cwd(), "src/content/articles");
 const BASE_URL = "/KIWiki/articles";
 
-function buildDictionary() {
-  if (dictionaryCache) return dictionaryCache;
-  const dict: { keyword: string; url: string }[] = [];
+async function buildDictionary() {
+  if (dictionaryCachePromise) return dictionaryCachePromise;
 
-  function walkDir(dir: string) {
-    if (!fs.existsSync(dir)) return;
-    const files = fs.readdirSync(dir);
-    for (const file of files) {
-      const fullPath = path.join(dir, file);
-      if (fs.statSync(fullPath).isDirectory()) {
-        walkDir(fullPath);
-      } else if (file.endsWith(".md") || file.endsWith(".mdx")) {
-        // Skip template or internal files starting with _
-        if (file.startsWith("_")) continue;
+  dictionaryCachePromise = (async () => {
+    const dict: { keyword: string; url: string }[] = [];
 
-        try {
-          const content = fs.readFileSync(fullPath, "utf8");
-          const { data } = matter(content);
+    async function walkDir(dir: string) {
+      if (!fs.existsSync(dir)) return;
 
-          // Compute slug based on relative path
-          const relPath = path.relative(CONTENT_DIR, fullPath);
-          const slug = relPath.replace(/\\/g, "/").replace(/\.mdx?$/, "");
-          const url = `${BASE_URL}/${slug}`;
+      const entries = await fsp.readdir(dir, { withFileTypes: true });
+      const promises = entries.map(async (entry) => {
+        const fullPath = path.join(dir, entry.name);
 
-          if (data.title) {
-            dict.push({ keyword: data.title, url });
+        if (entry.isDirectory()) {
+          await walkDir(fullPath);
+        } else if (entry.name.endsWith(".md") || entry.name.endsWith(".mdx")) {
+          // Skip template or internal files starting with _
+          if (entry.name.startsWith("_")) return;
+
+          try {
+            const content = await fsp.readFile(fullPath, "utf8");
+            const { data } = matter(content);
+
+            // Compute slug based on relative path
+            const relPath = path.relative(CONTENT_DIR, fullPath);
+            const slug = relPath.replace(/\\/g, "/").replace(/\.mdx?$/, "");
+            const url = `${BASE_URL}/${slug}`;
+
+            if (data.title) {
+              dict.push({ keyword: data.title, url });
+            }
+            if (Array.isArray(data.aliases)) {
+              data.aliases.forEach((alias) => {
+                if (typeof alias === "string") {
+                  dict.push({ keyword: alias, url });
+                }
+              });
+            }
+          } catch (e) {
+            console.error(`Error parsing frontmatter for ${fullPath}:`, e);
           }
-          if (Array.isArray(data.aliases)) {
-            data.aliases.forEach((alias) => {
-              if (typeof alias === "string") {
-                dict.push({ keyword: alias, url });
-              }
-            });
-          }
-        } catch (e) {
-          console.error(`Error parsing frontmatter for ${fullPath}:`, e);
         }
-      }
+      });
+
+      await Promise.all(promises);
     }
-  }
 
-  walkDir(CONTENT_DIR);
+    await walkDir(CONTENT_DIR);
 
-  // Sort by keyword length descending (longest first)
-  dict.sort((a, b) => b.keyword.length - a.keyword.length);
+    // Sort by keyword length descending (longest first)
+    dict.sort((a, b) => b.keyword.length - a.keyword.length);
 
-  console.log(`[CrossReference] Built dictionary with ${dict.length} entries.`);
+    console.log(`[CrossReference] Built dictionary with ${dict.length} entries.`);
 
-  // Precompile regexes for each keyword
-  dictionaryCache = dict.map((entry) => {
-    // Escape regex special chars
-    const escapedKeyword = entry.keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    // Match word boundaries considering German umlauts and numbers
-    // Using lookarounds for better multi-match support
-    const regex = new RegExp(`(?<=^|[^a-zA-Z0-9äöüÄÖÜß])(${escapedKeyword})(?=[^a-zA-Z0-9äöüÄÖÜß]|$)`, "iu");
-    return { ...entry, regex };
-  });
+    // Precompile regexes for each keyword
+    return dict.map((entry) => {
+      // Escape regex special chars
+      const escapedKeyword = entry.keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      // Match word boundaries considering German umlauts and numbers
+      // Using lookarounds for better multi-match support
+      const regex = new RegExp(`(?<=^|[^a-zA-Z0-9äöüÄÖÜß])(${escapedKeyword})(?=[^a-zA-Z0-9äöüÄÖÜß]|$)`, "iu");
+      return { ...entry, regex };
+    });
+  })();
 
-  return dictionaryCache;
+  return dictionaryCachePromise;
 }
 
 export function remarkCrossReference() {
   return async (tree: any, file: any) => {
     // Only process pages inside the articles directory (or let it run anywhere, it just links to articles)
-    const dict = buildDictionary();
+    const dict = await buildDictionary();
     if (dict.length === 0) return;
 
     // Determine current URL to prevent self-linking
