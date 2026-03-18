@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 const DifficultySelector = () => {
   const [mounted, setMounted] = useState(false);
   // We still use the store so React re-renders if needed
-  useStore(difficultyStore);
+  const currentDifficulty = useStore(difficultyStore);
 
   useEffect(() => {
     setMounted(true);
@@ -19,11 +19,16 @@ const DifficultySelector = () => {
   }
 
   return (
-    <div className="difficulty-selector flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl p-1.5 shadow-sm">
+    <div
+      className="difficulty-selector flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl p-1.5 shadow-sm"
+      role="group"
+      aria-label="Schwierigkeitsgrad wählen"
+    >
       {DIFFICULTIES.map((level) => (
         <button
           key={level}
           data-level={level}
+          aria-pressed={currentDifficulty === level}
           onClick={() => {
             difficultyStore.set(level);
           }}
