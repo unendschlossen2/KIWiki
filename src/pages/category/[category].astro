@@ -14,19 +14,30 @@ export async function getStaticPaths() {
     (a) => !a.id.startsWith("_"),
   );
 
-  const categories = [
-    ...new Set(articles.map((a) => getCategoryDisplay(a.data.category))),
-  ];
+  const categoryMap = new Map();
 
-  return categories.map((category) => ({
-    params: { category: slugifyCategory(category) },
-    props: {
-      category,
-      articles: articles.filter(
-        (a) => getCategoryDisplay(a.data.category) === category,
-      ),
-    },
-  }));
+  for (const article of articles) {
+    const category = getCategoryDisplay(article.data.category);
+    let categoryArticles = categoryMap.get(category);
+    if (!categoryArticles) {
+      categoryArticles = [];
+      categoryMap.set(category, categoryArticles);
+    }
+    categoryArticles.push(article);
+  }
+
+  const paths = [];
+  for (const [category, categoryArticles] of categoryMap) {
+    paths.push({
+      params: { category: slugifyCategory(category) },
+      props: {
+        category,
+        articles: categoryArticles,
+      },
+    });
+  }
+
+  return paths;
 }
 
 const { category, articles } = Astro.props;
