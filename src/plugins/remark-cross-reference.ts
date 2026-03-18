@@ -5,6 +5,7 @@ import path from "node:path";
 import matter from "gray-matter";
 
 let dictionaryCache: { keyword: string; url: string; regex: RegExp; regexGlobal: RegExp }[] | null = null;
+let dictionaryCachePromise: Promise<{ keyword: string; url: string; regex: RegExp; regexGlobal: RegExp }[]> | null = null;
 const CONTENT_DIR = path.resolve(process.cwd(), "src/content/articles");
 const BASE_URL = "/KIWiki/articles";
 
@@ -74,120 +75,118 @@ async function buildDictionary() {
       return { ...entry, regex, regexGlobal };
     });
 
-    return dictionaryCachePromise;
-  }
+    return dictionaryCache;
+  })();
+
+  return dictionaryCachePromise;
+}
 
 export function remarkCrossReference() {
-    return async (tree: any, file: any) => {
-      // Only process pages inside the articles directory (or let it run anywhere, it just links to articles)
-      const dict = await buildDictionary();
-      if (dict.length === 0) return;
+  return async (tree: any, file: any) => {
+    // Only process pages inside the articles directory (or let it run anywhere, it just links to articles)
+    const dict = await buildDictionary();
+    if (dict.length === 0) return;
 
-      // Determine current URL to prevent self-linking
-      let currentUrl = "";
-      let filePath = file.path;
-      if (!filePath && file.history && file.history.length > 0) {
-        filePath = file.history[file.history.length - 1];
+    // Determine current URL to prevent self-linking
+    let currentUrl = "";
+    let filePath = file.path;
+    if (!filePath && file.history && file.history.length > 0) {
+      filePath = file.history[file.history.length - 1];
+    }
+
+    if (filePath) {
+      const relPath = path.relative(CONTENT_DIR, filePath);
+      const slug = relPath.replace(/\\/g, "/").replace(/\.mdx?$/, "");
+      currentUrl = `${BASE_URL}/${slug}`;
+    }
+
+    const ignoredParents = new Set(["link", "linkReference", "heading", "inlineCode", "code", "html"]);
+
+    visitParents(tree, "text", (node, ancestors) => {
+      // Check if any ancestor is in the ignored list
+      if (ancestors.some((ancestor: any) => ignoredParents.has(ancestor.type))) {
+        return;
       }
 
-      if (filePath) {
-        const relPath = path.relative(CONTENT_DIR, filePath);
-        const slug = relPath.replace(/\\/g, "/").replace(/\.mdx?$/, "");
-        currentUrl = `${BASE_URL}/${slug}`;
-      }
+      const parent = ancestors[ancestors.length - 1] as any;
+      if (!parent || !parent.children) return;
 
-      const ignoredParents = new Set([
-        "link",
-        "linkReference",
-        "heading",
-        "inlineCode",
-        "code",
-        "html",
-      ]);
+      const text = String(node.value);
+      const matches: { start: number; end: number; entry: (typeof dict)[0] }[] = [];
+      const occupiedRanges: [number, number][] = [];
 
-      visitParents(tree, "text", (node, ancestors) => {
-        // Check if any ancestor is in the ignored list
-        if (ancestors.some((ancestor: typeof node) => ignoredParents.has(ancestor.type))) {
-          return;
-        }
+      // Find all matches for all dictionary entries
+      for (const entry of dict) {
+        if (entry.url === currentUrl) continue;
 
-        const parent = ancestors[ancestors.length - 1] as any;
-        if (!parent || !parent.children) return;
+        // Use a loop to find all occurrences of this regex in the text
+        // We use the precompiled global regex from the dictionary cache.
+        const regex = entry.regexGlobal;
+        regex.lastIndex = 0; // Reset stateful global regex before use
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+          // match[0] is the keyword now because we used lookarounds
+          const indexOffset = match.index;
+          const matchLength = match[0].length;
+          const matchEnd = indexOffset + matchLength;
 
-        const text = String(node.value);
-        const matches: { start: number; end: number; entry: typeof dict[0] }[] = [];
-        const occupiedRanges: [number, number][] = [];
-
-        // Find all matches for all dictionary entries
-        for (const entry of dict) {
-          if (entry.url === currentUrl) continue;
-
-          // Use a loop to find all occurrences of this regex in the text
-          // We use the precompiled global regex from the dictionary cache.
-          const regex = entry.regexGlobal;
-          regex.lastIndex = 0; // Reset stateful global regex before use
-          let match;
-          while ((match = regex.exec(text)) !== null) {
-            // match[0] is the keyword now because we used lookarounds
-            const indexOffset = match.index;
-            const matchLength = match[0].length;
-            const matchEnd = indexOffset + matchLength;
-
-            // Check for overlap with already found matches
-            const isOverlapping = occupiedRanges.some(([start, end]) =>
+          // Check for overlap with already found matches
+          const isOverlapping = occupiedRanges.some(
+            ([start, end]) =>
               (indexOffset >= start && indexOffset < end) ||
               (matchEnd > start && matchEnd <= end) ||
               (indexOffset <= start && matchEnd >= end)
-            );
+          );
 
-            if (!isOverlapping) {
-              matches.push({ start: indexOffset, end: matchEnd, entry });
-              occupiedRanges.push([indexOffset, matchEnd]);
-            }
+          if (!isOverlapping) {
+            matches.push({ start: indexOffset, end: matchEnd, entry });
+            occupiedRanges.push([indexOffset, matchEnd]);
           }
         }
+      }
 
-        if (matches.length > 0) {
-          // Sort matches by start index
-          matches.sort((a, b) => a.start - b.start);
+      if (matches.length > 0) {
+        // Sort matches by start index
+        matches.sort((a, b) => a.start - b.start);
 
-          const newNodes = [];
-          let lastIndex = 0;
+        const newNodes = [];
+        let lastIndex = 0;
 
-          for (const match of matches) {
-            // Add text before the match
-            if (match.start > lastIndex) {
-              newNodes.push({ type: "text", value: text.slice(lastIndex, match.start) });
-            }
+        for (const match of matches) {
+          // Add text before the match
+          if (match.start > lastIndex) {
+            newNodes.push({ type: "text", value: text.slice(lastIndex, match.start) });
+          }
 
-            // Add the link node
-            newNodes.push({
-              type: "link",
-              url: match.entry.url,
-              title: null,
-              data: {
-                hProperties: {
-                  className: ["cross-reference"],
-                },
+          // Add the link node
+          newNodes.push({
+            type: "link",
+            url: match.entry.url,
+            title: null,
+            data: {
+              hProperties: {
+                className: ["cross-reference"],
               },
-              children: [{ type: "text", value: text.slice(match.start, match.end) }],
-            });
+            },
+            children: [{ type: "text", value: text.slice(match.start, match.end) }],
+          });
 
-            lastIndex = match.end;
-          }
-
-          // Add remaining text
-          if (lastIndex < text.length) {
-            newNodes.push({ type: "text", value: text.slice(lastIndex) });
-          }
-
-          // Replace this node in the parent
-          const parentIndex = parent.children.indexOf(node);
-          if (parentIndex !== -1) {
-            parent.children.splice(parentIndex, 1, ...newNodes);
-            return [SKIP, parentIndex + newNodes.length];
-          }
+          lastIndex = match.end;
         }
-      });
-    };
-  }
+
+        // Add remaining text
+        if (lastIndex < text.length) {
+          newNodes.push({ type: "text", value: text.slice(lastIndex) });
+        }
+
+        // Replace this node in the parent
+        const parentIndex = parent.children.indexOf(node);
+        if (parentIndex !== -1) {
+          parent.children.splice(parentIndex, 1, ...newNodes);
+          return [SKIP, parentIndex + newNodes.length];
+        }
+      }
+    });
+  };
+}
+
