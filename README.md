@@ -1,5 +1,5 @@
 ## Was ist KIWiki?
-KIWiki ist ein Projekt der JadeHS, dessen Ziel die Vermittlung von Wissen über Künstliche Intelligenz ist. 
+KIWiki ist ein Projekt von Mitarbeitern der Jade Hochschule, dessen Ziel die Vermittlung von Wissen über Künstliche Intelligenz ist. 
 
 Im Fokus steht dabei die Zugänglichkeit der Informationen.
 
