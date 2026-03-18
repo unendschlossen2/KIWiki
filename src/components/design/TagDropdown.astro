@@ -12,9 +12,13 @@ const articles = (await getCollection("articles")).filter(
 const allTags = [...new Set(articles.flatMap((a) => a.data.tags || []))].sort();
 
 // Group articles by tag
-const groupedByTag = allTags.reduce(
-	(acc, tag) => {
-		acc[tag] = articles.filter((a) => a.data.tags?.includes(tag));
+const groupedByTag = articles.reduce(
+	(acc, article) => {
+		if (!article.data.tags) return acc;
+		for (const tag of article.data.tags) {
+			if (!acc[tag]) acc[tag] = [];
+			acc[tag].push(article);
+		}
 		return acc;
 	},
 	{} as Record<string, typeof articles>,
