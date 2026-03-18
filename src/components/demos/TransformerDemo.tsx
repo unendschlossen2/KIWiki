@@ -124,8 +124,8 @@ export default function TransformerDemo() {
                       setSelectedToken(null);
                     }}
                     className={`px-3 py-2 text-sm rounded-md border text-left transition-colors ${sentenceIdx === idx
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600'
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600'
                       }`}
                   >
                     {s.join(' ')}
