@@ -1,0 +1,104 @@
+---
+title: "Model Context Protocol (MCP)"
+description: "Ein einheitlicher Standard, um Large Language Models (LLMs) mit lokalen Werkzeugen, Datenbanken und APIs zu vernetzen."
+category: "genai"
+tags: ["MCP", "Tools", "LLM", "Integration", "EasyMCP"]
+aliases: ["Model Context Protocol", "MCP Standard"]
+---
+
+import MCPDemo from '../../../components/demos/MCPDemo.tsx';
+
+# Model Context Protocol (MCP)
+
+Das **Model Context Protocol (MCP)** ist ein offener Standard, der die Art und Weise vereinfacht, wie KI-Modelle auf externe Systeme zugreifen. Entwickelt von Anthropic, zielt MCP darauf ab, die Integration von Tools, Datenquellen und Software-Schnittstellen (APIs) zu standardisieren.
+
+---
+
+## Das Problem vor MCP
+
+:::beginner
+Bevor es MCP gab, musste für jedes KI-Tool und für jede Datenquelle (wie lokale Dateien, GitHub, Datenbanken oder Notion) eine eigene Brücke gebaut werden. Das bedeutet: Wenn ein Entwickler wollte, dass ChatGPT seine Dateien lesen kann, musste er einen speziellen Adapter schreiben. Wollte er dasselbe für Claude tun, musste er wieder von vorn anfangen.
+:::
+
+:::medium
+Ohne einen einheitlichen Standard entwickelte das Ökosystem sich als "Plugin-Wüsten". Jedes LLM (OpenAI, Anthropic, Google) brachte sein eigenes proprietäres Tool-Calling-Format mit. Die Konsequenz: Tool-Entwickler mussten den Code N-mal neu schreiben, pflegen und anpassen, um verschiedene Modelle zu unterstützen. Dies hemmte die Verbreitung von leistungsstarken, modellübergreifenden Werkzeugen.
+:::
+
+:::advanced
+Vor MCP bestanden Tool-Calling-Architekturen typischerweise aus proprietären JSON-RPC Wrappern. Bei der Integration von externen Systemen mussten Model-Provider oft als Middleman agieren oder Entwickler mussten Middleware-APIs betreiben, um das Custom-Routing zu verwalten. Dies erschwerte auch lokales Development erheblich, da eine saubere Trennung zwischen LLM-Client (der die Instruktionen und Prompt-Chains steuert) und dem Tool-Executor (der die tatsächliche Sandbox/Datenbank kontrolliert) oft fehlte.
+:::
+
+---
+
+## Wie funktioniert MCP?
+
+:::beginner
+**MCP** fungiert wie ein universeller Stecker.  
+Stell dir vor: Anstatt für jedes Land einen anderen Steckdosen-Adapter zu brauchen, gäbe es weltweit nur noch einen Stecker. Das LLM spricht eine universelle Sprache, um mitzuteilen: *"Ich brauche diese Daten"* oder *"Führe diese Aktion aus"*. Der MCP-Server hört zu, erledigt die Aufgabe vor Ort auf deinem Computer und gibt dem Modell die Antwort zurück.
+:::
+
+:::medium
+Die MCP-Architektur basiert auf einer strikten Client-Server-Trennung:
+1. **MCP Host (Client):** Eine App wie Claude Desktop, dein Code-Editor oder Cursor, welche die LLM-Verbindung managt.
+2. **MCP Client:** Der Code im Host, der mit dem Server via JSON-RPC kommuniziert.
+3. **MCP Server:** Das Programm (lokal oder remote), das den tatsächlichen Zugang zu Ressourcen, Prompts und Tools anbietet.
+
+Diese Struktur wird über sicheres **stdio** (Standard Input/Output) im lokalen System oder über **SSE** (Server-Sent Events) bei Remote-Setups abgewickelt.
+:::
+
+:::advanced
+MCP ist technologisch nichts anderes als ein standardisiertes JSON-RPC 2.0-Protokoll mit einem definierten Set an Features (Capabilities). Die wichtigsten sind:
+- **Resources:** Lese-Zugriff auf Kontext wie Dateien, Logs oder Datenbank-Ergebnisse (Ressourcen sind typischerweise stateful URIs).
+- **Prompts:** Vordefinierte System-Prompts, die eine UI dem Nutzer zur Verfügung stellen kann.
+- **Tools:** Funktionen, die das LLM ausführen kann. Der Server beschreibt die Parameter per JSON-Schema.
+
+Eine Transaktion läuft asynchron: Der Client ruft `tools/call` auf, der Server validiert den Request, führt ihn in seiner isolierten Sandbox aus und sendet `ToolResult` textuell oder binär zurück.
+:::
+
+---
+
+## Interaktive Flow-Demo
+
+<InfoBox type="info" title="Interaktiv testen">
+  Drücke auf "Play Flow", um einen typischen Tool-Calling Ablauf zwischen einem LLM und einem MCP-Server zu beobachten.
+</InfoBox>
+
+<MCPDemo client:load />
+
+---
+
+## Implementierung mit EasyMCP
+
+Da das manuelle Parsen von JSON-RPC-Nachrichten komplex ist, haben sich Bibliotheken wie **EasyMCP** (für Python) oder `@modelcontextprotocol/sdk` (für JS/TS) etabliert, die den Prozess stark vereinfachen.
+
+### Beispiel in Python (EasyMCP)
+
+Mit EasyMCP lassen sich in Python Funktionen mit simplen Decodern in MCP-Tools verwandeln.
+
+```python
+from easymcp import MCP
+import sqlite3
+
+# Initialisiere den MCP Server
+mcp = MCP(name="Employee DB", version="1.0.0")
+
+# Verbinde zu einer internen Datenbank
+conn = sqlite3.connect("company.db")
+
+@mcp.tool("search_employee", "Sucht nach Mitarbeitern in der Unternehmensdatenbank")
+def search_employee(name: str) -> str:
+    cursor = conn.cursor()
+    cursor.execute("SELECT name, department, email FROM employees WHERE name LIKE ?", (f"%{name}%",))
+    results = cursor.fetchall()
+    
+    if not results:
+        return "Keine Mitarbeiter gefunden."
+        
+    return "\n".join([f"{r[0]} ({r[1]}) - {r[2]}" for r in results])
+
+# Startet den Server auf stdio
+if __name__ == "__main__":
+    mcp.run()
+```
+
+Wenn ein MCP Client (z. B. Claude Desktop) diesen Server startet, fragt er zunächst die Fähigkeiten ab. Das Script liefert automatisch die Signatur und den Docstring von `search_employee` als Tool-Beschreibung an das LLM. Das LLM kann anschließend selbstständig diese Datenbankabfrage einsetzen, um Nutzerfragen zu beantworten.
