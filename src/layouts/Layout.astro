@@ -29,20 +29,21 @@ const description =
 	propDescription ||
 	"Das interaktive Nachschlagewerk für Künstliche Intelligenz";
 
-const basePath = import.meta.env.BASE_URL;
-const isRoot =
-	Astro.url.pathname === basePath || Astro.url.pathname === `${basePath}/`;
-const isArticle = Astro.url.pathname.includes(`${basePath}/articles/`);
-const isUeber = Astro.url.pathname.includes(`${basePath}/ueber`);
-const isCategory = Astro.url.pathname.includes(`${basePath}/category/`);
-const isTag = Astro.url.pathname.includes(`${basePath}/tag/`);
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+
+const isRoot = pathname === (base || "/");
+const isArticle = pathname.includes(`${base}/articles/`);
+const isUeber = pathname.includes(`${base}/ueber`);
+const isCategory = pathname.includes(`${base}/category/`);
+const isTag = pathname.includes(`${base}/tag/`);
 
 const showSidebar = !isRoot && !isUeber && !isCategory && !isTag;
 const isFullWidth = isRoot || isCategory || isTag;
 ---
 
 <!doctype html>
-<html lang="de" data-difficulty="easy" data-base={basePath}>
+<html lang="de" data-difficulty="easy" data-base={base}>
 	<head>
 		<script is:inline>
 			// Persistence — runs on every page load & View Transition

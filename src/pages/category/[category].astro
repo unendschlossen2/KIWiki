@@ -40,7 +40,7 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
 <Layout title={category}>
   <div class="category-hero">
     <div
-      class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-screen-2xl mx-auto mb-4"
+      class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-[1400px] mx-auto mb-4"
     >
       <h1 class="!mb-0 flex items-center gap-3 text-left shrink-0">
         <span class="text-4xl md:text-5xl">{getCategoryIcon(category)}</span>
@@ -90,7 +90,7 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
       </div>
     </div>
 
-    <div class="flex flex-col items-start max-w-screen-2xl mx-auto mt-4 px-2">
+    <div class="flex flex-col items-start max-w-[1400px] mx-auto mt-4 px-2">
       <p class="category-subtitle">
         {articles.length} Artikel in dieser Kategorie
       </p>
@@ -272,13 +272,13 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
     margin-top: 2rem;
     margin-bottom: 8rem;
     position: relative;
-    max-width: screen-2xl;
+    max-width: 1400px;
     margin-left: auto;
     margin-right: auto;
   }
 
   .category-info-tile {
-    grid-column: span 3;
+    grid-column: span 2;
     background: var(--bg-card) !important;
     transition: border-color 0.4s ease;
   }
@@ -319,18 +319,6 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
     ) !important;
   }
 
-  @media (max-width: 1400px) {
-    .category-info-tile {
-      grid-column: span 2;
-    }
-  }
-
-  @media (max-width: 1000px) {
-    .category-info-tile {
-      grid-column: span 1;
-    }
-  }
-
   @media (max-width: 768px) {
     .library-section {
       grid-template-columns: 1fr;
@@ -368,19 +356,16 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
 
   .article-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
   }
 
-  @media (max-width: 1400px) {
-    .article-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  @media (max-width: 1000px) {
+  @media (max-width: 1100px) {
     .article-grid {
       grid-template-columns: repeat(2, 1fr);
+    }
+    .category-info-tile {
+      grid-column: span 1;
     }
   }
 
