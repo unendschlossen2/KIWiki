@@ -1,0 +1,71 @@
+---
+title: "k-Nearest Neighbors (k-NN)"
+description: "Sag mir, wer deine Nachbarn sind — Klassifikation durch Ähnlichkeit und räumliche Nähe."
+category: "ml"
+tags: ["Klassifikation", "Abstandsmaß", "Lazy Learning", "Euklidisch"]
+---
+
+# k-Nearest Neighbors (k-NN)
+
+Der **k-Nearest Neighbors** (k-Nächste-Nachbarn) Algorithmus ist einer der intuitivsten Algorithmen im Maschinellen Lernen. Er folgt einem einfachen Motto: "Gleich und gleich gesellt sich gern." Anstatt eine komplexe Formel zu lernen, speichert k-NN einfach alle Trainingsdaten und schaut bei einer neuen Anfrage nach, welche bekannten Punkte am ähnlichsten sind.
+
+---
+
+## Das Prinzip der Nachbarschaft
+
+:::beginner
+Stell dir vor, du ziehst in eine neue Stadt und willst wissen, ob deine Nachbarschaft sicher ist. 
+Du fragst die **3 nächsten Nachbarn** in deiner Straße nach ihren Erfahrungen. Wenn zwei von ihnen sagen "Alles super" und einer sagt "Naja", entscheidest du dich basierend auf der Mehrheit für "Sicher".
+Genau so arbeitet k-NN: Ein neuer Punkt bekommt die Kategorie, die unter seinen **k** nächsten Nachbarn am häufigsten vorkommt.
+:::
+
+:::medium
+k-NN wird als **Lazy Learner** bezeichnet, da er während der Trainingsphase kein Modell erstellt. Die gesamte Arbeit findet erst zum Zeitpunkt der Vorhersage statt. 
+Um die "Nähe" zu bestimmen, nutzt der Algorithmus meist die **euklidische Distanz** (Luftlinie). Der Parameter **k** ist dabei entscheidend:
+- Ein zu kleines $k$ (z. B. $k=1$) macht das Modell anfällig für Ausreißer (Rauschen).
+- Ein zu großes $k$ führt dazu, dass lokale Muster ignoriert werden und das Modell zu stark vereinfacht.
+:::
+
+:::advanced
+Für zwei Punkte $\mathbf{p}$ und $\mathbf{q}$ im $n$-dimensionalen Raum wird die euklidische Distanz wie folgt berechnet:
+
+$$
+d(\mathbf{p}, \mathbf{q}) = \sqrt{\sum_{i=1}^n (p_i - q_i)^2}
+$$
+
+Der Algorithmus läuft in drei Schritten ab:
+1. Berechne die Distanz des neuen Punktes zu allen Punkten im Datensatz.
+2. Sortiere die Distanzen und wähle die $k$ kleinsten Werte aus.
+3. Führe eine Mehrheitswahl (Voting) über die Klassen dieser $k$ Nachbarn durch.
+
+Bei Regressionsproblemen wird statt der Mehrheitswahl einfach der Durchschnittswert der $k$ Nachbarn genommen.
+:::
+
+---
+
+## Interaktive Demo: Wer sind meine Nachbarn?
+
+In dieser Demo kannst du die Klassifikation durch k-NN live testen.
+- Bewege den **violetten Cursor** durch den Raum.
+- Das Modell sucht automatisch die $k$ nächsten Nachbarn (markiert durch Kreise).
+- Die Hintergrundfarbe zeigt dir, wie die Entscheidung an dieser Stelle ausfallen würde.
+
+<KNNDemo client:only="react" />
+
+---
+
+## Die Wahl des richtigen k
+
+Die Wahl von $k$ ist ein klassisches Beispiel für das **Bias-Variance Tradeoff**:
+- **Niedriges k:** Hohe Varianz (Overfitting). Das Modell passt sich jedem kleinen Rauschen an.
+- **Hohes k:** Hoher Bias (Underfitting). Die Entscheidungsgrenzen werden sehr glatt, verlieren aber Details.
+- **Tipp:** Bei binärer Klassifikation wählt man oft ein ungerades $k$, um ein Unentschieden beim Voting zu vermeiden.
+
+---
+
+## Zusammenfassung
+
+- **Einfachheit:** Keine Trainingsphase, sehr intuitiv.
+- **Abstands-basiert:** Die Skalierung der Daten ist extrem wichtig (Features mit großen Zahlenwerten dominieren sonst die Distanz).
+- **Rechenaufwand:** Bei sehr großen Datensätzen wird die Vorhersage langsam, da jeder Punkt mit jedem verglichen werden muss.
+- **Fluch der Dimensionen:** In sehr hochdimensionalen Räumen rücken alle Punkte "gefühlt" weit voneinander weg, was die Distanzmetrik weniger aussagekräftig macht.

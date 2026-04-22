@@ -1,0 +1,78 @@
+---
+title: "Support Vector Machines (SVM)"
+description: "Sicherheitsabstand für Daten — wie SVMs die optimale Trennebene finden und durch den Kernel-Trick Unmögliches möglich machen."
+category: "ml"
+tags: ["Klassifikation", "Margin", "Hyperplane", "Kernel-Trick"]
+---
+
+# Support Vector Machines (SVM)
+
+Die **Support Vector Machine** (Stützvektormaschine) ist ein eleganter und mathematisch fundierter Algorithmus, der besonders für Klassifikationsaufgaben mit klarer Trennung bekannt ist. Während andere Modelle einfach *irgendeine* Linie zwischen Klassen ziehen, sucht die SVM nach der **bestmöglichen** Trennung: derjenigen mit dem maximalen Sicherheitsabstand.
+
+---
+
+## Das Prinzip des maximalen Abstands (Margin)
+
+:::beginner
+Stell dir vor, du baust einen Zaun zwischen zwei Grundstücken. 
+- Du könntest den Zaun ganz nah an Haus A bauen, aber dann fühlt sich Bewohner A unwohl. 
+- Du könntest ihn ganz nah an Haus B bauen, aber dann beschwert sich Bewohner B. 
+
+Die fairste Lösung ist, den Zaun genau in die Mitte zu stellen, sodass der **Abstand zu beiden Häusern so groß wie möglich ist**. Die Häuser, die dem Zaun am nächsten stehen, nennen wir **Support Vectors** (Stützvektoren). Sie sind die einzigen Punkte, die bestimmen, wo der Zaun steht.
+:::
+
+:::medium
+Das Ziel einer SVM ist es, eine Hyperebene (in 2D eine Gerade) zu finden, welche die Klassen trennt und dabei den **Margin** (den Abstand zum nächsten Punkt jeder Klasse) maximiert. 
+
+Man unterscheidet zwei Varianten:
+1.  **Hard Margin:** Erlaubt keinerlei Fehler (nur möglich, wenn die Daten perfekt linear trennbar sind).
+2.  **Soft Margin:** Erlaubt einige Fehlklassifikationen oder Punkte innerhalb des Margins, um robuster gegenüber Rauschen zu sein. Dies wird über den Parameter **C** gesteuert.
+:::
+
+:::advanced
+Mathematisch lösen wir ein quadratisches Optimierungsproblem. Wir suchen Gewichte $\wvec$ und einen Bias $b$, die folgende Bedingung für alle Datenpunkte $(\xvec_i, y_i)$ erfüllen:
+
+$$
+y_i (\wvec^T \xvec_i + b) \geq 1
+$$
+
+Dabei minimieren wir $\| \wvec \|^2$, was äquivalent zur Maximierung des Margins $\frac{2}{\| \wvec \|}$ ist. Falls die Daten nicht linear trennbar sind, führen wir Schlupfvariablen $\xi_i$ (Slack variables) ein, was zum Soft-Margin-Problem führt:
+
+$$
+\min_{\wvec, b, \xi} \frac{1}{2} \| \wvec \|^2 + C \sum_{i=1}^N \xi_i
+$$
+:::
+
+---
+
+## Interaktive Demo: Margin-Maximierung
+
+In dieser Demo kannst du sehen, wie die SVM die optimale Trennlinie findet.
+- Setze Punkte für **Klasse 0 (Blau)** und **Klasse 1 (Rot)**.
+- Die **durchgehende Linie** ist die Entscheidungsgrenze.
+- Die **gestrichelten Linien** markieren den Margin.
+- Punkte, die genau auf den gestrichelten Linien liegen (oder sie verletzen), sind die **Support Vectors**.
+
+<SVMDemo client:only="react" />
+
+---
+
+## Der Kernel-Trick: In die dritte Dimension
+
+Was passiert, wenn Daten kreisförmig angeordnet sind? Eine gerade Linie kann sie nicht trennen. Hier kommt der legendäre **Kernel-Trick** ins Spiel.
+
+:::medium
+Die SVM "beamt" die Daten in einen höherdimensionalen Raum, in dem eine Trennung durch eine Ebene wieder möglich ist. 
+Stell dir Punkte auf einem Tisch vor, die im Kreis liegen. Wenn du die inneren Punkte nach oben in die Luft hebst, kannst du einfach ein Blatt Papier (eine Ebene) zwischen die schwebenden und die liegenden Punkte schieben.
+
+Ein **RBF-Kernel** (Radial Basis Function) ermöglicht es der SVM, fast jede komplexe Form zu lernen, indem er Abstände in einem unendlich-dimensionalen Raum berechnet.
+:::
+
+---
+
+## Zusammenfassung
+
+- **Maximaler Margin:** Die SVM sucht die Trennlinie mit dem größten Sicherheitsabstand.
+- **Support Vectors:** Nur die kritischen Punkte am Rand bestimmen das Modell.
+- **Robustheit:** Durch den Parameter $C$ kann man zwischen einer harten Trennung und Fehlertoleranz wählen.
+- **Kernel-Trick:** Ermöglicht die Klassifikation von komplexen, nicht-linearen Datenmustern.

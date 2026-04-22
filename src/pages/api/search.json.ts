@@ -1,4 +1,5 @@
 import { getCollection } from "astro:content";
+import { slugifyPath } from "../../utils/slugify";
 
 export async function GET() {
   const articles = await getCollection("articles");
@@ -11,7 +12,7 @@ export async function GET() {
     description: article.data.description || "",
     category: article.data.category,
     aliases: article.data.aliases || [],
-    slug: article.id.replace(/\.mdx?$/, ""),
+    slug: slugifyPath(article.id.replace(/\.mdx?$/, "")),
     difficulties: article.data.difficulties || [],
   }));
 

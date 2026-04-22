@@ -1,0 +1,67 @@
+---
+title: "Principal Component Analysis (PCA)"
+description: "Den Kern der Sache finden — wie man komplexe Daten vereinfacht, ohne das Wichtigste zu verlieren."
+category: "ml"
+tags: ["Datenanalyse", "Dimensionalkomprimierung", "PCA", "Varianz"]
+---
+
+# Principal Component Analysis (PCA)
+
+Die **Principal Component Analysis** (Hauptkomponentenanalyse) ist das wichtigste Werkzeug, wenn es darum geht, Ordnung in riesige Datenmengen zu bringen. Sie hilft uns, die Anzahl der Merkmale (Features) zu reduzieren, während sie gleichzeitig versucht, so viel Information wie möglich zu bewahren.
+
+---
+
+## Das Prinzip der Projektion
+
+:::beginner
+Stell dir vor, du hältst ein kompliziertes 3D-Objekt (z. B. eine Teekanne) vor eine Taschenlampe und betrachtest den Schatten an der Wand. 
+- Wenn du die Teekanne drehst, ändert sich der Schatten. 
+- In einer bestimmten Position siehst du die Teekanne am besten (Henkel und Tülle sind klar erkennbar). 
+
+PCA macht genau das: Sie sucht den "Winkel", aus dem man die Daten betrachten muss (die Projektion), damit die Unterschiede zwischen den Punkten (die **Varianz**) am deutlichsten sichtbar bleiben.
+:::
+
+:::medium
+Technisch gesehen sucht PCA nach neuen Achsen im Datenraum, den sogenannten **Hauptkomponenten**.
+1. Die **erste Hauptkomponente** ist die Richtung, in der die Daten am stärksten gestreut sind.
+2. Die **zweite Hauptkomponente** steht senkrecht zur ersten und deckt den nächstgrößeren Teil der verbleibenden Streuung ab.
+
+Durch das Weglassen der Komponenten mit sehr geringer Streuung können wir Daten von z. B. 100 Dimensionen auf 2 oder 3 Dimensionen reduzieren, um sie visualisieren zu können.
+:::
+
+:::advanced
+Mathematisch ist PCA eine Basis-Transformation. Wir berechnen zuerst die **Kovarianzmatrix** der zentrierten Daten. Dann bestimmen wir die **Eigenvektoren** und **Eigenwerte** dieser Matrix.
+- Die Eigenvektoren geben die Richtungen der Hauptkomponenten an.
+- Die Eigenwerte geben an, wie viel Varianz (Information) entlang dieser Achsen liegt.
+
+Wir sortieren die Eigenvektoren nach ihren Eigenwerten und projizieren die Daten auf die Top-$k$ Vektoren. Das Ergebnis ist eine lineare Abbildung, welche den mittleren quadratischen Projektionsfehler minimiert.
+:::
+
+---
+
+## Interaktive Demo: Den optimalen Winkel finden
+
+In dieser Demo kannst du die Suche nach der ersten Hauptkomponente miterleben.
+- Du siehst eine Punktwolke und eine **Indigo-farbene Achse**.
+- Die **kleinen grauen Linien** zeigen die Projektion der Punkte auf diese Achse.
+- Drehe die Achse mit dem Regler und beobachte den **Balken unten**: Er zeigt, wie viel "Information" (Varianz) auf der Achse erhalten bleibt.
+- Dein Ziel: Den Winkel finden, bei dem der Balken am längsten ist!
+
+<PCADemo client:only="react" />
+
+---
+
+## Warum brauchen wir PCA?
+
+- **Visualisierung:** Wir können keine 50-dimensionalen Räume sehen. PCA ermöglicht es uns, komplexe Datensätze auf 2D-Diagrammen darzustellen.
+- **Effizienz:** Weniger Features bedeuten schnelleres Training und geringeren Speicherbedarf für Machine Learning Modelle.
+- **Rauschunterdrückung:** Da Rauschen oft eine geringe Varianz hat, wird es durch das Weglassen der hinteren Hauptkomponenten oft automatisch entfernt.
+
+---
+
+## Zusammenfassung
+
+- **Dimensionsreduktion:** Vereinfacht Daten durch Projektion.
+- **Varianz-Maximierung:** Sucht nach Richtungen mit dem größten Informationsgehalt.
+- **Orthogonalität:** Alle Hauptkomponenten stehen senkrecht aufeinander.
+- **Verlustbehaftet:** Man verliert immer ein bisschen Information, gewinnt aber Übersichtlichkeit.

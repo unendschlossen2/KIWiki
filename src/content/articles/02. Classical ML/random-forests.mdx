@@ -1,0 +1,80 @@
+---
+title: "Random Forests"
+description: "Die Stärke der Gemeinschaft — wie viele einfache Entscheidungsbäume zusammen ein robustes Kraftpaket bilden."
+category: "ml"
+tags: ["Ensemble Learning", "Bagging", "Bootstrap", "Klassifikation"]
+aliases: ["Zufallswald", "Random Forest Classifier", "RF"]
+---
+
+# Random Forests
+
+Ein einzelner Entscheidungsbaum ist zwar leicht zu verstehen, neigt aber stark dazu, die Trainingsdaten einfach "auswendig zu lernen" (Overfitting). Der Random Forest löst dieses Problem durch das Prinzip der **Schwarmintelligenz**: Statt auf einen einzigen Experten zu hören, befragt er einen ganzen Wald von Bäumen.
+
+---
+
+## Die Kraft der Masse
+
+:::beginner
+Stell dir vor, du möchtest wissen, ob ein Film gut ist. 
+- Ein einzelner Kritiker (ein Entscheidungsbaum) hat vielleicht sehr spezifische Vorlieben und liegt für die Allgemeinheit oft daneben.
+- Wenn du aber **100 verschiedene Leute** fragst und die Mehrheit entscheiden lässt, ist das Ergebnis meist viel zuverlässiger.
+
+Ein Random Forest ist genau das: Eine Sammlung von vielen Entscheidungsbäumen, die unabhängig voneinander trainiert werden und am Ende gemeinsam abstimmen.
+:::
+
+:::medium
+Der Random Forest nutzt zwei wesentliche Techniken, um Vielfalt in den Wald zu bringen:
+1. **Bagging (Bootstrap Aggregating):** Jeder Baum wird auf einer zufälligen Stichprobe der Daten trainiert. Manche Datenpunkte kommen im Training eines Baumes mehrfach vor, andere gar nicht.
+2. **Feature Randomness:** An jedem Knoten eines Baumes darf der Algorithmus nicht alle Merkmale (Features) betrachten, sondern nur eine zufällige Auswahl.
+
+Diese "künstliche Schwächung" der einzelnen Bäume sorgt dafür, dass sie sich voneinander unterscheiden und individuelle Fehler machen, die sich im Gesamtergebnis gegenseitig aufheben.
+:::
+
+:::advanced
+Mathematisch gesehen reduziert der Random Forest die **Varianz** des Modells, ohne den **Bias** wesentlich zu erhöhen. Da die Bäume unkorreliert sind (durch Bootstrapping und Feature-Subsets), konvergiert der Gesamtfehler mit zunehmender Anzahl der Bäume $B$ gegen:
+
+$$
+\text{Varianz}_{\text{Forest}} \approx \rho \cdot \sigma^2 + \frac{1 - \rho}{B} \cdot \sigma^2
+$$
+
+Dabei ist $\rho$ die Korrelation zwischen den Bäumen. Je geringer die Korrelation (also je unterschiedlicher die Bäume), desto stärker sinkt die Varianz des Ensembles.
+:::
+
+---
+
+## Interaktive Demo
+
+Beobachte hier, wie ein Random Forest den Raum aufteilt. Im Vergleich zu einem einzelnen Baum (Anzahl = 1) wirst du sehen, dass die Flächen bei mehr Bäumen "weicher" und weniger zerklüftet wirken. Das ist ein Zeichen für eine bessere Generalisierung.
+
+<RandomForestDemo client:only="react" />
+
+---
+
+## Warum Random Forests nutzen?
+
+:::beginner
+**Vorteile:**
+- **Robustheit:** Ein paar fehlerhafte Datenpunkte bringen den Wald nicht aus der Ruhe.
+- **Einfachheit:** Er funktioniert meistens "out of the box" sehr gut, ohne dass man viel einstellen muss.
+
+**Nachteile:**
+- **Black-Box:** Es ist schwer nachzuvollziehen, warum 100 Bäume genau so entschieden haben.
+- **Speicher:** Ein Wald aus 500 tiefen Bäumen kann viel Speicherplatz benötigen.
+:::
+
+:::medium
+Ein wertvoller Nebenprodukt des Random Forest ist die **Feature Importance**. Der Algorithmus kann messen, wie viel "Ordnung" (Gini-Gain) ein bestimmtes Merkmal über alle Bäume hinweg im Durchschnitt schafft. So erfährt man, welche Daten für die Vorhersage am wichtigsten sind.
+:::
+
+:::advanced
+In der Praxis ist der Random Forest oft der erste Algorithmus, den man auf tabellarische Daten anwendet (Baseline). Er ist unempfindlich gegenüber Ausreißern und benötigt keine Skalierung der Eingabewerte (wie z.B. bei SVMs oder Neuronalen Netzen). Allerdings wird er heute oft von **Gradient Boosting** Modellen übertroffen, wenn es um die absolut letzte Prise Genauigkeit geht.
+:::
+
+---
+
+## Zusammenfassung
+
+- Ein Random Forest ist ein **Ensemble** aus vielen unkorrelierten Entscheidungsbäumen.
+- Er verhindert **Overfitting** durch zufällige Daten- und Feature-Auswahl.
+- Die finale Entscheidung fällt per **Mehrheitswahl** (Voting).
+- Er ist ein extrem zuverlässiges Arbeitstier für fast jede Art von tabellarischen Daten.

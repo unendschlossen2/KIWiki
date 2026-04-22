@@ -1,0 +1,72 @@
+---
+title: "Neuronale Netze"
+description: "Vom biologischen Vorbild zur Superintelligenz — wie Schichten aus Neuronen komplexe Muster lernen."
+category: "dl"
+tags: ["Deep Learning", "Architektur", "Backpropagation", "Gewichte"]
+---
+
+# Neuronale Netze
+
+Künstliche Neuronale Netze (Artificial Neural Networks, ANN) sind das Rückgrat der modernen KI-Revolution. Inspiriert von der Vernetzung der Neuronen im menschlichen Gehirn, bestehen sie aus Schichten von Recheneinheiten, die durch das Anpassen von Millionen kleiner Regler (**Gewichte**) lernen, Aufgaben wie Bilderkennung oder Sprachübersetzung zu meistern.
+
+---
+
+## Der Aufbau: Schichten und Verbindungen
+
+:::beginner
+Stell dir eine Fabrik mit mehreren Abteilungen vor:
+1.  **Input-Schicht:** Hier kommen die Rohmaterialien (z. B. Pixel eines Bildes) an.
+2.  **Verborgene Schichten (Hidden Layers):** Hier wird das Material bearbeitet. Jede Schicht erkennt etwas komplexere Muster (z. B. Linien, dann Formen, dann Gesichter).
+3.  **Output-Schicht:** Hier wird das fertige Produkt geliefert (z. B. die Entscheidung "Das ist eine Katze").
+
+Jede Verbindung zwischen den Stationen hat ein **Gewicht**, das bestimmt, wie wichtig eine Information für den nächsten Schritt ist.
+:::
+
+:::medium
+Ein neuronales Netz besteht aus einer Eingabeschicht, einer Ausgabeschicht und einer beliebigen Anzahl von **Hidden Layers**. Je mehr Schichten ein Netz hat, desto "tiefer" ist es – daher der Begriff **Deep Learning**.
+
+Jedes Neuron in einer Schicht berechnet eine gewichtete Summe seiner Eingaben, addiert einen Bias und schickt das Ergebnis durch eine **Aktivierungsfunktion** (wie ReLU oder Sigmoid). Dies ermöglicht es dem Netz, nicht-lineare Zusammenhänge zu lernen, was mit einfacher Regression unmöglich wäre.
+:::
+
+:::advanced
+Ein vorwärtsgerichtetes Netz (Feedforward Neural Network) berechnet den Output $\mathbf{a}^{(L)}$ der Schicht $L$ wie folgt:
+
+$$
+\mathbf{a}^{(L)} = \sigma(\mathbf{W}^{(L)} \mathbf{a}^{(L-1)} + \mathbf{b}^{(L)})
+$$
+
+- $\mathbf{W}^{(L)}$ ist die Gewichtsmatrix.
+- $\mathbf{b}^{(L)}$ ist der Bias-Vektor.
+- $\sigma$ ist die Aktivierungsfunktion.
+
+Das Training erfolgt durch das Minimieren einer Kostenfunktion $J(\mathbf{W}, \mathbf{b})$ mittels **Gradientenabstieg**. Das Herzstück ist dabei der **Backpropagation**-Algorithmus, der die Kettenregel der Differentialrechnung nutzt, um den Fehler vom Output zurück durch alle Schichten zu propagieren und die Gewichte entsprechend anzupassen.
+:::
+
+---
+
+## Interaktive Demo: Das Netz in Aktion
+
+In dieser Demo siehst du ein einfaches Deep Neural Network mit zwei Hidden Layers.
+- Die **Linienstärke** visualisiert das aktuelle Gewicht der Verbindung.
+- Klicke auf **"Gewichte trainieren"**, um zu beobachten, wie das Netz versucht, eine einfache Klassifikationsaufgabe zu lösen.
+- Achte darauf, wie sich die Verbindungen verstärken oder abschwächen, während das Modell lernt.
+
+<NeuralNetworkDemo client:only="react" />
+
+---
+
+## Meilensteine des Deep Learning
+
+- **Perzeptron (1950er):** Die erste künstliche Recheneinheit.
+- **Multi-Layer Perceptron (MLP):** Einführung der Hidden Layers.
+- **Deep Learning Durchbruch (2012):** AlexNet gewinnt den ImageNet-Wettbewerb und zeigt die Überlegenheit tiefer Netze.
+- **Transformers (2017):** Die Architektur, die LLMs wie GPT-4 erst möglich machte.
+
+---
+
+## Zusammenfassung
+
+- **Schichten-Architektur:** Daten fließen von Input zu Output.
+- **Lernfähige Gewichte:** Wissen wird in der Stärke der Verbindungen gespeichert.
+- **Aktivierungsfunktionen:** Verleihen dem Netz die Fähigkeit, komplexe, nicht-lineare Muster zu verstehen.
+- **Backpropagation:** Der mathematische Trick, mit dem das Netz aus seinen Fehlern lernt.

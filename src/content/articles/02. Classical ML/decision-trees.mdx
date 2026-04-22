@@ -1,0 +1,91 @@
+---
+title: "Entscheidungsbäume"
+description: "Wie KI logische Wenn-Dann-Entscheidungen trifft und Daten in hierarchische Strukturen zerlegt."
+category: "ml"
+tags: ["Klassifikation", "Regression", "Gini-Index", "Logik"]
+aliases: ["Decision Trees", "CART", "ID3", "Baumbasiertes Lernen"]
+---
+
+# Entscheidungsbäume
+
+Entscheidungsbäume (Decision Trees) gehören zu den intuitivsten Algorithmen im Maschinellen Lernen. Sie bilden Entscheidungsprozesse so ab, wie wir Menschen es oft tun: durch eine Abfolge von logischen Fragen, die uns schrittweise zum Ergebnis führen.
+
+---
+
+## Die Logik der Verzweigung
+
+:::beginner
+Stell dir vor, du möchtest entscheiden, ob du heute draußen Tennis spielen gehst. Deine Fragen könnten lauten:
+1. Regnet es? (Wenn ja: Bleib drinnen)
+2. Ist es windig? (Wenn ja: Bleib drinnen)
+3. Scheint die Sonne? (Wenn ja: Geh raus!)
+
+Jede Antwort führt dich zu einer neuen Frage oder zu einer endgültigen Entscheidung. Im Maschinellen Lernen lernt der Computer selbstständig, welche Fragen am wichtigsten sind, um die Daten am besten zu sortieren.
+:::
+
+:::medium
+Ein Entscheidungsbaum besteht aus **Wurzelknoten** (Root), **Entscheidungsknoten** (Internal Nodes) und **Blattknoten** (Leaves). An jedem Knoten wird ein Datensatz anhand eines Merkmals gesplittet.
+
+Das Ziel ist es, die Daten so zu teilen, dass die resultierenden Gruppen möglichst "rein" (**pure**) sind – das heißt, sie sollten idealerweise nur noch Datenpunkte einer einzigen Klasse enthalten.
+:::
+
+:::advanced
+Mathematisch gesehen ist ein Entscheidungsbaum eine partitionierende Methode, die den Feature-Raum in rechteckige Regionen unterteilt. Um den besten Split zu finden, nutzt man Metriken wie die **Entropie** oder den **Gini-Index**.
+
+Der Gini-Index misst die Unreinheit eines Knotens. Ein Wert von 0 bedeutet perfekte Reinheit. Die Formel lautet:
+
+$$
+G = 1 - \sum_{i=1}^{C} p_i^2
+$$
+
+Wobei $p_i$ der Anteil der Klasse $i$ im Knoten ist. Der Algorithmus wählt den Split, der die größte Reduktion der Unreinheit (Information Gain) bewirkt.
+:::
+
+---
+
+## Interaktive Demo
+
+Hier kannst du sehen, wie ein Entscheidungsbaum den Raum aufteilt. Setze Punkte unterschiedlicher Farben und beobachte, wie der Algorithmus die optimale "Trennlinie" findet. In der Seitenleiste siehst du die daraus resultierende Baumstruktur.
+
+<DecisionTreeDemo client:only="react" />
+
+---
+
+## Vor- und Nachteile
+
+:::beginner
+**Vorteile:**
+- Extrem leicht zu verstehen (White-Box-Modell).
+- Braucht kaum Vorbereitung der Daten.
+
+**Nachteile:**
+- Bäume werden schnell zu komplex und merken sich die Daten einfach auswendig (Overfitting), statt das allgemeine Muster zu lernen.
+:::
+
+:::medium
+Ein großes Problem von Entscheidungsbäumen ist ihre Instabilität: Kleine Änderungen in den Daten können zu einem völlig anderen Baum führen. Um dies zu beheben, nutzt man oft **Ensemble-Methoden** wie Random Forests, bei denen viele Bäume gemeinsam entscheiden.
+
+Um Overfitting zu verhindern, nutzt man Techniken wie **Pruning** (das Abschneiden von unwichtigen Zweigen) oder legt eine maximale Tiefe fest.
+:::
+
+:::advanced
+Entscheidungsbäume sind die Basis für einige der stärksten Algorithmen im modernen ML (z.B. XGBoost oder LightGBM). Während ein einzelner Baum oft eine hohe Varianz aufweist, können Boosting-Verfahren diese Bäume sequentiell so kombinieren, dass sie auch komplexeste nicht-lineare Zusammenhänge hocheffizient abbilden können.
+:::
+
+---
+
+## Wichtige Begriffe
+
+- **Information Gain:** Der Gewinn an "Ordnung" durch einen Split.
+- **Overfitting:** Der Baum ist zu tief und lernt Details/Rauschen statt Trends.
+- **Pruning:** Das Vereinfachen eines Baumes nach dem Training.
+- **Klassifikation vs. Regression:** Bäume können beides – Klassen vorhersagen oder Zahlenwerte schätzen.
+
+---
+
+## Zusammenfassung
+
+- Entscheidungsbäume zerlegen komplexe Probleme in **einfache Ja/Nein-Fragen**.
+- Sie unterteilen den Datenraum in immer reinere Segmente.
+- Sie sind **hochgradig interpretierbar**, aber anfällig für Overfitting.
+- Sie bilden den Grundstein für moderne Ensemble-Verfahren wie **Random Forests**.

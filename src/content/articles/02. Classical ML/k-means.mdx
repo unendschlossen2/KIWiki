@@ -1,0 +1,68 @@
+---
+title: "K-Means Clustering"
+description: "Ordnung im Chaos — wie Maschinen Gruppen in Daten finden, ganz ohne menschliche Hilfe."
+category: "ml"
+tags: ["Unsupervised Learning", "Clustering", "Zentroiden", "Datenanalyse"]
+---
+
+# K-Means Clustering
+
+Das **K-Means Clustering** ist einer der populärsten Algorithmen im Bereich des **Unsupervised Learning** (Unüberwachtes Lernen). Während Klassifikatoren wie SVM oder k-NN wissen müssen, welche Punkte zu welcher Gruppe gehören, findet K-Means diese Gruppen ganz von selbst. Er erkennt Muster und Strukturen in Daten, die auf den ersten Blick wie eine ungeordnete Punktwolke aussehen.
+
+---
+
+## Das Prinzip der Gruppenbildung
+
+:::beginner
+Stell dir vor, du schüttest eine Kiste bunter Bausteine auf den Boden. Du kennst die Farben nicht, aber du willst sie in **3 Häufen** sortieren. 
+1. Du legst drei Platzhalter (Zentroiden) irgendwo in den Raum.
+2. Du nimmst jeden Stein und legst ihn zu dem Platzhalter, der am nächsten liegt.
+3. Sobald alle Steine verteilt sind, schiebst du jeden Platzhalter genau in die Mitte seines neuen Haufens.
+4. Das wiederholst du so lange, bis sich die Platzhalter nicht mehr bewegen.
+:::
+
+:::medium
+K-Means ist ein iterativer Algorithmus, der Datenpunkte in $k$ Cluster unterteilt. Ziel ist es, die Varianz innerhalb der Cluster zu minimieren. 
+Der Prozess besteht aus zwei Hauptschritten:
+1.  **Zuweisung:** Jeder Datenpunkt wird dem nächstgelegenen Zentroiden (Mittelpunkt) zugewiesen.
+2.  **Update:** Die Position jedes Zentroiden wird als Mittelwert aller ihm zugewiesenen Punkte neu berechnet.
+
+Dieser Zyklus wiederholt sich, bis die Zentroiden stabil bleiben oder eine maximale Anzahl an Iterationen erreicht ist.
+:::
+
+:::advanced
+Mathematisch minimiert K-Means die Summe der quadrierten Abstände (Within-Cluster Sum of Squares, WCSS):
+
+$$
+\text{WCSS} = \sum_{j=1}^{k} \sum_{x \in S_j} \| x - \mu_j \|^2
+$$
+
+Dabei ist $S_j$ die Menge der Punkte im Cluster $j$ und $\mu_j$ der Zentroid dieses Clusters. Ein bekanntes Problem ist, dass der Algorithmus in einem lokalen Minimum stecken bleiben kann, abhängig von der initialen (zufälligen) Position der Zentroiden. Moderne Varianten wie **K-Means++** nutzen eine klügere Initialisierung, um dieses Risiko zu minimieren.
+:::
+
+---
+
+## Interaktive Demo: Das Wandern der Zentroiden
+
+In dieser Demo kannst du den K-Means Algorithmus Schritt für Schritt beobachten.
+- Setze eigene Punkte oder nutze die vorhandenen.
+- Klicke auf **"Schritt ausführen"**, um abwechselnd Punkte zuzuweisen und Zentroiden zu verschieben.
+- Beobachte, wie die Zentroiden ("+") langsam in das Zentrum der jeweiligen Punktgruppen wandern.
+
+<KMeansDemo client:only="react" />
+
+---
+
+## Herausforderungen
+
+- **Wahl von k:** Wie viele Cluster gibt es wirklich? Man nutzt oft die **Ellbogen-Methode**, um das optimale $k$ zu finden.
+- **Ausreißer:** Einzelne Punkte, die sehr weit weg liegen, können die Zentroiden stark verfälschen.
+- **Nicht-sphärische Formen:** K-Means funktioniert am besten bei kreisförmigen (sphärischen) Clustern. Bei länglichen oder mondförmigen Clustern scheitert er oft (hier wären Algorithmen wie DBSCAN besser).
+
+---
+
+## Zusammenfassung
+
+- **Unüberwacht:** Benötigt keine Labels (Klassen) zum Lernen.
+- **Zentroiden-basiert:** Findet die Mittelpunkte von Datenwolken.
+- **Einsatz:** Kundensegmentierung, Bildkompression (Farbreduktion) und Anomalieerkennung.

@@ -5,8 +5,8 @@ export async function GET() {
   const articles = await getCollection('articles');
 
   const index = articles.map(article => ({
-    slug: article.slug,
-    url: resolvePath(`/articles/${article.slug}`),
+    slug: article.id,
+    url: resolvePath(`/articles/${article.id}`),
     title: article.data.title,
     description: article.data.description || "",
     category: article.data.category,

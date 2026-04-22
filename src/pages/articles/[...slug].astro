@@ -1,12 +1,14 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
+
+import { slugifyPath } from "../../utils/slugify";
 
 export async function getStaticPaths() {
   const articles = await getCollection("articles");
   return articles.map((article) => {
-    // Strip file extension from ID
-    const slug = article.id.replace(/\.mdx?$/, "");
+    const slug = slugifyPath(article.id.replace(/\.mdx?$/, ""));
+
     return {
       params: { slug },
       props: { article },
@@ -18,17 +20,22 @@ import { slugifyTag } from "../../utils/slugify";
 import TagPill from "../../components/design/TagPill.astro";
 
 const { article } = Astro.props;
-const { Content } = await article.render();
+const { Content } = await render(article);
 const tags = article.data.tags || [];
 ---
 
-<Layout frontmatter={{ title: article.data.title }} category={article.data.category}>
-  {tags.length > 0 && (
-    <div class="flex flex-wrap gap-2 mb-8 -mt-6">
-      {tags.map(tag => (
-        <TagPill tag={tag} />
-      ))}
-    </div>
-  )}
+<Layout
+  frontmatter={{ title: article.data.title }}
+  category={article.data.category}
+>
+  {
+    tags.length > 0 && (
+      <div class="flex flex-wrap gap-2 mb-8 -mt-6">
+        {tags.map((tag) => (
+          <TagPill tag={tag} />
+        ))}
+      </div>
+    )
+  }
   <Content />
 </Layout>

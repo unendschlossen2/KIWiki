@@ -6,7 +6,6 @@ tags: ["MCP", "Tools", "LLM", "Integration", "EasyMCP"]
 aliases: ["Model Context Protocol", "MCP Standard"]
 ---
 
-import MCPDemo from '../../../components/demos/MCPDemo.tsx';
 
 # Model Context Protocol (MCP)
 
@@ -78,29 +77,30 @@ Da MCP lokalen Systemzugriff ermöglicht, ist das Thema **Sicherheit** zentral i
 
 ---
 
-## Implementierung mit EasyMCP
+## Implementierung mit FastMCP
 
-Da das manuelle Parsen von JSON-RPC-Nachrichten komplex ist, haben sich Bibliotheken wie **EasyMCP** (für Python) oder `@modelcontextprotocol/sdk` (für JS/TS) etabliert, die den Prozess stark vereinfachen.
+Da das manuelle Parsen von JSON-RPC-Nachrichten komplex ist, stellt Anthropic das offizielle **MCP Python SDK** bereit. Das Herzstück für Entwickler ist dabei **FastMCP** — ein High-Level Framework, das sich ähnlich wie FastAPI oder Flask anfühlt.
 
-### Beispiel in Python (EasyMCP)
+### Beispiel in Python (FastMCP)
 
-Mit EasyMCP lassen sich in Python reguläre Funktionen mit simplen Decorators in vollständige MCP-Tools verwandeln.
+Mit FastMCP lassen sich in Python reguläre Funktionen mit simplen Decorators in vollständige MCP-Tools verwandeln.
 
 ```python
-from easymcp import MCP
+from mcp.server.fastmcp import FastMCP
 import sqlite3
 
 # 1. Initialisiere den MCP Server (läuft standardmäßig auf stdio)
-mcp = MCP(name="Employee DB", version="1.0.0")
+mcp = FastMCP("Employee DB")
 
 # Verbinde zu einer internen Datenbank
 conn = sqlite3.connect("company.db")
 
 # 2. Registriere ein Tool über den Decorator
 # Der Docstring und die Type-Hints werden automatisch vom LLM gelesen!
-@mcp.tool("search_employee", "Sucht nach Mitarbeitern in der Unternehmensdatenbank")
+@mcp.tool()
 def search_employee(name: str) -> str:
     """
+    Sucht nach Mitarbeitern in der Unternehmensdatenbank.
     Diese Beschreibung sieht das LLM, um zu verstehen, was das Tool macht.
     """
     cursor = conn.cursor()

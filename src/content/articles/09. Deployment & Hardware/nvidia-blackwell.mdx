@@ -1,0 +1,56 @@
+---
+title: "NVIDIA: Blackwell & Blackwell-Ultra"
+description: "Der Motor der KI-Revolution — wie NVIDIAs Blackwell-Architektur die Rechenleistung für AGI bereitstellt."
+category: "deployment"
+tags: ["Hardware", "NVIDIA", "Blackwell", "GPU", "Compute"]
+---
+
+# NVIDIA: Blackwell & Blackwell-Ultra
+
+Hinter jedem bahnbrechenden KI-Modell steht die Hardware, die es berechnet. Im Jahr 2026 ist **NVIDIAs Blackwell-Architektur** (B200) der unangefochtene Standard für KI-Rechenzentren weltweit. Systeme wie der **GB200 NVL72** werden mittlerweile flächendeckend an Cloud-Provider wie AWS, Azure und Google Cloud ausgeliefert.
+
+---
+
+## Blackwell: Ein Quantensprung in der Rechenpower
+
+:::beginner
+Stell dir vor, du hättest bisher mit einem Fahrrad deine Einkäufe erledigt und steigst plötzlich auf einen Schwerlast-LKW um. Blackwell ist für KI genau dieser Sprung. Er kann Billionen von Rechenoperationen pro Sekunde ausführen, was das Training von Modellen ermöglicht, die zuvor Jahre gedauert hätten.
+:::
+
+:::medium
+Die Blackwell-Architektur führt den **FP4 (4-Bit Floating Point)** Datentyp ein, der es ermöglicht, die Rechenleistung bei gleichem Energieverbrauch massiv zu steigern. Ein einzelner GB200-Node (Grace Blackwell) vereint zwei Blackwell-GPUs mit einer Grace-CPU über eine 900 GB/s schnelle Verbindung.
+:::
+
+:::advanced
+Der technologische Kern von Blackwell ist die **Transformer Engine der 2. Generation**. Diese nutzt dynamische FP4-Präzision, um die Inferenz-Rechenleistung im Vergleich zu FP8 (Hopper) zu verdoppeln, ohne signifikante Einbußen in der Modellgenauigkeit. 
+Zudem skaliert Blackwell über den **NVLink 5-Fabric**, der eine bidirektionale Bandbreite von 1,8 TB/s pro GPU ermöglicht. Dies reduziert den Kommunikations-Overhead bei Multi-GPU-Training massiv. Blackwell-Ultra erweitert dies durch den Einsatz von **HBM3e (High Bandwidth Memory)** mit bis zu 141 GB pro GPU, was den Weg für Modelle mit mehr als 10 Billionen Parametern ebnet.
+:::
+
+---
+
+## Blackwell-Ultra: Skalierung ohne Grenzen
+
+Mit dem Release von Blackwell-Ultra im Jahr 2026 hat NVIDIA die Speicherkapazität (HBM3e) und die Bandbreite nochmals verdoppelt.
+- **NVLink Switch System:** Ermöglicht es, bis zu 576 GPUs zu einer einzigen, gigantischen "Super-GPU" zusammenzuschalten.
+- **Energieeffizienz:** Trotz der enormen Leistung verbraucht Blackwell pro Recheneinheit deutlich weniger Strom als die Vorgängergeneration Hopper (H100).
+
+## Der Nachfolger: Vera Rubin
+
+Obwohl Blackwell gerade erst den Markt dominiert, hat NVIDIA bereits die nächste Generation angekündigt: **Vera Rubin**.
+- **Release:** Erste Samples werden für das 2. Halbjahr 2026 erwartet.
+- **HBM4:** Vera Rubin wird den neuen HBM4-Speicher nutzen, um die Bandbreiten-Engpässe bei extrem großen Agenten-Systemen endgültig zu beseitigen.
+- **Sovereign AI:** NVIDIA fokussiert sich zunehmend auf schlüsselfertige "Sovereign AI" Lösungen für Nationalstaaten, die eigene Blackwell- und Rubin-Cluster betreiben.
+
+---
+
+## Die Hardware-Wall
+
+Trotz der rasanten Entwicklung stößt die Industrie an physikalische Grenzen.
+1. **Kühlung:** Blackwell-Systeme benötigen fast ausschließlich Flüssigkeitskühlung, um die enorme Abwärme abzuführen.
+2. **Stromversorgung:** Ganze Rechenzentren müssen heute wie kleine Städte geplant werden, um den Energiebedarf der Blackwell-Cluster zu decken.
+
+---
+
+## Zusammenfassung
+
+NVIDIA liefert mit Blackwell die "Schaufeln" für den Goldrausch der KI. Ohne diese spezialisierten Chips wären Fortschritte wie GPT-5 oder Gemini 3.1 technisch nicht realisierbar. Blackwell ist das Fundament, auf dem die künstliche Intelligenz von morgen gebaut wird.

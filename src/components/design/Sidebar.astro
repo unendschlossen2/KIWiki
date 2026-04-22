@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import { slugifyCategory } from "../../utils/slugify";
+import { slugifyCategory, slugifyPath } from "../../utils/slugify";
 import { DIFFICULTY_LABELS, DIFFICULTY_SHORT } from "../../config/difficulty";
 import {
   getCategoryDisplay,
@@ -147,7 +147,7 @@ const groupedArticles = allArticles.reduce(
                     </a>
                     <ul class="sidebar-list">
                       {items.map((article) => {
-                        const slug = article.id.replace(/\.mdx?$/, "");
+                        const slug = slugifyPath(article.id.replace(/\.mdx?$/, ""));
                         const href = `/KIWiki/articles/${slug}`;
                         const isActive = currentPath.includes(slug);
                         const difficulties = article.data.difficulties;

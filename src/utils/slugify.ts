@@ -12,3 +12,20 @@ export function slugifyCategory(cat: string): string {
 export function slugifyTag(tag: string): string {
   return slugifyCategory(tag);
 }
+
+export function slugifyPath(path: string): string {
+  return path
+    .replace(/\\/g, "/") // Normalize backslashes to forward slashes
+    .split("/")
+    .map((segment) =>
+      segment
+        .toLowerCase()
+        .replace(/[äöüÄÖÜß]/g, (c) =>
+          (({ ä: "ae", ö: "oe", ü: "ue", Ä: "ae", Ö: "oe", Ü: "ue", ß: "ss" } as Record<string, string>)[c] ?? c)
+        )
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+    )
+    .join("/");
+}

@@ -1,0 +1,75 @@
+---
+title: "Gradient Boosting"
+description: "Vom Fehler zum Modell — wie XGBoost und LightGBM durch sequentielles Lernen die Spitze der Tabellendaten-Modelle erklommen haben."
+category: "ml"
+tags: ["Ensemble Learning", "Boosting", "XGBoost", "LightGBM"]
+---
+
+# Gradient Boosting
+
+Während **Random Forests** darauf basieren, viele Bäume unabhängig voneinander zu trainieren und deren Ergebnisse zu mitteln (Bagging), verfolgt **Gradient Boosting** einen fundamental anderen Ansatz: Die Bäume werden nacheinander (sequentiell) gebaut. Jeder neue Baum hat dabei nur eine einzige Aufgabe: Die Fehler seines Vorgängers zu korrigieren.
+
+---
+
+## Das Prinzip der Korrektur
+
+:::beginner
+Stell dir vor, du versuchst ein kompliziertes Lied auf dem Klavier zu lernen. 
+1. Im ersten Durchgang spielst du das ganze Lied, machst aber viele Fehler. 
+2. Statt das Lied einfach nochmal von vorne zu spielen, konzentrierst du dich im zweiten Durchgang **nur auf die Takte, in denen du dich verspielt hast**.
+3. Im dritten Durchgang korrigierst du die verbleibenden kleinen Fehler aus dem zweiten Durchgang.
+
+Am Ende ist dein Spiel die Summe aus dem ersten Versuch und allen darauffolgenden Korrekturen. Genau so arbeitet Gradient Boosting: Ein Modell lernt aus den "Restfehlern" (Residuen) der vorherigen Modelle.
+:::
+
+:::medium
+Technisch gesehen minimiert Gradient Boosting eine Verlustfunktion (Loss Function), indem es in jedem Schritt ein neues Modell in Richtung des negativen Gradienten der Verlustfunktion hinzufügt. 
+
+Bei der Regression bedeutet das: Wenn unser aktuelles Modell für einen Datenpunkt 100 vorhergesagt hat, der echte Wert aber 110 war, beträgt das Residuum +10. Der nächste Baum wird darauf trainiert, genau diesen Wert 10 vorherzusagen. Die finale Vorhersage ist die Summe aller Bäume, oft gewichtet mit einer **Lernrate** ($\eta$).
+:::
+
+:::advanced
+Gradient Boosting betrachtet das Training als einen Optimierungsprozess im Funktionenraum. Wir suchen eine Funktion $F(x)$, die den erwarteten Verlust $L(y, F(x))$ minimiert. Das Modell wird additiv aufgebaut:
+
+$$
+F_{m}(x) = F_{m-1}(x) + \eta \cdot h_m(x)
+$$
+
+Dabei ist $h_m(x)$ ein schwacher Lerner (meist ein flacher Entscheidungsbaum), der auf die Pseudo-Residuen $r_{im}$ trainiert wird:
+
+$$
+r_{im} = -\left[\frac{\partial L(y_i, F(x_i))}{\partial F(x_i)}\right]_{F(x)=F_{m-1}(x)}
+$$
+
+Moderne Implementierungen wie **XGBoost** nutzen zusätzlich die zweite Ableitung (Hessian) der Verlustfunktion für eine präzisere Optimierung (Newton-Verfahren) und integrieren eine starke Regularisierung, um Overfitting zu vermeiden.
+:::
+
+---
+
+## Interaktive Demo: Schrittweise Verbesserung
+
+In dieser Demo siehst du, wie Gradient Boosting eine komplexe Funktion (eine Sinuskurve mit Rauschen) lernt. 
+- Jeder **Lernschritt** fügt einen neuen "schwachen" Baum hinzu.
+- Die **rote Linie** zeigt die aktuelle Gesamtvorhersage.
+- Die **blauen Balken** visualisieren die aktuellen Residuen (Fehler), auf die der nächste Baum trainiert wird.
+
+<GradientBoostingDemo client:only="react" />
+
+---
+
+## Warum ist Boosting so erfolgreich?
+
+Gradient Boosting Modelle, insbesondere **XGBoost**, **LightGBM** und **CatBoost**, dominieren seit Jahren die Wettbewerbe für tabellarische Daten (z. B. auf Kaggle). Ihre Stärken liegen in:
+
+1.  **Umgang mit fehlenden Werten:** Sie können automatisch lernen, wie mit Lücken in den Daten umzugehen ist.
+2.  **Effizienz:** LightGBM nutzt Techniken wie GOSS (Gradient-based One-Side Sampling), um riesige Datensätze in Bruchteilen von Sekunden zu verarbeiten.
+3.  **Flexibilität:** Sie können fast jede differenzierbare Verlustfunktion optimieren, egal ob für Regression, Klassifikation oder Ranking.
+
+---
+
+## Zusammenfassung
+
+- **Sequentielles Lernen:** Bäume werden nacheinander gebaut, nicht gleichzeitig.
+- **Fehlerfokus:** Jeder Baum lernt aus den Fehlern (Residuen) des Gesamtensembles.
+- **Lernrate:** Bestimmt, wie stark jeder einzelne Baum die Gesamtvorhersage beeinflussen darf (wichtig zur Vermeidung von Overfitting).
+- **SOTA:** Für strukturierte Daten (Tabellen, Excel-Listen) sind Gradient Boosting Verfahren auch 2026 noch oft die erste Wahl vor Deep Learning.

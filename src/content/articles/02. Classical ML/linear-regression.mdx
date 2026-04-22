@@ -1,0 +1,142 @@
+---
+title: "Lineare Regression"
+description: "Der Einstieg in die prädiktive Modellierung — wie man Trends in Daten findet und Vorhersagen trifft."
+category: "ml"
+tags: ["Grundlagen", "Regression", "Statistik", "Supervised Learning"]
+aliases: ["Linear Regression", "OLS", "Geradenfitting"]
+---
+
+# Lineare Regression
+
+Die lineare Regression ist einer der grundlegendsten und am häufigsten verwendeten Algorithmen im Maschinellen Lernen. Sie dient dazu, die Beziehung zwischen einer abhängigen Variable (dem Zielwert) und einer oder mehreren unabhängigen Variablen (den Features) zu modellieren.
+
+---
+
+## Was ist lineare Regression?
+
+:::beginner
+Stell dir vor, du möchtest den Preis einer Wohnung vorhersagen. Du weißt, dass größere Wohnungen meist teurer sind. Wenn du die Quadratmeter auf einer Karte einträgst, bemerkst du einen Trend: Die Punkte liegen ungefähr auf einer ansteigenden Linie.
+
+Die lineare Regression versucht, genau diese **"bestmögliche Gerade"** durch deine Datenpunkte zu ziehen. Sobald du diese Gerade hast, kannst du für jede beliebige Quadratmeterzahl den ungefähren Preis einfach auf der Linie ablesen.
+:::
+
+:::medium
+Bei der einfachen linearen Regression modellieren wir den Zusammenhang durch eine lineare Funktion. Ziel ist es, Parameter für die Steigung und den Achsenabschnitt zu finden, welche den Gesamtabstand zwischen der Geraden und den tatsächlichen Datenpunkten minimieren.
+
+Wir nutzen hierfür meist die Methode der **Kleinsten Quadrate** (Ordinary Least Squares). Dabei wird der vertikale Abstand (das Residuum) jedes Punktes zur Geraden quadriert und aufsummiert. Die Gerade mit der kleinsten Summe gilt als die beste Annäherung.
+:::
+
+:::advanced
+Formal betrachten wir eine Menge von $N$ Datenpunkten $\{(\xvec_i, y_i)\}_{i=1}^N$. Wir nehmen an, dass die Zielvariable $y$ eine Linearkombination der Eingabefeatures $\xvec$ plus ein Rauschen $\epsilon$ ist:
+
+$$
+y = \wvec^T \xvec + b + \epsilon
+$$
+
+Wobei $\wvec$ der Gewichtsvektor (Steigung) und $b$ der Bias (Achsenabschnitt) ist. In der klassischen Statistik wird die Lösung analytisch über die Normalgleichung bestimmt:
+
+$$
+\wvec = (X^T X)^{-1} X^T \mathbf{y}
+$$
+
+Im Kontext von Machine Learning, besonders bei sehr großen Datensätzen, bevorzugen wir jedoch iterative Verfahren wie den **Gradientenabstieg**, um diese Parameter numerisch zu finden.
+:::
+
+---
+
+## Interaktive Demo
+
+In dieser Demo kannst du die lineare Regression live erleben. Klicke in das Koordinatensystem, um eigene Datenpunkte zu setzen. Beobachte, wie sich der **MSE** (Mean Squared Error) verändert, wenn du auf "Schritt lernen" klickst. Das Modell nutzt Gradient Descent, um die Gerade immer präziser an deine Punkte anzupassen.
+
+<LinearRegressionDemo client:only="react" />
+
+---
+
+## Das mathematische Modell
+
+:::beginner
+Die Formel für unsere Vorhersage-Gerade sieht so aus:
+**Preis = (Gewicht × Quadratmeter) + Basispreis**
+
+Das **Gewicht** sagt uns, wie viel der Preis pro zusätzlichem Quadratmeter steigt. Der **Basispreis** (auch Bias genannt) ist der Startpunkt der Linie auf der Preisskala.
+:::
+
+:::medium
+Die mathematische Darstellung für ein einzelnes Feature lautet:
+
+$$
+\hat{y} = w \cdot x + b
+$$
+
+- $\hat{y}$ ist der vorhergesagte Wert.
+- $w$ ist das Gewicht (**Weight**), das die Steigung der Geraden bestimmt.
+- $b$ ist der **Bias**, der den Schnittpunkt mit der y-Achse festlegt.
+
+Um zu messen, wie gut unsere Gerade ist, berechnen wir den **Mean Squared Error (MSE)**:
+
+$$
+\loss = \frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2
+$$
+:::
+
+:::advanced
+In Vektor-Matrix-Notation für mehrere Dimensionen (Multiple Linear Regression) lässt sich das Modell sehr kompakt darstellen:
+
+$$
+\mathbf{\hat{y}} = \mathbf{X} \wvec
+$$
+
+Dabei ist $\mathbf{X}$ die sogenannte Design-Matrix, in der jede Zeile ein Datenpunkt und jede Spalte ein Feature ist (wobei meist eine Spalte aus Einsen hinzugefügt wird, um den Bias $b$ als Teil von $\wvec$ zu integrieren). Die Loss-Funktion als Vektoroperation lautet dann:
+
+$$
+\loss(\wvec) = \frac{1}{N} \| \mathbf{y} - \mathbf{X} \wvec \|_2^2
+$$
+:::
+
+---
+
+## Wie lernt das Modell? (Gradient Descent)
+
+:::beginner
+Stell dir vor, du stehst im dichten Nebel auf einem Berg und willst ins Tal (den Punkt mit dem geringsten Fehler). Da du nicht weit sehen kannst, tastest du mit dem Fuß den Boden ab und machst einen Schritt in die Richtung, in der es am steilsten bergab geht.
+
+Genau das macht der **Gradientenabstieg**: Er berechnet für die aktuelle Gerade, ob eine Änderung der Gewichte den Fehler verkleinert, und passt sie in kleinen Schritten (der **Lernrate**) an.
+:::
+
+:::medium
+Der Algorithmus berechnet die Ableitung (den Gradienten) der Verlustfunktion $\loss$ nach den Parametern $w$ und $b$. Diese Ableitung gibt die Richtung des steilsten Anstiegs an. Um den Fehler zu minimieren, gehen wir in die entgegengesetzte Richtung:
+
+$$
+w \leftarrow w - \eta \cdot \frac{\partial \loss}{\partial w}
+$$
+$$
+b \leftarrow b - \eta \cdot \frac{\partial \loss}{\partial b}
+$$
+
+Dabei ist $\eta$ die **Lernrate**. Ist sie zu groß, "springt" das Modell über das Ziel hinaus. Ist sie zu klein, dauert das Lernen sehr lange.
+:::
+
+:::advanced
+Der Gradient der Kostenfunktion in Matrix-Vektor-Schreibweise ergibt sich zu:
+
+$$
+\nabla_\wvec \loss = \frac{2}{N} \mathbf{X}^T (\mathbf{X} \wvec - \mathbf{y})
+$$
+
+Beim Gradientenabstieg iterieren wir dann gemäß:
+
+$$
+\wvec^{(t+1)} = \wvec^{(t)} - \eta \nabla_\wvec \loss(\wvec^{(t)})
+$$
+
+Für sehr große Datensätze (wo das Rechnen mit der kompletten Matrix $\mathbf{X}$ ineffizient wird) nutzt man stattdessen **Stochastic Gradient Descent (SGD)** oder **Mini-Batch Gradient Descent**, bei dem der Gradient nur auf einem kleinen, zufälligen Teil der Daten berechnet wird.
+:::
+
+---
+
+## Zusammenfassung
+
+- Die lineare Regression findet den **linearen Trend** in Daten.
+- Der **MSE** misst die Qualität der Vorhersage.
+- **Gradient Descent** ist das Werkzeug, mit dem die Maschine die optimalen Parameter $w$ und $b$ lernt.
+- Sie ist extrem interpretierbar, stößt aber bei komplexen, nicht-linearen Zusammenhängen an ihre Grenzen.

@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import { slugifyCategory } from "../../utils/slugify";
+import { slugifyCategory, slugifyPath } from "../../utils/slugify";
 import {
   getCategoryDisplay,
   getCategoryIcon,
@@ -160,7 +160,7 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
 
         {
           articles.map((article) => {
-            const slug = article.id.replace(/\.mdx?$/, "");
+            const slug = article.id;
             const difficulties = article.data.difficulties;
             const isRestricted = difficulties && difficulties.length < 3;
 
@@ -210,7 +210,7 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
                   )}
 
                   <a
-                    href={`/KIWiki/articles/${slug}`}
+                    href={`/KIWiki/articles/${slugifyPath(article.id.replace(/\.mdx?$/, ""))}`}
                     class="tile-link stretched-link"
                   >
                     Artikel lesen{" "}

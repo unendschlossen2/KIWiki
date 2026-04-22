@@ -1,0 +1,75 @@
+---
+title: "Naive Bayes"
+description: "Der Klassiker der Wahrscheinlichkeitsrechnung — wie der Satz von Bayes hilft, Spam von wichtigen E-Mails zu trennen."
+category: "ml"
+tags: ["Klassifikation", "Wahrscheinlichkeit", "Bayes", "Spam-Filter"]
+---
+
+# Naive Bayes
+
+Der **Naive Bayes** Algorithmus ist ein probabilistischer Klassifikator, der auf dem berühmten **Satz von Bayes** basiert. Trotz seiner Einfachheit und der oft "naiven" Annahme über die Unabhängigkeit der Daten, ist er extrem schnell und in vielen Bereichen (wie der Textklassifikation) erstaunlich effektiv.
+
+---
+
+## Das Prinzip der bedingten Wahrscheinlichkeit
+
+:::beginner
+Stell dir vor, du bist ein Wetterfrosch. Du weißt:
+1. Wie oft es insgesamt regnet (**Prior**).
+2. Wie oft es bewölkt ist, wenn es regnet.
+3. Wie oft es insgesamt bewölkt ist.
+
+Mit dem Satz von Bayes kannst du nun die entscheidende Frage beantworten: **"Wie hoch ist die Wahrscheinlichkeit für Regen, wenn ich gerade Wolken sehe?"**
+Naive Bayes macht genau das für Tausende von Merkmalen gleichzeitig (z. B. Wörter in einer E-Mail).
+:::
+
+:::medium
+Der Algorithmus heißt "naiv", weil er annimmt, dass alle Merkmale (Features) eines Datenpunkts **völlig unabhängig** voneinander sind. 
+
+Beispiel Spam-Filter: Wenn das Wort "Lotto" und das Wort "Gewinn" vorkommen, geht das Modell davon aus, dass das Auftreten von "Lotto" nichts über die Wahrscheinlichkeit aussagt, dass auch "Gewinn" erscheint. In der Realität hängen Wörter natürlich zusammen, aber diese Vereinfachung erlaubt es dem Modell, extrem effizient zu rechnen.
+:::
+
+:::advanced
+Der Kern ist das Theorem von Bayes:
+
+$$
+P(C|x) = \frac{P(x|C) \cdot P(C)}{P(x)}
+$$
+
+- $P(C|x)$: Die Wahrscheinlichkeit der Klasse $C$ gegeben das Feature $x$ (Posterior).
+- $P(x|C)$: Die Wahrscheinlichkeit des Features $x$ gegeben die Klasse $C$ (Likelihood).
+- $P(C)$: Die allgemeine Wahrscheinlichkeit der Klasse $C$ (Prior).
+
+Für mehrere Features $x_1, x_2, ..., x_n$ multiplizieren wir unter der Unabhängigkeitsannahme einfach alle Wahrscheinlichkeiten:
+
+$$
+P(C|x_1, ..., x_n) \propto P(C) \cdot \prod_{i=1}^{n} P(x_i|C)
+$$
+:::
+
+---
+
+## Interaktive Demo: Wort-Wahrscheinlichkeiten
+
+In dieser Demo simulieren wir einen einfachen Spam-Filter. 
+- Du siehst eine Liste von Wörtern und deren Wahrscheinlichkeiten, in **Spam** oder **Ham** (erwünschten Mails) vorzukommen.
+- Tippe einen Satz ein und beobachte, wie das Modell die Gesamtwahrscheinlichkeit berechnet.
+
+<NaiveBayesDemo client:only="react" />
+
+---
+
+## Stärken und Schwächen
+
+- **Vorteil:** Benötigt sehr wenig Trainingsdaten im Vergleich zu neuronalen Netzen.
+- **Vorteil:** Extrem schnell und skalierbar (linearer Aufwand).
+- **Nachteil:** Die Unabhängigkeitsannahme ist fast immer falsch, was bei stark korrelierten Daten zu Problemen führen kann.
+- **Nachteil:** Das "Zero-Frequency" Problem: Wenn ein Wort im Training nie vorkam, wird die gesamte Wahrscheinlichkeit zu 0. (Lösung: Laplace-Smoothing).
+
+---
+
+## Zusammenfassung
+
+- **Bayes Theorem:** Berechnet Wahrscheinlichkeiten basierend auf Vorwissen.
+- **Naiv:** Nimmt Unabhängigkeit der Features an.
+- **Einsatz:** Klassiker für Spam-Filterung, Sentiment-Analyse und schnelle Kategorisierungen.

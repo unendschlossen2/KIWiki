@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import { slugifyTag } from "../../utils/slugify";
+import { slugifyTag, slugifyPath } from "../../utils/slugify";
 import { DIFFICULTY_LABELS, DIFFICULTY_SHORT } from "../../config/difficulty";
 
 export async function getStaticPaths() {
@@ -196,7 +196,7 @@ const { tag, articles } = Astro.props;
 									)}
 
 									<a
-										href={`/KIWiki/articles/${slug}`}
+										href={`/KIWiki/articles/${slugifyPath(article.id.replace(/\.mdx?$/, ""))}`}
 										class="tile-link stretched-link"
 									>
 										Artikel lesen{" "}

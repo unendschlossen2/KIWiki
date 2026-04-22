@@ -1,135 +1,146 @@
-# Fahrplan: Zukünftige Artikel & Demo-Konzepte
+# Fahrplan: Zukünftige Artikel & Demo-Konzepte (SOTA April 2026)
 
-Dieses Dokument listet geplante Artikel für das KIWiki auf. Die Struktur folgt den Best-Practices für Einsteiger, Fortgeschrittene und Experten.
-
----
-
-## 1. Linear Regression (Lineare Regression)
-**Fokus:** Das Fundament der prädiktiven Modellierung — Trends in Daten finden.
-
-*   **Kategorie:** `ml` (Klassisches Maschinelles Lernen)
-*   **Keywords:** `Regression`, `OLS`, `Kleinste Quadrate`, `Gradient Descent`, `Bias-Variance`
-*   **Struktur:** Grundkonzept der Ausgleichsgeraden, Kostenfunktion (MSE), Optimierung.
-*   **Demo-Idee:** Ein Streudiagramm, in dem der User Datenpunkte setzt und eine Gerade interaktiv "fittet" (manuell oder per Knopfdruck via Gradient Descent).
-*   **Abhängigkeiten:** Mathematische Grundlagen (Vektoren/Ableitungen).
+Dieses Dokument listet geplante Artikel für das KIWiki auf. Alle Inhalte wurden auf den Stand von **April 2026** aktualisiert, um die neuesten State-of-the-Art (SOTA) Modelle und regulatorischen Entwicklungen abzubilden.
 
 ---
 
-## 2. Logistic Regression (Logistische Regression)
-**Fokus:** Der Einstieg in die Klassifikation — Wahrscheinlichkeiten für binäre Entscheidungen.
-
+## 1. Linear Regression (Lineare Regression) (ERLEDIGT ✅)
 *   **Kategorie:** `ml`
-*   **Keywords:** `Klassifikation`, `Sigmoid`, `Log-Loss`, `Binäre Entscheidung`
-*   **Struktur:** Unterschied zur linearen Regression, die Sigmoid-Funktion, Entscheidungsgrenzen.
-*   **Demo-Idee:** Eine interaktive Sigmoid-Kurve, bei der man die Steigung und Verschiebung anpasst, um Datenpunkte in zwei Klassen zu trennen.
-*   **Abhängigkeiten:** Linear Regression (für das Verständnis der Linearkombination).
+*   **Keywords:** `Regression`, `OLS`, `Gradient Descent`, `MSE`
+*   **Demo:** Interaktives Fitting einer Geraden in einer Punktwolke.
 
 ---
 
-## 3. Decision Trees (Entscheidungsbäume)
-**Fokus:** Intuitive, baumartige Entscheidungsstrukturen.
-
+## 2. Logistic Regression (Logistische Regression) (ERLEDIGT ✅)
 *   **Kategorie:** `ml`
-*   **Keywords:** `Entscheidungsbaum`, `Gini-Index`, `Information Gain`, `Overfitting`, `Pruning`
-*   **Struktur:** Wurzelknoten, Splits, Blattknoten. Wie ein Baum "entscheidet".
-*   **Demo-Idee:** Ein interaktiver Baum-Editor, der zeigt, wie sich die Datenverteilung bei jedem "Split" in einem 2D-Koordinatensystem verändert.
-*   **Unter-Artikel:** "Entropy & Gini-Index im Detail", "Visualisierung von Baumstrukturen".
+*   **Keywords:** `Klassifikation`, `Sigmoid`, `Log-Loss`, `Decision Boundary`
+*   **Demo:** Datenpunkte per Sigmoid-Kurve in zwei Klassen trennen.
 
 ---
 
-## 4. Random Forests
-**Fokus:** Die Macht der Menge — Viele Bäume für stabilere Vorhersagen.
+## 3. Decision Trees (Entscheidungsbäume) (ERLEDIGT ✅)
+*   **Kategorie:** `ml`
+*   **Keywords:** `Gini-Index`, `Information Gain`, `Overfitting`, `Pruning`
+*   **Demo:** Ein interaktiver Baum-Editor, der Splits in 2D visualisiert.
 
+---
+
+## 4. Random Forests (ERLEDIGT ✅)
 *   **Kategorie:** `ml`
 *   **Keywords:** `Ensemble Learning`, `Bagging`, `Bootstrap`, `Feature Importance`
-*   **Struktur:** Das Prinzip von Bagging, Reduktion von Varianz, Abstimmung der Bäume.
-*   **Demo-Idee:** Visualisierung von 5-10 kleinen Bäumen gleichzeitig. Man sieht, wie die "Mehrheitsentscheidung" (Voting) das Endergebnis robuster macht als ein einzelner Baum.
-*   **Abhängigkeiten:** Decision Trees.
+*   **Demo:** Vergleich zwischen einem einzelnen Baum und einem Wald aus 10 Bäumen.
 
 ---
 
-## 5. Gradient Boosting (XGBoost, LightGBM)
-**Fokus:** Fehler korrigieren — Sequentielles Lernen für Höchstleistung.
-
+## 5. Gradient Boosting (XGBoost, LightGBM) (ERLEDIGT ✅)
 *   **Kategorie:** `ml`
-*   **Keywords:** `Boosting`, `AdaBoost`, `XGBoost`, `Residuen`, `Lernrate`
-*   **Struktur:** Das Prinzip von Boosting (aus Fehlern lernen), Residuen-Fitting, Unterschied zu Bagging.
-*   **Demo-Idee:** Ein schrittweiser Prozess, der zeigt, wie ein Modell ein einfaches Signal lernt, der nächste Baum die Fehler (Residuen) lernt und die Summe immer präziser wird.
-*   **Abhängigkeiten:** Decision Trees.
+*   **Keywords:** `Boosting`, `Residuen`, `XGBoost`, `Learning Rate`
+*   **Demo:** Schrittweise Verbesserung der Vorhersage durch Hinzufügen neuer "Korrektur-Bäume".
 
 ---
 
-## 6. Support Vector Machines (SVM)
-**Fokus:** Grenzen ziehen — Der "Maximum Margin" Klassifikator.
-
+## 6. Support Vector Machines (SVM) (ERLEDIGT ✅)
 *   **Kategorie:** `ml`
-*   **Keywords:** `SVM`, `Hyperplane`, `Kernel-Trick`, `Support Vectors`, `Margin`
-*   **Struktur:** Lineare Trennbarkeit, Margin-Maximierung, der Kernel-Trick für nicht-lineare Daten.
-*   **Demo-Idee:** Ein 2D-Raum mit zwei Klassen. Der User verschiebt die Punkte und sieht, wie sich die "Hard/Soft-Margin" und die Trennebene dynamisch anpassen.
-*   **Unter-Artikel:** "Der Kernel-Trick (Mathematik)", "Lagrange-Multiplikatoren in SVMs".
+*   **Keywords:** `Hyperplane`, `Kernel-Trick`, `Support Vectors`, `Margin`
+*   **Demo:** Punkte im 2D-Raum verschieben und die optimale Trennebene beobachten.
 
 ---
 
-## 7. Naive Bayes
-**Fokus:** Wahrscheinlichkeitsrechnung in Aktion — Der Klassiker für Text-Filter.
-
+## 7. Naive Bayes (ERLEDIGT ✅)
 *   **Kategorie:** `ml`
-*   **Keywords:** `Bayes Theorem`, `Bedingte Wahrscheinlichkeit`, `Spam-Filter`, `Prior/Posterior`
-*   **Struktur:** Satz von Bayes, die "naive" Annahme der Unabhängigkeit, Anwendung in der Textklassifikation.
-*   **Demo-Idee:** Ein einfacher Spam-Filter-Simulator. Der User gibt Wörter ein und sieht, wie sich die Wahrscheinlichkeiten für "Spam" vs. "Ham" basierend auf Worthäufigkeiten verschieben.
-*   **Abhängigkeiten:** Grundlagen der Wahrscheinlichkeitsrechnung.
+*   **Keywords:** `Bayes Theorem`, `Prior`, `Posterior`, `Spam-Filter`
+*   **Demo:** Ein interaktiver Spam-Filter basierend auf Wortwahrscheinlichkeiten.
 
 ---
 
-## 8. K-Nearest Neighbors (k-NN)
-**Fokus:** Sag mir, wer deine Nachbarn sind — Klassifikation durch Nähe.
-
+## 8. k-Nearest Neighbors (k-NN) (ERLEDIGT ✅)
 *   **Kategorie:** `ml`
-*   **Keywords:** `k-NN`, `Euklidische Distanz`, `Lazy Learning`, `Fluch der Dimensionalität`
-*   **Struktur:** Distanzmetriken, Wahl von 'k', Vor- und Nachteile (keine Trainingsphase).
-*   **Demo-Idee:** Ein interaktives Koordinatensystem. Man setzt einen neuen Punkt und sieht, wie das Modell die 'k' nächsten Nachbarn einkreist und die Klasse bestimmt.
+*   **Keywords:** `Distance Metric`, `Lazy Learning`, `Classification`
+*   **Demo:** Neuen Punkt setzen und die k nächsten Nachbarn im Raum einkreisen.
 
 ---
 
-## 9. K-Means Clustering
-**Fokus:** Muster ohne Label finden — Automatisches Gruppieren von Daten.
-
+## 9. K-Means Clustering (ERLEDIGT ✅)
 *   **Kategorie:** `ml`
-*   **Keywords:** `Unsupervised Learning`, `Clustering`, `Centroids`, `Elbow Method`
-*   **Struktur:** Initialisierung, Zuweisung, Update der Centroiden. Wann bricht man ab?
-*   **Demo-Idee:** Eine Animation des K-Means-Algorithmus. Man sieht, wie die Centroiden in jedem Schritt "wandern", bis die Cluster stabil sind.
+*   **Keywords:** `Unsupervised Learning`, `Centroids`, `Elbow Method`
+*   **Demo:** Animation des Clustering-Prozesses ("Wandern" der Zentroiden).
 
 ---
 
-## 10. Principal Component Analysis (PCA)
-**Fokus:** Den Kern finden — Dimensionsreduktion ohne Informationsverlust.
-
-*   **Kategorie:** `ml` (bzw. `data`)
-*   **Keywords:** `PCA`, `Eigenwerte`, `Eigenvektoren`, `Varianz`, `Dimensionsreduktion`
-*   **Struktur:** Projektion von Daten, Hauptkomponenten, Datenkompression und Visualisierung.
-*   **Demo-Idee:** Eine 3D-Punktwolke, die auf eine 2D-Ebene projiziert wird. Der User kann die Ebene drehen, um die Projektion mit der höchsten Varianz zu finden.
-*   **Abhängigkeiten:** Lineare Algebra (Matrizen, Eigenwerte).
+## 10. Principal Component Analysis (PCA) (ERLEDIGT ✅)
+*   **Kategorie:** `ml` / `data`
+*   **Keywords:** `Eigenvalues`, `Eigenvectors`, `Dimension Reduction`
+*   **Demo:** Projektion auf Achsen mit maximaler Varianz.
 
 ---
 
-## 11. Neural Networks (Neuronale Netze)
-**Fokus:** Vom biologischen Vorbild zu tiefen Architekturen.
-
-*   **Status:** *Teilweise abgedeckt durch den Artikel "Neuron".*
-*   **Kategorie:** `dl` (Deep Learning)
-*   **Keywords:** `MLP`, `Backpropagation`, `Hidden Layers`, `Universal Approximation`
-*   **Struktur:** Schichten-Architektur, der Vorwärtspass, Backpropagation-Algorithmus (Kettenregel).
-*   **Unter-Artikel:** "Backpropagation im Detail", "Aktivierungsfunktionen (Deep Dive)", "Optimierer (Adam, SGD)".
-*   **Abhängigkeiten:** Neuron.
+## 11. Neural Networks (Neuronale Netze) (ERLEDIGT ✅)
+*   **Kategorie:** `dl`
+*   **Keywords:** `Backpropagation`, `MLP`, `Hidden Layers`, `Optimizers`
+*   **Demo:** Visualisierung eines Deep Neural Networks und des Gewichts-Trainings.
 
 ---
 
-## 12. Transformers
-**Fokus:** Revolution der Sprachverarbeitung — Self-Attention und Parallelisierung.
+## 12. Transformers (ERLEDIGT ✅)
+*   **Kategorie:** `genai`
+*   **Keywords:** `Self-Attention`, `Multi-Head Attention`, `Positional Encoding`
 
-*   **Status:** *Artikel existiert bereits.*
-*   **Kategorie:** `genai` / `nlp`
-*   **Keywords:** `Self-Attention`, `Encoder-Decoder`, `Positional Encoding`, `GPT`, `BERT`
-*   **Struktur:** Architektur (Vaswani et al.), Multi-Head Attention, Skalierbarkeit.
-*   **Unter-Artikel:** "Attention Is All You Need — Paper Review", "BERT vs GPT Architekturen".
-*   **Abhängigkeiten:** Neural Networks, Word Embeddings.
+---
+
+## 13. OpenAI: GPT-5.4 und die Agenten-Ära (ERLEDIGT ✅)
+*   **Kategorie:** `history`
+*   **Keywords:** `OpenAI`, `GPT-5.4`, `ChatGPT Images 2.0`, `AGI`
+
+---
+
+## 14. Google DeepMind: Gemini 3.1 & Veo (ERLEDIGT ✅)
+*   **Kategorie:** `history`
+*   **Keywords:** `Google`, `DeepMind`, `Gemini 3.1 Pro`, `Veo 3.1`
+
+---
+
+## 15. Anthropic: Claude 4.7 & Restricted Safety (ERLEDIGT ✅)
+*   **Kategorie:** `history`
+*   **Keywords:** `Anthropic`, `Claude Opus 4.7`, `Claude Mythos`, `Safety`
+
+---
+
+## 16. Meta AI: Muse Spark & Strategiewechsel (ERLEDIGT ✅)
+*   **Kategorie:** `history`
+*   **Keywords:** `Meta Superintelligence Labs`, `Muse Spark`, `Efficiency`
+
+---
+
+## 17. NVIDIA: Blackwell & Blackwell-Ultra (ERLEDIGT ✅)
+*   **Kategorie:** `deployment`
+*   **Keywords:** `NVIDIA`, `Blackwell`, `B200`, `Compute`
+
+---
+
+## 18. KI in China: Qwen 3.6 & ERNIE 5.0 (ERLEDIGT ✅)
+*   **Kategorie:** `history`
+*   **Keywords:** `Alibaba Qwen 3.6-Max`, `Baidu ERNIE 5.0`, `3D-Generierung`
+
+---
+
+## 19. EU AI Act: Volle Anwendung 2026 (ERLEDIGT ✅)
+*   **Kategorie:** `ethics`
+*   **Keywords:** `EU AI Act`, `Compliance`, `Risk Classes`
+
+---
+
+## 20. AI Safety & Alignment (RLHF 2.0) (ERLEDIGT ✅)
+*   **Kategorie:** `ethics`
+*   **Keywords:** `Superalignment`, `RLHF`, `Constitutional AI`
+
+---
+
+## 21. Stable Diffusion & Flux.1 (SOTA Bild-KI) (ERLEDIGT ✅)
+*   **Kategorie:** `genai`
+*   **Keywords:** `Flux.1`, `Black Forest Labs`, `Flow Matching`
+
+---
+
+## 22. Generative Medien: Video & Audio Evolution 2026 (ERLEDIGT ✅)
+*   **Kategorie:** `genai` / `audio`
+*   **Keywords:** `Veo 3.1`, `Kling Omni`, `Suno V5`

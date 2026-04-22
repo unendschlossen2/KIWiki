@@ -1,0 +1,89 @@
+---
+title: "Logistische Regression"
+description: "Der Standard für Klassifikationsaufgaben — wie KI lernt, zwischen Kategorien zu unterscheiden."
+category: "ml"
+tags: ["Klassifikation", "Wahrscheinlichkeit", "Sigmoid", "Supervised Learning"]
+aliases: ["Logistic Regression", "Logit", "Binäre Klassifikation"]
+---
+
+# Logistische Regression
+
+Trotz ihres Namens ist die logistische Regression kein reines Regressionsverfahren, sondern der grundlegendste Algorithmus für **Klassifikationsaufgaben**. Während die lineare Regression einen kontinuierlichen Wert (z. B. einen Preis) vorhersagt, liefert die logistische Regression eine Wahrscheinlichkeit für eine Kategorie (z. B. "Spam" oder "Kein Spam").
+
+---
+
+## Wahrscheinlichkeit statt Werte
+
+:::beginner
+Stell dir vor, ein Arzt möchte wissen, ob ein Patient basierend auf seinen Testergebnissen krank ist oder nicht. Ein reiner Zahlenwert hilft hier nicht weiter – wir brauchen eine Ja/Nein-Entscheidung.
+
+Die logistische Regression nimmt die Testergebnisse und berechnet daraus eine **Wahrscheinlichkeit zwischen 0 und 1 (0% bis 100%)**. Wenn die Wahrscheinlichkeit über 0,5 liegt, sagt das Modell "Krank" voraus, ansonsten "Gesund".
+:::
+
+:::medium
+Technisch gesehen nutzen wir die gleiche lineare Basis wie bei der linearen Regression ($z = w \cdot x + b$). Das Problem: Dieser Wert $z$ kann unendlich groß oder klein werden.
+
+Um $z$ in eine Wahrscheinlichkeit umzuwandeln, jagen wir es durch die **Sigmoid-Funktion** (auch Logit-Funktion genannt). Diese Funktion "quetscht" jeden beliebigen Wert in den Bereich zwischen 0 und 1.
+:::
+
+:::advanced
+Die mathematische Definition der Sigmoid-Funktion lautet:
+
+$$
+\sigma(z) = \frac{1}{1 + e^{-z}}
+$$
+
+Dabei ist $z$ unser lineares Modell $\wvec^T \xvec + b$. Der Output $\hat{y} = \sigma(z)$ wird als die bedingte Wahrscheinlichkeit $P(y=1|\xvec)$ interpretiert. Die Entscheidungsgrenze (**Decision Boundary**) liegt dort, wo $z=0$ ist, was einer Wahrscheinlichkeit von genau 0,5 entspricht.
+:::
+
+---
+
+## Interaktive Demo
+
+In dieser Demo siehst du die Klassifikation in Aktion. Klicke in das Feld, um Datenpunkte für zwei verschiedene Klassen (Blau und Rot) zu setzen. Durch Klicken auf bestehende Punkte kannst du deren Klasse ändern. Beobachte, wie die **Decision Boundary** (die gestrichelte Linie) versucht, die Farben sauber zu trennen.
+
+<LogisticRegressionDemo client:only="react" />
+
+---
+
+## Die Kostenfunktion (Cross-Entropy)
+
+:::beginner
+Bei der linearen Regression haben wir einfach den Abstand zur Geraden gemessen. Bei der Klassifikation funktioniert das nicht gut. Stattdessen "bestrafen" wir das Modell hart, wenn es sich sehr sicher ist, aber falsch liegt.
+
+Wenn das Modell sagt "99% sicher Spam", es aber kein Spam war, ist der Fehler (die Kosten) extrem hoch.
+:::
+
+:::medium
+Wir verwenden die **Binary Cross-Entropy Loss** (auch Log-Loss genannt). Diese Funktion ist konvex für die logistische Regression, was bedeutet, dass wir mit dem Gradientenabstieg zuverlässig das globale Minimum (die besten Parameter) finden können.
+
+Wenn das Label $y=1$ ist, minimieren wir $-\log(\hat{y})$. Wenn $y=0$ ist, minimieren wir $-\log(1-\hat{y})$.
+:::
+
+:::advanced
+Die zusammengefasste Formel für die Kostenfunktion $\loss$ über $N$ Datenpunkte lautet:
+
+$$
+\loss = -\frac{1}{N} \sum_{i=1}^{N} \left[ y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i) \right]
+$$
+
+Diese Funktion stammt aus der Informationstheorie und misst die Differenz zwischen der tatsächlichen Verteilung ($y$) und der vorhergesagten Wahrscheinlichkeitsverteilung ($\hat{y}$).
+:::
+
+---
+
+## Anwendungen in der Praxis
+
+- **Medizin:** Vorhersage, ob ein Tumor bösartig oder gutartig ist.
+- **Finanzen:** Kreditwürdigkeitsprüfung (Zahlungsausfall: Ja/Nein).
+- **Marketing:** Vorhersage der Abwanderungswahrscheinlichkeit (Churn-Modellierung).
+- **Spam-Filter:** Die klassische Anwendung zur Trennung von erwünschten und unerwünschten E-Mails.
+
+---
+
+## Zusammenfassung
+
+- Die logistische Regression berechnet **Wahrscheinlichkeiten**.
+- Die **Sigmoid-Funktion** transformiert lineare Werte in den Bereich $[0, 1]$.
+- Sie findet eine **Decision Boundary**, um Klassen voneinander zu trennen.
+- Sie ist die Grundlage für komplexere neuronale Netze (ein Neuron mit Sigmoid-Aktivierung ist im Grunde eine logistische Regression).

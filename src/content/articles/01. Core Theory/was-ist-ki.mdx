@@ -10,32 +10,61 @@ difficulties: # Optional: Falls der Artikel nur für bestimmte Stufen ist
  
 # Künstliche Intelligenz
 
-Künstliche Intelligenz beschreibt den menschlichen Versuch, technischen Geräten, insbesondere Computern, eine Art "Denken" beizubringen, die über das reine Befehle-befolgen hinausgeht.
+Künstliche Intelligenz (KI) beschreibt den Versuch, Maschinen eine Form von „Denken“ beizubringen. Während ein Taschenrechner stur Befehlen folgt, kann eine KI aus Erfahrungen lernen und Muster erkennen – ganz ähnlich wie wir Menschen.
 
-## Training
+---
 
-Dafür wird ein Mathematisches Modell mit vielen Daten gefüttert, aus denen es dann eigene Schlüsse oder Muster ableiten soll. Dies geschieht ähnlich zur Informationsaufnahme unseres Gehirns, aus dessen Wissen sich unsere Handlungen, Meinungen und Träume bilden, mit dem Unterschied, dass die *Künstliche* Intelligenz dabei rein Stochastisch, also auf Wahrscheinlichkeit basierend vorgeht.
+## Was ist KI?
 
-## Wie Antwortet die KI?
+:::beginner
+Stell dir vor, du zeigst einem Kind viele Bilder von Hunden. Irgendwann versteht das Kind: „Ah, vier Beine, Schlappohren und Schwanz wedeln – das ist ein Hund.“ 
+Genau so lernt eine KI. Man füttert sie mit Tausenden von Beispielen (Bildern, Texten oder Tönen), bis sie selbstständig erkennt, was was ist. Sie „denkt“ nicht wie wir, sondern sie ist ein Meister darin, **Wahrscheinlichkeiten** zu berechnen: „Ich bin mir zu 99% sicher, dass das ein Hund ist.“
+:::
 
-Das Modell erhält, nachdem es mit genug Daten gefüttert wurde (z.B. Bilder von einem Hund oder Tausenden bis Millionen von Buchseiten) eine Anfrage (Query). Dies kann wiederum ein Text, Bild oder ein anderes Medium sein. Ähnlich wie du und ich, die von unseren Eltern gesagt bekommen haben, dass dieses fluffige Tierchen ein Hund ist, hat das Modell jetzt viele verschiedene Bilder von Hunden gesehen, guckt sich das aktuelle Bild an und generiert eine Zahl. Diese Zahl repräsentiert, wie sicher sich das Modell ist, dass es sich bei dem Bild um einen Hund handelt. Und kann entsprechend auch in Textform dargestellt werden.
+:::medium
+Technisch gesehen ist KI ein Teilgebiet der Informatik, das sich mit der Automatisierung intelligenten Verhaltens befasst. Das Herzstück moderner KI ist das **Maschinelle Lernen**. Dabei wird ein mathematisches Modell mit Daten trainiert, um eine Zielfunktion zu minimieren (den Fehler zu verringern).
+Anstatt dass ein Programmierer jede Regel einzeln schreibt („Wenn Pixel 10 rot ist, dann...“), lernt das Modell die Regeln selbstständig aus den Daten. Man unterscheidet dabei oft zwischen **schwacher KI** (spezialisiert auf eine Aufgabe, z.B. Schach spielen) und **starker KI** (die theoretische Fähigkeit, jede intellektuelle Aufgabe eines Menschen zu bewältigen – auch AGI genannt).
+:::
 
-## Unsicherheit
+:::advanced
+In der modernen Forschung definieren wir KI meist über die Fähigkeit zur **Generalisierung**. Ein Modell (z.B. ein Neuronales Netz) bildet eine hochdimensionale Repräsentation der Eingangsdaten in einem latenten Raum ab. 
+Der Prozess der Antwortgenerierung (Inferenz) basiert auf stochastischen Verfahren: Bei Sprachmodellen (LLMs) wird beispielsweise der nächste wahrscheinlichste Token vorhergesagt ($P(x_t | x_1, \dots, x_{t-1})$). KI ist somit die Kunst der statistischen Approximation komplexer Funktionen, die für klassische algorithmische Ansätze zu hochdimensional oder instabil sind.
+:::
 
-Dabei ist sich das Modell fast nie absolut sicher. Wie wenn ein Mensch vielleicht zweimal gucken muss, ob es nun ein Hund oder eine sehr flauschige Katze ist, macht die Künstliche Intelligenz ebenfalls Fehler. Diese Fehler können nachgebessert werden, indem der Lerneffekt aus einer richtigen / falschen Antwort genutzt wird (auch Reinforcement Learning genannt).
+---
 
 ## Wo begegnet dir KI schon jetzt?
 
-Neben der offensichtlichen Antwort (ChatGPT, Gemini etc.) kommen Systeme die Intelligenz nachbilden sollen schon in allen möglichen Lebensbereichen vor. Wenn du dein Handy mit deinem Gesicht entsperrst, dir dein Navi eine Alternativroute vorschlägt oder du auf Netflix nach Filmen stöberst, sitzt fast immer ein mathematisches Modell im Hintergrund, das versucht den optimalen Weg zu finden oder dir den bestmöglichen Film vorzuschlagen.
+:::beginner
+KI ist längst in deinem Alltag:
+- **Dein Handy:** Entsperrt sich, weil es dein Gesicht erkennt.
+- **Netflix & Spotify:** Schlagen dir Filme und Musik vor, die dir gefallen könnten.
+- **Navi:** Berechnet Staus und schlägt dir die schnellste Route vor.
+:::
 
-## Ein Blick in die Zukunft
+:::medium
+In der Industrie und Wissenschaft ist KI unverzichtbar geworden:
+- **Medizin:** KI-Systeme erkennen Tumore auf Röntgenbildern oft präziser als das menschliche Auge.
+- **Finanzwesen:** Banken nutzen KI, um Betrugsversuche in Echtzeit zu erkennen (Anomalieerkennung).
+- **Logistik:** Algorithmen planen die Routen von tausenden Lieferwagen gleichzeitig, um CO2 und Zeit zu sparen.
+:::
 
-Künstliche Intelligenz bietet massives Potential dafür, Krankheiten frühzeitig zu erkennen, Lösungen für den Klimawandel zu finden oder einfach nur beeindruckend realistische Katzenvideos zu erstellen. **Aber** sie ist auch mit Bedacht zu nutzen. Die Rechenleistung die für Künstliche Intelligenz in Anspruch genommen wird ist enorm und könnte sich langfristig selbst zum Problem entwickeln. 
+---
 
-## Wird uns die KI alle versklaven??? 
+## Chance und Risiko
 
-Fürs erste bleib unbesorgt. Während der Nutzen von Künstlicher Intelligenz für militärische Zwecke wächst und es schon viele Dumme Unfälle/Missgeschicke mit dem Einsatz künstlicher Intelligenz gab, ist die Unfallursache doch meist der Mensch. Wie bei allen anderen Dingen auch, liegt die Kontrolle schlussendlich in der Hand dessen, der das Instrument nutzt. Ob dies zur Schaffung oder Zerstörung, für Gut oder für Böse genutzt wird ist nicht die Entscheidung der KI.
+:::beginner
+KI kann uns helfen, riesige Probleme zu lösen: Krankheiten heilen, den Klimawandel verstehen oder uns einfach nervige Arbeit abnehmen. Aber sie ist nur so gut wie die Daten, mit denen sie gefüttert wurde. Wenn die Daten Fehler haben, macht auch die KI Fehler. Und: Sie verbraucht sehr viel Strom!
+:::
 
-## Der Abschluss
+:::advanced
+Die Herausforderungen für 2026 liegen vor allem im Bereich **Alignment** und **Compute-Effizienz**. Während Modelle immer mächtiger werden, müssen wir sicherstellen, dass ihre Ziele mit menschlichen Werten übereinstimmen. Zudem stößt die Skalierung an physikalische Grenzen (Energiebedarf, Hardware-Verfügbarkeit), was die Forschung verstärkt in Richtung effizienterer Architekturen (wie Sparse Transformers oder State Space Models) treibt.
+:::
 
-Deswegen bleib neugierig und benutze deinen eigenen Kopf! :) Es wirkt oft so als wüsste die KI alles, aber vergiss nicht, dass sie mit Millionen oder Milliarden von Daten gefüttert und Monatelang trainiert wurde bevor sie so schlau geworden ist. **Unterschätze dein Gehirn nicht** Wenn du Interesse an einem bestimmten Thema hast und viel Erfahrung sammelst, wirst du schnell merken wie viel du der *künstlichen* Intelligenz voraus hast.
+---
+
+## Zusammenfassung
+
+- KI lernt aus **Daten** statt aus starren Befehlen.
+- Sie ist ein Werkzeug, das uns in fast allen Lebensbereichen unterstützt.
+- **Du bleibst der Chef:** Eine KI hat kein Bewusstsein und keine Gefühle – sie ist ein mathematisches Instrument, das wir mit Verstand einsetzen müssen.
