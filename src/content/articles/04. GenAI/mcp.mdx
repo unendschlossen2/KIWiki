@@ -57,13 +57,24 @@ Eine Transaktion läuft asynchron: Der Client ruft `tools/call` auf, der Server 
 
 ---
 
-## Interaktive Flow-Demo
+## Interaktive Demo
 
-<InfoBox type="info" title="Interaktiv testen">
-  Drücke auf "Play Flow", um einen typischen Tool-Calling Ablauf zwischen einem LLM und einem MCP-Server zu beobachten.
-</InfoBox>
+Drücke auf "Play Flow", um einen typischen Tool-Calling Ablauf zwischen einem LLM und einem MCP-Server zu beobachten.
 
 <MCPDemo client:load />
+
+---
+
+## Sicherheit und reale Anwendungen
+
+Da MCP lokalen Systemzugriff ermöglicht, ist das Thema **Sicherheit** zentral im Architektur-Design verankert:
+- **Lokale Ausführung:** Tools laufen standardmäßig als lokale Subprozesse, weshalb sensible Firmendaten nie über fremde APIs geroutet werden müssen, wenn das LLM ebenfalls lokal läuft.
+- **Opt-in-Prinzip:** Moderne MCP Hosts erzwingen oft eine explizite Bestätigung durch den Nutzer, bevor ein Tool ausgeführt wird. 
+- **Zwei-Wege-Sicherheit:** Weder der Client noch der Server kennen die internen Speicher des jeweils anderen. Sie kommunizieren rein über JSON-RPC Grenzen hinweg.
+
+<InfoBox type="note" title="Wer nutzt MCP bereits?">
+  Zahlreiche Tools unterstützen MCP bereits nativ. **Claude Desktop** und fortschrittliche IDEs wie **Cursor** nutzen MCP, um kontext-aware auf das Dateisystem und Terminal zuzugreifen. Firmen können so eigene firmeninterne APIs extrem schnell an diese Tools andocken.
+</InfoBox>
 
 ---
 
@@ -73,32 +84,38 @@ Da das manuelle Parsen von JSON-RPC-Nachrichten komplex ist, haben sich Biblioth
 
 ### Beispiel in Python (EasyMCP)
 
-Mit EasyMCP lassen sich in Python Funktionen mit simplen Decodern in MCP-Tools verwandeln.
+Mit EasyMCP lassen sich in Python reguläre Funktionen mit simplen Decorators in vollständige MCP-Tools verwandeln.
 
 ```python
 from easymcp import MCP
 import sqlite3
 
-# Initialisiere den MCP Server
+# 1. Initialisiere den MCP Server (läuft standardmäßig auf stdio)
 mcp = MCP(name="Employee DB", version="1.0.0")
 
 # Verbinde zu einer internen Datenbank
 conn = sqlite3.connect("company.db")
 
+# 2. Registriere ein Tool über den Decorator
+# Der Docstring und die Type-Hints werden automatisch vom LLM gelesen!
 @mcp.tool("search_employee", "Sucht nach Mitarbeitern in der Unternehmensdatenbank")
 def search_employee(name: str) -> str:
+    """
+    Diese Beschreibung sieht das LLM, um zu verstehen, was das Tool macht.
+    """
     cursor = conn.cursor()
-    cursor.execute("SELECT name, department, email FROM employees WHERE name LIKE ?", (f"%{name}%",))
+    cursor.execute("SELECT name, department, email FROM employees WHERE name LIKE ?", ("%" + name + "%",))
     results = cursor.fetchall()
     
     if not results:
-        return "Keine Mitarbeiter gefunden."
+        return "Keine Mitarbeiter mit dem Namen '" + name + "' gefunden."
         
-    return "\n".join([f"{r[0]} ({r[1]}) - {r[2]}" for r in results])
+    # Formatiere das Ergebnis als Text, den das LLM gut verarbeiten kann
+    return "\n".join(["- " + r[0] + " (Abteilung: " + r[1] + ") | Email: " + r[2] for r in results])
 
-# Startet den Server auf stdio
+# 3. Starte den Server
 if __name__ == "__main__":
     mcp.run()
 ```
 
-Wenn ein MCP Client (z. B. Claude Desktop) diesen Server startet, fragt er zunächst die Fähigkeiten ab. Das Script liefert automatisch die Signatur und den Docstring von `search_employee` als Tool-Beschreibung an das LLM. Das LLM kann anschließend selbstständig diese Datenbankabfrage einsetzen, um Nutzerfragen zu beantworten.
+Wenn ein MCP Host (wie z. B. Claude Desktop) diesen Server per Command-Line startet (`python server.py`), fragt er zunächst via `tools/list` die Fähigkeiten ab. Das Script liefert automatisch die Parameter (`name: str`) und den Docstring als Tool-Beschreibung an das LLM. Das LLM kann anschließend selbstständig die Datenbank abfragen, ohne dass du Prompt-Engineering im Code betreiben musst.

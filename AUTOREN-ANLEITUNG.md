@@ -22,6 +22,11 @@ src/
     ├── ueber.mdx          ← "Über das Projekt" Seite
     └── articles/
         └── [...slug].astro ← Dynamische Route für alle Artikel
+
+scripts/
+└── generate-index.js   ← Generiert den Artikel-Index für die KI
+
+ARTICLE_INDEX.json       ← Statischer Artikel-Index (automatisch generiert)
 ```
 
 ---
@@ -298,7 +303,34 @@ Neue Makros können in `katex-macros.js` hinzugefügt werden.
 
 ---
 
-## 7. Checkliste für neue Artikel
+## 7. Best Practices & Formatierungs-Richtlinien
+
+Um die Artikel im gesamten Wiki einheitlich (und fehlerfrei!) zu halten, beachte bitte die folgenden Best-Practice-Regeln, die wir aus vergangenen Integrationen gelernt haben:
+
+### 7.1 Interaktive Demos richtig einbinden
+* **Einheitliche Überschrift:** Jede interaktive Komponente (wie `<MCPDemo />`, `<TransformerDemo />`) MUSS unter einer expliziten Markdown-Überschrift stehen: `## Interaktive Demo`. So wird sichergestellt, dass sie sauber im Inhaltsverzeichnis (rechts) auftaucht.
+* **Keine InfoBoxen als Wrapper:** Packe den Beschreibungstext oder die Demo selbst **nicht** in eine `<InfoBox>`. Dies führt oft dazu, dass der TOC-Parser von Astro den Text der InfoBox fälschlicherweise für das Inhaltsverzeichnis extrahiert oder das Layout zerstört wird. Nutze normalen Text direkt unter der Überschrift.
+
+### 7.2 MDX Parsing-Fallen (Python & f-Strings)
+* **Das Problem:** Der MDX-Parser interpretiert geschweifte Klammern `{...}` **immer** als JSX-Ausdrücke – *auch* wenn sie sich innerhalb eines Markdown-Code-Blocks (z. B. ` ```python `) befinden!
+* **Die Lösung:** Vermeide Python f-Strings (z. B. `f"Hallo {name}"`) in Code-Beispielen, da MDX vergeblich versucht, `{name}` als JavaScript-Variable aufzulösen, was den Build zum Absturz bringt ("Missing opening `{`" Fehler).
+* **Workaround:** Nutze stattdessen klassische String-Konkatenation (`"Hallo " + name`) oder das Prozent-Formatting (`"Hallo %s" % name`).
+
+### 7.3 Komplexe Tailwind-Klassen (Arbitrary Values)
+* **Das Problem:** Extrem spezifische und komplexe dynamische Tailwind-Klassen (z. B. `bg-[linear-gradient(to_bottom,transparent_50%,rgba(0,0,0,0.05)_50%)]` oder `shadow-[0_0_20px_rgba(59,130,246,0.3)]`) können in Kombination mit Astro und React den Tailwind JIT-Compiler durcheinanderbringen, besonders durch die vielen Kommas und Klammern.
+* **Die Lösung:** Verzichte auf diese Arbitrary Values und nutze stattdessen **Standard-Tailwind-Utilities** (wie `shadow-blue-500/30` oder `bg-gradient-to-b`), um die Stabilität des Builds zu garantieren.
+
+### 7.4 Strukturierung des Haupttextes & InfoBoxen
+* **Der Haupttext (Main Body):** Der Kerninhalt eines Artikels gehört direkt als Fließtext in die Datei, gegliedert durch die Difficulty-Direktiven (`:::beginner`, `:::medium`, `:::advanced`). Jedes Konzept sollte als regulärer Text erklärt werden, beginnend mit der einfachsten Stufe. Text außerhalb der Direktiven wird für *alle* Schwierigkeitsstufen angezeigt – nutze dies für allgemeine Überleitungen oder Kern-Definitionen.
+* **Der Zweck von InfoBoxen:** `<InfoBox>`-Komponenten sind **ausschließlich** für ergänzende Hinweise gedacht (z. B. "Tipp", "Weiterführend", "Achtung"). Sie dürfen niemals den Hauptinhalt oder die Kern-Erklärung eines Konzepts enthalten.
+* **Konsistente Typen:** Nutze immer den korrekten `type` der InfoBox:
+  * `info`: Für allgemeine Zusatzinfos oder praktische Tipps.
+  * `note`: Für Verweise auf andere Artikel oder vertiefendes Material.
+  * `warning` / `danger`: Für wichtige Einschränkungen, Sicherheitshinweise oder veraltete Konzepte.
+
+---
+
+## 8. Checkliste für neue Artikel
 
 - [ ] Datei in `src/content/articles/` erstellt (`.mdx`)
 - [ ] `title` im Frontmatter gesetzt
@@ -309,12 +341,14 @@ Neue Makros können in `katex-macros.js` hinzugefügt werden.
 - [ ] Optional: `difficulties` eingeschränkt (wenn nicht für alle Stufen)
 - [ ] Inhalt mit `:::beginner`, `:::medium`, `:::advanced` strukturiert
 - [ ] Mathe-Formeln mit `$...$` oder `$$...$$` geschrieben
+- [ ] Bei Demos: `## Interaktive Demo` als Headline gesetzt und KEINE `<InfoBox>` verwendet.
+- [ ] Keine f-Strings in Python-Code-Blöcken verwendet.
 - [ ] `npm run build` läuft ohne Fehler
 - [ ] Artikel erscheint in der Seitenleiste
 
 ---
 
-## 8. Häufige Fehler
+## 9. Häufige Fehler
 
 | Problem | Lösung |
 |---------|--------|
@@ -323,9 +357,10 @@ Neue Makros können in `katex-macros.js` hinzugefügt werden.
 | Build-Fehler im Frontmatter | Prüfe das Schema in `src/content/config.ts` |
 | Mathe wird nicht gerendert | Verwende `$...$` für Inline und `$$...$$` für Blöcke |
 | `:::` Block funktioniert nicht | Achte auf Leerzeilen vor und nach `:::` Blöcken |
+| "Missing opening `{`" Fehler | Suche nach f-Strings in Code-Blöcken oder nach fehlplatzierten Kommas in Tailwind-Klassen. |
 
 ---
 
-## 9. Vorlage (Template) nutzen
+## 10. Vorlage (Template) nutzen
 
 Um dir den Start zu erleichtern, haben wir eine Vorlage unter `src/content/articles/_template.mdx` angelegt. Du kannst sie Einsteiger kopieren und als Basis für deinen neuen Artikel nutzen.

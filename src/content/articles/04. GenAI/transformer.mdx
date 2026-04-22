@@ -169,9 +169,9 @@ $$
 Die Skalierung mit $\frac{1}{\sqrt{d_k}}$ verhindert, dass die Dot-Products bei hoher Dimension in die Sättigungsbereiche der Softmax-Funktion fallen. Im Decoder wird zusätzlich eine **kausale Maske** angewendet, die verhindert, dass Token auf zukünftige Positionen zugreifen (wichtig für auto-regressives Generieren).
 :::
 
-<InfoBox type="info" title="Interaktiv ausprobieren">
-  Die Demo unten zeigt, wie Self-Attention funktioniert. Die **Heatmap** visualisiert, wie stark jedes Wort auf jedes andere achtet — je heller die Zelle, desto mehr Aufmerksamkeit. Klick auf ein Wort, um seine Verbindungen als **Bögen** zu sehen. Mit dem **Temperatur-Regler** steuerst du, ob sich das Modell stark auf wenige Wörter konzentriert (niedrig) oder die Aufmerksamkeit breit streut (hoch).
-</InfoBox>
+## Interaktive Demo
+
+Die Demo unten zeigt, wie Self-Attention funktioniert. Die **Heatmap** visualisiert, wie stark jedes Wort auf jedes andere achtet — je heller die Zelle, desto mehr Aufmerksamkeit. Klick auf ein Wort, um seine Verbindungen als **Bögen** zu sehen. Mit dem **Temperatur-Regler** steuerst du, ob sich das Modell stark auf wenige Wörter konzentriert (niedrig) oder die Aufmerksamkeit breit streut (hoch).
 
 <TransformerDemo client:load />
 

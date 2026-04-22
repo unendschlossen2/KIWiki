@@ -1,0 +1,90 @@
+[
+  {
+    "slug": "01. core theory/was-ist-ki",
+    "title": "Was ist KI?",
+    "description": "Künstliche Intelligenz kurz erklärt",
+    "category": "core",
+    "tags": [
+      "Einführung",
+      "KI-Grundlagen"
+    ],
+    "aliases": [
+      "Künstliche Intelligenz",
+      "KI"
+    ],
+    "difficulties": [
+      "easy"
+    ],
+    "filePath": "src/content/articles/01. Core Theory/was-ist-ki.mdx"
+  },
+  {
+    "slug": "03. deep learning/neuron",
+    "title": "Neuron",
+    "description": "Die Grundeinheit neuronaler Netze — vom biologischen Vorbild zum mathematischen Modell.",
+    "category": "dl",
+    "tags": [
+      "Grundlagen",
+      "Netzwerk",
+      "Aktivierungsfunktion"
+    ],
+    "aliases": [
+      "Perzeptron",
+      "Künstliches Neuron",
+      "Perceptron",
+      "Neurons",
+      "Neuronen"
+    ],
+    "difficulties": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "filePath": "src/content/articles/03. Deep Learning/neuron.mdx"
+  },
+  {
+    "slug": "04. genai/mcp",
+    "title": "Model Context Protocol (MCP)",
+    "description": "Ein einheitlicher Standard, um Large Language Models (LLMs) mit lokalen Werkzeugen, Datenbanken und APIs zu vernetzen.",
+    "category": "genai",
+    "tags": [
+      "MCP",
+      "Tools",
+      "LLM",
+      "Integration",
+      "EasyMCP"
+    ],
+    "aliases": [
+      "Model Context Protocol",
+      "MCP Standard"
+    ],
+    "difficulties": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "filePath": "src/content/articles/04. GenAI/mcp.mdx"
+  },
+  {
+    "slug": "04. genai/transformer",
+    "title": "Transformer",
+    "description": "Die Architektur hinter ChatGPT, BERT und Co. — von der Intuition bis zur Formel.",
+    "category": "genai",
+    "tags": [
+      "Attention",
+      "LLM",
+      "Deep Learning",
+      "NLP"
+    ],
+    "aliases": [
+      "Transformers",
+      "Transformer-Modell",
+      "Transformer-Architektur"
+    ],
+    "difficulties": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "filePath": "src/content/articles/04. GenAI/transformer.mdx"
+  }
+]
