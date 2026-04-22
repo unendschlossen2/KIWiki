@@ -90,7 +90,7 @@ function remarkDirectiveTransformer() {
 // https://astro.build/config
 export default defineConfig({
   site: 'https://unendschlossen2.github.io',
-  base: '/KIWiki',
+  base: '/KIWiki/',
   integrations: [
     react(),
     mdx({
