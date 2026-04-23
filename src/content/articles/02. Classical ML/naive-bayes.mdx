@@ -11,7 +11,7 @@ Der **Naive Bayes** Algorithmus ist ein probabilistischer Klassifikator, der auf
 
 ---
 
-## Das Prinzip der bedingten Wahrscheinlichkeit
+## Wahrscheinlichkeit und Vorwissen
 
 :::beginner
 Stell dir vor, du bist ein Wetterfrosch. Du weißt:
@@ -65,6 +65,36 @@ In dieser Demo simulieren wir einen einfachen Spam-Filter.
 - **Vorteil:** Extrem schnell und skalierbar (linearer Aufwand).
 - **Nachteil:** Die Unabhängigkeitsannahme ist fast immer falsch, was bei stark korrelierten Daten zu Problemen führen kann.
 - **Nachteil:** Das "Zero-Frequency" Problem: Wenn ein Wort im Training nie vorkam, wird die gesamte Wahrscheinlichkeit zu 0. (Lösung: Laplace-Smoothing).
+
+## Implementierung in Python
+
+Naive Bayes wird oft für Text verwendet (`MultinomialNB`), aber es gibt auch Versionen für normale Zahlen (`GaussianNB`).
+
+```python
+from sklearn.naive_bayes import GaussianNB
+import numpy as np
+
+# 1. Daten vorbereiten (X: Features, y: Klassen)
+# Beispiel: Wetter-Parameter -> Spielt Tennis (Ja/Nein)
+X = np.array([[30, 80], [25, 90], [20, 70], [15, 60]]) # Temp, Feuchtigkeit
+y = np.array([0, 0, 1, 1])
+
+# 2. Modell erstellen und trainieren
+model = GaussianNB()
+model.fit(X, y)
+
+# 3. Wahrscheinlichkeit berechnen
+neuer_tag = np.array([[22, 75]])
+vorhersage = model.predict(neuer_tag)
+wahrsch = model.predict_proba(neuer_tag)
+
+print(f"Vorhersage Klasse: {vorhersage[0]}")
+print(f"Wahrscheinlichkeiten (0/1): {wahrsch[0]}")
+```
+
+**Erklärung:**
+- `GaussianNB`: Geht davon aus, dass die Merkmale einer Normalverteilung folgen.
+- `predict_proba`: Da Naive Bayes ein rein probabilistisches Modell ist, sind diese Werte besonders aussagekräftig.
 
 ---
 

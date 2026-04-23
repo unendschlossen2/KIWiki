@@ -11,7 +11,7 @@ Die **Principal Component Analysis** (Hauptkomponentenanalyse) ist das wichtigst
 
 ---
 
-## Das Prinzip der Projektion
+## Intuition: Das Wesentliche im Schatten sehen
 
 :::beginner
 Stell dir vor, du hältst ein kompliziertes 3D-Objekt (z. B. eine Teekanne) vor eine Taschenlampe und betrachtest den Schatten an der Wand. 
@@ -56,6 +56,31 @@ In dieser Demo kannst du die Suche nach der ersten Hauptkomponente miterleben.
 - **Visualisierung:** Wir können keine 50-dimensionalen Räume sehen. PCA ermöglicht es uns, komplexe Datensätze auf 2D-Diagrammen darzustellen.
 - **Effizienz:** Weniger Features bedeuten schnelleres Training und geringeren Speicherbedarf für Machine Learning Modelle.
 - **Rauschunterdrückung:** Da Rauschen oft eine geringe Varianz hat, wird es durch das Weglassen der hinteren Hauptkomponenten oft automatisch entfernt.
+
+## Implementierung in Python
+
+PCA ist besonders nützlich, um hochdimensionale Daten (wie Bilder oder Gen-Daten) in 2D darzustellen.
+
+```python
+from sklearn.decomposition import PCA
+import numpy as np
+
+# 1. Daten vorbereiten (X: 10 Features)
+X = np.random.rand(100, 10)
+
+# 2. Modell erstellen (n_components = Ziel-Dimensionen)
+pca = PCA(n_components=2)
+X_reduced = pca.fit_transform(X)
+
+# 3. Ergebnisse prüfen
+print(f"Ursprüngliche Form: {X.shape}")
+print(f"Reduzierte Form: {X_reduced.shape}")
+print(f"Erklärte Varianz pro Komponente: {pca.explained_variance_ratio_}")
+```
+
+**Erklärung:**
+- `n_components`: Bestimmt, auf wie viele Achsen du die Daten projizieren willst.
+- `explained_variance_ratio_`: Sagt dir, wie viel Prozent der ursprünglichen Information in deinen neuen Achsen noch steckt (z.B. `0.7` bedeutet 70%).
 
 ---
 

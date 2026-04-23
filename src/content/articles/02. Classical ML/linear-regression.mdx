@@ -12,7 +12,7 @@ Die lineare Regression ist einer der grundlegendsten und am häufigsten verwende
 
 ---
 
-## Was ist lineare Regression?
+## Das Konzept
 
 :::beginner
 Stell dir vor, du möchtest den Preis einer Wohnung vorhersagen. Du weißt, dass größere Wohnungen meist teurer sind. Wenn du die Quadratmeter auf einer Karte einträgst, bemerkst du einen Trend: Die Punkte liegen ungefähr auf einer ansteigenden Linie.
@@ -131,6 +131,35 @@ $$
 
 Für sehr große Datensätze (wo das Rechnen mit der kompletten Matrix $\mathbf{X}$ ineffizient wird) nutzt man stattdessen **Stochastic Gradient Descent (SGD)** oder **Mini-Batch Gradient Descent**, bei dem der Gradient nur auf einem kleinen, zufälligen Teil der Daten berechnet wird.
 :::
+
+## Implementierung in Python
+
+Für die praktische Anwendung nutzt man in Python meist die Bibliothek `scikit-learn`. Hier ist ein einfaches Beispiel, wie du ein Modell trainierst und Vorhersagen triffst:
+
+```python
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+# 1. Daten vorbereiten (X muss 2D sein)
+X = np.array([[1], [2], [3], [4], [5]]) # Quadratmeter
+y = np.array([150, 210, 290, 360, 420]) # Preis in 1000€
+
+# 2. Modell erstellen und trainieren
+model = LinearRegression()
+model.fit(X, y)
+
+# 3. Vorhersage treffen
+neue_wohnung = np.array([[6]])
+vorhersage = model.predict(neue_wohnung)
+
+print(f"Gewicht (Steigung): {model.coef_[0]}")
+print(f"Bias (Achsenabschnitt): {model.intercept_}")
+print(f"Vorhersage für 60m²: {vorhersage[0]}k €")
+```
+
+**Erklärung:**
+- `fit(X, y)`: Hier findet der Gradientenabstieg (oder die Normalgleichung) statt. Das Modell lernt die optimalen Werte für $w$ und $b$.
+- `predict(X)`: Das Modell wendet die gelernte Formel $y = w \cdot x + b$ auf neue Daten an.
 
 ---
 

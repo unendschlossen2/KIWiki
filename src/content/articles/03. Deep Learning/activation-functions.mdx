@@ -1,0 +1,105 @@
+---
+title: "Aktivierungsfunktionen"
+description: "Der Funke im Gehirn der KI — warum Nichtlinearität der Schlüssel zu komplexem Lernen ist."
+category: "dl"
+tags: ["Grundlagen", "Mathematik", "ReLU", "Sigmoid"]
+aliases: ["Activation Functions", "Nichtlinearität", "Transferfunktion"]
+---
+
+# Aktivierungsfunktionen
+
+Ein neuronales Netz ohne Aktivierungsfunktionen ist wie ein Taschenrechner, der nur addieren kann. Egal wie viele Schichten du hinzufügst, das Ergebnis bliebe immer eine einfache, lineare Transformation. Erst die Aktivierungsfunktionen erlauben es der KI, **nicht-lineare Zusammenhänge** zu lernen — also die komplizierten Kurven und Muster, die unsere Welt ausmachen.
+
+---
+
+## Das Prinzip der Entscheidung
+
+:::beginner
+Stell dir ein Neuron wie einen Türsteher vor. Er bekommt Informationen (die gewichtete Summe der Eingänge) und muss entscheiden: **Darf das Signal durch oder nicht?**
+
+Die Aktivierungsfunktion ist die Regel, nach der er entscheidet. Eine einfache Regel wäre: "Alles über 5 darf durch, alles darunter bleibt 0." Ohne diese Regel würde der Türsteher einfach nur das Signal weiterreichen, ohne eine echte Entscheidung zu treffen.
+:::
+
+:::medium
+Die Aktivierungsfunktion $\sigma$ wird auf die gewichtete Summe $z = \wvec^T \xvec + b$ angewendet. Ihr Hauptzweck ist die Einführung von **Nichtlinearität**. In der Mathematik ist die Hintereinanderschaltung linearer Funktionen immer wieder eine lineare Funktion ($f(g(x)) = linear$). 
+
+Nur durch nichtlineare Aktivierungsfunktionen kann ein tiefes Netz komplexe Funktionen approximieren, wie es das **Universal Approximation Theorem** beschreibt.
+:::
+
+:::advanced
+In modernen Architekturen (wie Transformern) ist die Wahl der Aktivierungsfunktion entscheidend für die **Konvergenzgeschwindigkeit** und das Vermeiden des **Vanishing Gradient Problems**. Wenn eine Funktion in bestimmten Bereichen sehr flach ist (Ableitung nahe 0), "verhungert" der Gradient bei der Backpropagation, und das Netz lernt nicht mehr weiter.
+:::
+
+---
+
+## Interaktive Demo: Die Form der Entscheidung
+
+In dieser Demo kannst du sehen, wie verschiedene Funktionen die Eingabe transformieren. Verändere das **Gewicht** (Steilheit) und den **Bias** (Verschiebung), um zu sehen, wie die Funktionen reagieren.
+
+<ActivationDemo client:load />
+
+---
+
+## Die wichtigsten Funktionen im Überblick
+
+### 1. ReLU (Rectified Linear Unit)
+Die heute am häufigsten verwendete Funktion in den "verborgenen Schichten" (Hidden Layers).
+
+:::medium
+$$ \relu(z) = \max(0, z) $$
+**Vorteil:** Extrem schnell zu berechnen und verhindert das Verschwinden des Gradienten für positive Werte.
+**Nachteil:** "Dying ReLU" — Neuronen können dauerhaft auf 0 festfrieren, wenn sie nur noch negative Werte empfangen.
+:::
+
+### 2. Sigmoid
+Der Klassiker, der alles auf den Bereich zwischen 0 und 1 quetscht.
+
+:::medium
+$$ \sigmoid(z) = \frac{1}{1 + e^{-z}} $$
+**Einsatz:** Meist nur noch in der Ausgabeschicht für binäre Klassifikationen (Wahrscheinlichkeiten).
+:::
+
+### 3. Tanh (Tangens Hyperbolicus)
+Ähnlich wie Sigmoid, aber mit einem Wertebereich von -1 bis 1.
+
+:::medium
+$$ \tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}} $$
+**Vorteil:** Die Ausgaben sind nullzentriert, was das Training oft stabilisiert.
+:::
+
+---
+
+## Implementierung in Python
+
+In Bibliotheken wie PyTorch oder TensorFlow sind diese Funktionen bereits eingebaut. Hier siehst du, wie sie mathematisch in Python definiert werden:
+
+```python
+import numpy as np
+
+def relu(z):
+    return np.maximum(0, z)
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+def tanh(z):
+    return np.tanh(z)
+
+# Test mit einem Wert
+z = 2.0
+print(f"ReLU: {relu(z)}")
+print(f"Sigmoid: {sigmoid(z)}")
+```
+
+**Erklärung:**
+- `np.maximum(0, z)`: Setzt alle negativen Werte hart auf Null.
+- `np.exp(-z)`: Die Exponentialfunktion sorgt für die weiche S-Kurve bei Sigmoid.
+
+---
+
+## Zusammenfassung
+
+- **Nichtlinearität:** Ohne sie kann ein KI-Modell keine komplexen Muster lernen.
+- **ReLU:** Der Standard für fast alle modernen Netze.
+- **Sigmoid/Tanh:** Nützlich für Wahrscheinlichkeiten und zentrierte Daten.
+- **Gradienten:** Die Funktion muss differenzierbar sein, damit das Netz per Backpropagation lernen kann.

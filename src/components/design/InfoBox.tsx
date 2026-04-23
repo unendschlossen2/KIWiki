@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface Props {
-  type?: 'info' | 'warning' | 'success' | 'danger' | 'note';
+  type?: 'info' | 'warning' | 'success' | 'danger' | 'note' | 'tip';
   title?: string;
   children: React.ReactNode;
 }
@@ -42,10 +42,17 @@ const Callout: React.FC<Props> = ({ type = 'info', title, children }) => {
       text: 'text-slate-900 dark:text-slate-200',
       icon: '📝',
       accent: 'bg-slate-500'
+    },
+    tip: {
+      bg: 'bg-emerald-50/50 dark:bg-emerald-950/30',
+      border: 'border-emerald-500/50 dark:border-emerald-400/30',
+      text: 'text-emerald-900 dark:text-emerald-200',
+      icon: '💡',
+      accent: 'bg-emerald-500'
     }
   };
 
-  const theme = themes[type];
+  const theme = themes[type as keyof typeof themes] || themes.info;
 
   return (
     <div className={`not-prose my-8 overflow-hidden rounded-2xl border ${theme.bg} ${theme.border} shadow-sm transition-all hover:shadow-md`}>

@@ -12,7 +12,7 @@ Fast jede bahnbrechende KI der letzten Jahre — **GPT-4, Gemini, LLaMA, BERT** 
 
 ---
 
-## Was ist ein Transformer?
+## Das Konzept der Aufmerksamkeit
 
 :::beginner
 Stell dir vor, du liest einen Satz und möchtest verstehen, worauf sich das Wort „es" bezieht:
@@ -289,3 +289,34 @@ Chinchilla-optimal ist ein Modell, wenn $N$ und $D$ in einem festen Verhältnis 
 <InfoBox type="note" title="Vertiefung">
   Der Transformer baut auf dem Konzept des Neurons auf — jede Schicht besteht aus vielen tausend Neuronen, die gemeinsam arbeiten.
 </InfoBox>
+
+---
+
+## Implementierung in Python
+
+Die Nutzung von Transformern ist dank der `transformers`-Bibliothek von Hugging Face extrem einfach geworden.
+
+```python
+from transformers import pipeline
+
+# 1. Eine fertige Pipeline laden (z. B. für Sentiment-Analyse)
+classifier = pipeline("sentiment-analysis")
+
+# 2. Text analysieren
+result = classifier("Der Transformer ist die wichtigste Erfindung der KI-Geschichte.")
+
+print(f"Ergebnis: {result[0]['label']} mit Score {result[0]['score']:.4f}")
+```
+
+**Erklärung:**
+- `pipeline`: Abstrahiert die komplexe Architektur (Tokenisierung, Forward Pass, Post-Processing) weg.
+- Das Modell berechnet im Hintergrund die Self-Attention über alle Wörter und gibt die Wahrscheinlichkeit für die Stimmung (positiv/negativ) aus.
+
+---
+
+## Zusammenfassung
+
+- **Attention Mechanism:** Erlaubt dem Modell, Bezüge zwischen weit entfernten Wörtern zu verstehen.
+- **Parallelisierung:** Im Gegensatz zu RNNs können Transformer ganze Sätze auf einmal verarbeiten.
+- **Skalierbarkeit:** Die Architektur funktioniert sowohl für kleine Modelle als auch für gigantische LLMs wie GPT-4.
+- **Standard:** Fast jede moderne KI-Anwendung (Text, Bild, Audio) nutzt heute Transformer-Varianten.

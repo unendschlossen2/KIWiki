@@ -11,7 +11,7 @@ Der **k-Nearest Neighbors** (k-Nächste-Nachbarn) Algorithmus ist einer der intu
 
 ---
 
-## Das Prinzip der Nachbarschaft
+## Intuition: Die Logik der Ähnlichkeit
 
 :::beginner
 Stell dir vor, du ziehst in eine neue Stadt und willst wissen, ob deine Nachbarschaft sicher ist. 
@@ -60,6 +60,36 @@ Die Wahl von $k$ ist ein klassisches Beispiel für das **Bias-Variance Tradeoff*
 - **Niedriges k:** Hohe Varianz (Overfitting). Das Modell passt sich jedem kleinen Rauschen an.
 - **Hohes k:** Hoher Bias (Underfitting). Die Entscheidungsgrenzen werden sehr glatt, verlieren aber Details.
 - **Tipp:** Bei binärer Klassifikation wählt man oft ein ungerades $k$, um ein Unentschieden beim Voting zu vermeiden.
+
+## Implementierung in Python
+
+Bei k-NN ist die Vorbereitung der Daten (Skalierung) besonders wichtig, da der Algorithmus auf Distanzen basiert.
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+
+# 1. Daten vorbereiten
+X = np.array([[10, 100], [20, 200], [30, 300], [40, 400]]) # z.B. Alter und Einkommen
+y = np.array([0, 0, 1, 1])
+
+# 2. Skalierung (WICHTIG für k-NN!)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# 3. Modell erstellen (k=3)
+knn = KNeighborsClassifier(n_neighbors=3)
+knn.fit(X_scaled, y)
+
+# 4. Vorhersage für einen neuen Punkt
+neuer_punkt = scaler.transform([[25, 250]])
+print(f"Klasse: {knn.predict(neuer_punkt)[0]}")
+```
+
+**Erklärung:**
+- `StandardScaler`: k-NN misst Abstände. Wenn ein Merkmal (z.B. Einkommen) Werte in Tausendern hat und ein anderes (z.B. Alter) nur bis 100, würde das Einkommen die Berechnung dominieren. Skalierung bringt alle Werte auf das gleiche Niveau.
+- `n_neighbors`: Dies ist dein $k$.
 
 ---
 

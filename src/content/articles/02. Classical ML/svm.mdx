@@ -11,7 +11,7 @@ Die **Support Vector Machine** (Stützvektormaschine) ist ein eleganter und math
 
 ---
 
-## Das Prinzip des maximalen Abstands (Margin)
+## Die Idee des maximalen Sicherheitsabstands
 
 :::beginner
 Stell dir vor, du baust einen Zaun zwischen zwei Grundstücken. 
@@ -67,6 +67,32 @@ Stell dir Punkte auf einem Tisch vor, die im Kreis liegen. Wenn du die inneren P
 
 Ein **RBF-Kernel** (Radial Basis Function) ermöglicht es der SVM, fast jede komplexe Form zu lernen, indem er Abstände in einem unendlich-dimensionalen Raum berechnet.
 :::
+
+## Implementierung in Python
+
+Bei der SVM ist die Wahl des Kernels entscheidend. Für einfache Daten nutzt man `linear`, für komplexe meist `rbf`.
+
+```python
+from sklearn.svm import SVC
+import numpy as np
+
+# 1. Daten vorbereiten
+X = np.array([[1, 2], [5, 8], [1.5, 1.8], [8, 8], [1, 0.6], [9, 11]])
+y = np.array([0, 1, 0, 1, 0, 1])
+
+# 2. Modell erstellen (C steuert die Härte des Margins)
+# kernel='linear' sucht eine Gerade, 'rbf' erlaubt Kurven
+model = SVC(kernel='linear', C=1.0)
+model.fit(X, y)
+
+# 3. Vorhersage
+print(f"Klasse: {model.predict([[2, 2]])[0]}")
+print(f"Anzahl Support Vektoren: {model.support_vectors_.shape[0]}")
+```
+
+**Erklärung:**
+- `kernel`: Bestimmt, wie die SVM die Daten transformiert. `rbf` ist der Standard für die meisten Probleme.
+- `C`: Ein kleiner Wert für `C` macht den Margin "weicher" (erlaubt mehr Fehler), ein großer Wert macht ihn "härter".
 
 ---
 

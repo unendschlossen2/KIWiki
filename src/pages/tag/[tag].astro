@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { slugifyTag, slugifyPath } from "../../utils/slugify";
+import { resolvePath } from "../../utils/path";
 import { DIFFICULTY_LABELS, DIFFICULTY_SHORT } from "../../config/difficulty";
 
 export async function getStaticPaths() {
@@ -26,7 +27,7 @@ const { tag, articles } = Astro.props;
 <Layout title={`Tag: #${tag}`}>
 	<div class="category-hero">
 		<div
-			class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-screen-2xl mx-auto mb-4"
+			class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-[1400px] mb-4"
 		>
 			<h1 class="!mb-0 flex items-center gap-3 text-left">
 				<span class="text-4xl md:text-5xl">🏷️</span>
@@ -77,7 +78,7 @@ const { tag, articles } = Astro.props;
 		</div>
 
 		<div
-			class="flex flex-col items-start max-w-screen-2xl mx-auto mt-4 px-2"
+			class="flex flex-col items-start max-w-[1400px] mt-4 px-2"
 		>
 			<p class="category-subtitle">
 				{articles.length} Artikel mit diesem Tag
@@ -106,7 +107,7 @@ const { tag, articles } = Astro.props;
 							Hier gelangst du zurück zur Übersicht aller Themen
 							und Kategorien.
 						</p>
-						<a href="/KIWiki/" class="tile-link stretched-link">
+						<a href={resolvePath("/")} class="tile-link stretched-link">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								width="16"
@@ -196,7 +197,7 @@ const { tag, articles } = Astro.props;
 									)}
 
 									<a
-										href={`/KIWiki/articles/${slugifyPath(article.id.replace(/\.mdx?$/, ""))}`}
+										href={resolvePath(`/articles/${slugifyPath(article.id.replace(/\.mdx?$/, ""))}/`)}
 										class="tile-link stretched-link"
 									>
 										Artikel lesen{" "}
@@ -262,8 +263,8 @@ const { tag, articles } = Astro.props;
 		gap: 4rem;
 		margin-top: 2rem;
 		position: relative;
-		max-width: screen-2xl;
-		margin-left: auto;
+		max-width: 1400px;
+		margin-left: 0;
 		margin-right: auto;
 	}
 

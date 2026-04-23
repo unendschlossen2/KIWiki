@@ -11,7 +11,7 @@ Künstliche Neuronale Netze (Artificial Neural Networks, ANN) sind das Rückgrat
 
 ---
 
-## Der Aufbau: Schichten und Verbindungen
+## Hierarchie der Mustererkennung
 
 :::beginner
 Stell dir eine Fabrik mit mehreren Abteilungen vor:
@@ -44,14 +44,32 @@ Das Training erfolgt durch das Minimieren einer Kostenfunktion $J(\mathbf{W}, \m
 
 ---
 
-## Interaktive Demo: Das Netz in Aktion
+## Interaktive Demo 1: Multivariater Kredit-Check
 
-In dieser Demo siehst du ein einfaches Deep Neural Network mit zwei Hidden Layers.
-- Die **Linienstärke** visualisiert das aktuelle Gewicht der Verbindung.
-- Klicke auf **"Gewichte trainieren"**, um zu beobachten, wie das Netz versucht, eine einfache Klassifikationsaufgabe zu lösen.
-- Achte darauf, wie sich die Verbindungen verstärken oder abschwächen, während das Modell lernt.
+In dieser erweiterten Praxis-Demo verarbeitet das Netz nun **5 verschiedene Faktoren** gleichzeitig. Dies kommt einem echten Szenario deutlich näher, da Schichten aus Neuronen gerade dann glänzen, wenn sie komplexe Abhängigkeiten zwischen vielen Variablen finden müssen.
+
+- **Inputs:** Ersparnisse, Einkommen, Kreditscore, Alter und Sicherheiten.
+- **Beobachtung:** Achte darauf, wie sich die Signale in den Hidden Layers vermischen. Ein einzelnes Neuron in der Mitte kann nun "verstehen", dass z.B. ein niedriges Einkommen durch hohe Sicherheiten ausgeglichen wird.
 
 <NeuralNetworkDemo client:only="react" />
+
+---
+
+## Interaktive Demo 2: Mustererkennung (MNIST-Light)
+
+Der wohl ikonischste Einsatzbereich von Deep Learning ist die **Computer Vision**. Hier rechtfertigt sich die Schichten-Architektur durch die Hierarchie der Merkmale:
+1.  Die erste Schicht sieht nur einzelne Pixel.
+2.  Die zweite Schicht kombiniert diese zu Linien oder Kanten.
+3.  Die finale Schicht erkennt das Objekt.
+
+**Zeichne ein Muster in das Raster (z.B. eine horizontale Linie oder ein Kreuz) und schau, ob das Netz es erkennt:**
+
+<PatternRecognitionDemo client:only="react" />
+
+:::info
+### Das "Black Box" Problem
+Obwohl wir im Diagramm genau sehen können, welches Neuron wie stark feuert, ist es bei echten Netzen mit Millionen von Parametern extrem schwierig zu sagen, *warum* genau eine Entscheidung getroffen wurde. Das ist eines der größten Forschungsfelder der KI: **Explainable AI (XAI)**.
+:::
 
 ---
 
@@ -61,6 +79,39 @@ In dieser Demo siehst du ein einfaches Deep Neural Network mit zwei Hidden Layer
 - **Multi-Layer Perceptron (MLP):** Einführung der Hidden Layers.
 - **Deep Learning Durchbruch (2012):** AlexNet gewinnt den ImageNet-Wettbewerb und zeigt die Überlegenheit tiefer Netze.
 - **Transformers (2017):** Die Architektur, die LLMs wie GPT-4 erst möglich machte.
+
+## Implementierung in Python
+
+Für Deep Learning nutzt man heute meist `PyTorch` oder `TensorFlow/Keras`. Hier ist ein einfaches Netz in Keras:
+
+```python
+import tensorflow as tf
+from tensorflow.keras import layers, models
+
+# 1. Architektur definieren
+model = models.Sequential([
+    layers.Dense(16, activation='relu', input_shape=(10,)), # Hidden Layer 1
+    layers.Dense(8, activation='relu'),                     # Hidden Layer 2
+    layers.Dense(1, activation='sigmoid')                   # Output Layer
+])
+
+# 2. Modell konfigurieren
+model.compile(optimizer='adam',
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+
+# 3. Trainieren (mit zufälligen Daten)
+import numpy as np
+X_train = np.random.random((100, 10))
+y_train = np.random.randint(2, size=(100, 1))
+
+model.fit(X_train, y_train, epochs=10)
+```
+
+**Erklärung:**
+- `Dense`: Eine Standard-Schicht, in der jedes Neuron mit jedem der vorherigen Schicht verbunden ist.
+- `activation`: Hier legst du fest, wie die Neuronen "feuern" (z.B. `relu`).
+- `optimizer`: Der Algorithmus, der den Gradientenabstieg steuert (z.B. `adam`).
 
 ---
 

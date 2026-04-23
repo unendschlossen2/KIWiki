@@ -81,6 +81,32 @@ Entscheidungsbäume sind die Basis für einige der stärksten Algorithmen im mod
 - **Pruning:** Das Vereinfachen eines Baumes nach dem Training.
 - **Klassifikation vs. Regression:** Bäume können beides – Klassen vorhersagen oder Zahlenwerte schätzen.
 
+## Implementierung in Python
+
+Entscheidungsbäume lassen sich in Python sehr einfach visualisieren. Hier ist ein Beispiel mit `scikit-learn`:
+
+```python
+from sklearn.tree import DecisionTreeClassifier, export_text
+import numpy as np
+
+# 1. Daten vorbereiten (X: [Features], y: Klasse)
+# Beispiel: Alter und Einkommen -> Kauft Produkt (Ja/Nein)
+X = np.array([[25, 30000], [45, 80000], [20, 20000], [35, 50000]])
+y = np.array([0, 1, 0, 1])
+
+# 2. Modell erstellen (mit max_depth gegen Overfitting)
+clf = DecisionTreeClassifier(max_depth=3)
+clf.fit(X, y)
+
+# 3. Den Baum als Text ausgeben
+tree_rules = export_text(clf, feature_names=['Alter', 'Einkommen'])
+print(tree_rules)
+```
+
+**Erklärung:**
+- `DecisionTreeClassifier`: Erstellt einen Baum für Klassifikationsaufgaben. Für Zahlenwerte nutzt man `DecisionTreeRegressor`.
+- `max_depth`: Einer der wichtigsten Parameter. Er begrenzt, wie viele Fragen der Baum maximal hintereinander stellen darf.
+
 ---
 
 ## Zusammenfassung

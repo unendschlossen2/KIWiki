@@ -7,6 +7,7 @@ import {
   HEADER_CATEGORIES,
   sortCategories,
 } from "../../config/categories";
+import { resolvePath } from "../../utils/path";
 
 const allArticles = (await getCollection("articles")).filter(
   (a) => !a.id.startsWith("_"),
@@ -93,17 +94,17 @@ const groupedArticles = allArticles.reduce(
 
   <nav class="sidebar-nav" id="sidebar-nav">
     <a
-      href="/KIWiki/"
+      href={resolvePath("/")}
       class="sidebar-header-main transition-transform hover:scale-[1.02] active:scale-[0.98]"
     >
       <div class="sidebar-logo-wrapper">
         <img
-          src="/KIWiki/assets/logo.png"
+          src={resolvePath("/assets/logo.png")}
           alt="KIWiki Logo"
           class="sidebar-logo light-logo"
         />
         <img
-          src="/KIWiki/assets/logo-dark.png"
+          src={resolvePath("/assets/logo-dark.png")}
           alt="KIWiki Logo"
           class="sidebar-logo dark-logo"
         />
@@ -137,7 +138,7 @@ const groupedArticles = allArticles.reduce(
                 return (
                   <div class="sidebar-category">
                     <a
-                      href={`/KIWiki/category/${slugifyCategory(category)}`}
+                      href={resolvePath(`/category/${slugifyCategory(category)}/`)}
                       class="sidebar-header block transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-lg mx-2 px-3 py-2"
                       style="text-decoration: none;"
                     >
@@ -148,7 +149,7 @@ const groupedArticles = allArticles.reduce(
                     <ul class="sidebar-list">
                       {items.map((article) => {
                         const slug = slugifyPath(article.id.replace(/\.mdx?$/, ""));
-                        const href = `/KIWiki/articles/${slug}`;
+                        const href = resolvePath(`/articles/${slug}/`);
                         const isActive = currentPath.includes(slug);
                         const difficulties = article.data.difficulties;
                         const isRestricted =

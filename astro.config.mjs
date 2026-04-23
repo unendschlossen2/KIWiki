@@ -17,6 +17,8 @@ import { katexMacros } from './src/config/katex-macros.js';
 
 import { remarkCrossReference } from './src/plugins/remark-cross-reference.ts';
 
+import searchIndexIntegration from './scripts/generate-index.js';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const comp = (/** @type {string} */ name) => `/src/components/${name}`;
 
@@ -91,8 +93,10 @@ function remarkDirectiveTransformer() {
 export default defineConfig({
   site: 'https://unendschlossen2.github.io',
   base: '/KIWiki/',
+  trailingSlash: 'always',
   integrations: [
     react(),
+    searchIndexIntegration(),
     mdx({
       remarkPlugins: [
         remarkCrossReference,
@@ -115,6 +119,12 @@ export default defineConfig({
           NaiveBayesDemo: comp('demos/NaiveBayesDemo.tsx'),
           PCADemo: comp('demos/PCADemo.tsx'),
           NeuralNetworkDemo: comp('demos/NeuralNetworkDemo.tsx'),
+          BackpropagationDemo: comp('demos/BackpropagationDemo.tsx'),
+          PatternRecognitionDemo: comp('demos/PatternRecognitionDemo.tsx'),
+          NeuronDemo: comp('demos/NeuronDemo.tsx'),
+          CNNDemo: comp('demos/CNNDemo.tsx'),
+          EmbeddingDemo: comp('demos/EmbeddingDemo.tsx'),
+          GradientDescentDemo: comp('demos/GradientDescentDemo.tsx'),
           GradientBoostingDemo: comp('demos/GradientBoostingDemo.tsx'),
           TableOfContents: comp('design/TableOfContents.tsx'),
         }],

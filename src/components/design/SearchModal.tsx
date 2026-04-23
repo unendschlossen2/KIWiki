@@ -137,7 +137,7 @@ export default function SearchModal() {
               {results.map((result) => (
                 <li key={result.slug}>
                   <a
-                    href={`${getBase()}/articles/${result.slug}`}
+                    href={`${getBase()}/articles/${result.slug}/`}
                     className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 px-4 py-3 rounded-xl hover:bg-blue-50 dark:hover:bg-slate-800/80 hover:text-blue-700 dark:hover:text-blue-400 transition-colors group"
                   >
                     <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-white dark:group-hover:bg-slate-900 group-hover:text-blue-600 dark:group-hover:text-blue-400 shrink-0 shadow-sm transition-colors">

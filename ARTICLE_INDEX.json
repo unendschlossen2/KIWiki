@@ -1,6 +1,30 @@
 [
   {
-    "slug": "01. core theory/was-ist-ki",
+    "slug": "01.-core-theory/gradient-descent",
+    "title": "Gradientenabstieg",
+    "description": "Der Kompass der Optimierung — wie Maschinen Schritt für Schritt den Weg zum Ziel finden.",
+    "category": "core",
+    "tags": [
+      "Mathematik",
+      "Optimierung",
+      "Grundlagen",
+      "Lernrate"
+    ],
+    "aliases": [
+      "Gradient Descent",
+      "SGD",
+      "Adam",
+      "Optimierung"
+    ],
+    "difficulties": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "filePath": "src/content/articles/01. Core Theory/gradient-descent.mdx"
+  },
+  {
+    "slug": "01.-core-theory/was-ist-ki",
     "title": "Was ist KI?",
     "description": "Künstliche Intelligenz kurz erklärt",
     "category": "core",
@@ -18,7 +42,7 @@
     "filePath": "src/content/articles/01. Core Theory/was-ist-ki.mdx"
   },
   {
-    "slug": "02. classical ml/decision-trees",
+    "slug": "02.-classical-ml/decision-trees",
     "title": "Entscheidungsbäume",
     "description": "Wie KI logische Wenn-Dann-Entscheidungen trifft und Daten in hierarchische Strukturen zerlegt.",
     "category": "ml",
@@ -42,7 +66,7 @@
     "filePath": "src/content/articles/02. Classical ML/decision-trees.mdx"
   },
   {
-    "slug": "02. classical ml/gradient-boosting",
+    "slug": "02.-classical-ml/gradient-boosting",
     "title": "Gradient Boosting",
     "description": "Vom Fehler zum Modell — wie XGBoost und LightGBM durch sequentielles Lernen die Spitze der Tabellendaten-Modelle erklommen haben.",
     "category": "ml",
@@ -61,7 +85,7 @@
     "filePath": "src/content/articles/02. Classical ML/gradient-boosting.mdx"
   },
   {
-    "slug": "02. classical ml/k-means",
+    "slug": "02.-classical-ml/k-means",
     "title": "K-Means Clustering",
     "description": "Ordnung im Chaos — wie Maschinen Gruppen in Daten finden, ganz ohne menschliche Hilfe.",
     "category": "ml",
@@ -80,7 +104,7 @@
     "filePath": "src/content/articles/02. Classical ML/k-means.mdx"
   },
   {
-    "slug": "02. classical ml/knn",
+    "slug": "02.-classical-ml/knn",
     "title": "k-Nearest Neighbors (k-NN)",
     "description": "Sag mir, wer deine Nachbarn sind — Klassifikation durch Ähnlichkeit und räumliche Nähe.",
     "category": "ml",
@@ -99,7 +123,7 @@
     "filePath": "src/content/articles/02. Classical ML/knn.mdx"
   },
   {
-    "slug": "02. classical ml/linear-regression",
+    "slug": "02.-classical-ml/linear-regression",
     "title": "Lineare Regression",
     "description": "Der Einstieg in die prädiktive Modellierung — wie man Trends in Daten findet und Vorhersagen trifft.",
     "category": "ml",
@@ -122,7 +146,7 @@
     "filePath": "src/content/articles/02. Classical ML/linear-regression.mdx"
   },
   {
-    "slug": "02. classical ml/logistic-regression",
+    "slug": "02.-classical-ml/logistic-regression",
     "title": "Logistische Regression",
     "description": "Der Standard für Klassifikationsaufgaben — wie KI lernt, zwischen Kategorien zu unterscheiden.",
     "category": "ml",
@@ -145,7 +169,7 @@
     "filePath": "src/content/articles/02. Classical ML/logistic-regression.mdx"
   },
   {
-    "slug": "02. classical ml/naive-bayes",
+    "slug": "02.-classical-ml/naive-bayes",
     "title": "Naive Bayes",
     "description": "Der Klassiker der Wahrscheinlichkeitsrechnung — wie der Satz von Bayes hilft, Spam von wichtigen E-Mails zu trennen.",
     "category": "ml",
@@ -164,7 +188,7 @@
     "filePath": "src/content/articles/02. Classical ML/naive-bayes.mdx"
   },
   {
-    "slug": "02. classical ml/pca",
+    "slug": "02.-classical-ml/pca",
     "title": "Principal Component Analysis (PCA)",
     "description": "Den Kern der Sache finden — wie man komplexe Daten vereinfacht, ohne das Wichtigste zu verlieren.",
     "category": "ml",
@@ -183,7 +207,7 @@
     "filePath": "src/content/articles/02. Classical ML/pca.mdx"
   },
   {
-    "slug": "02. classical ml/random-forests",
+    "slug": "02.-classical-ml/random-forests",
     "title": "Random Forests",
     "description": "Die Stärke der Gemeinschaft — wie viele einfache Entscheidungsbäume zusammen ein robustes Kraftpaket bilden.",
     "category": "ml",
@@ -206,7 +230,7 @@
     "filePath": "src/content/articles/02. Classical ML/random-forests.mdx"
   },
   {
-    "slug": "02. classical ml/svm",
+    "slug": "02.-classical-ml/svm",
     "title": "Support Vector Machines (SVM)",
     "description": "Sicherheitsabstand für Daten — wie SVMs die optimale Trennebene finden und durch den Kernel-Trick Unmögliches möglich machen.",
     "category": "ml",
@@ -225,7 +249,53 @@
     "filePath": "src/content/articles/02. Classical ML/svm.mdx"
   },
   {
-    "slug": "03. deep learning/neural-networks",
+    "slug": "03.-deep-learning/activation-functions",
+    "title": "Aktivierungsfunktionen",
+    "description": "Der Funke im Gehirn der KI — warum Nichtlinearität der Schlüssel zu komplexem Lernen ist.",
+    "category": "dl",
+    "tags": [
+      "Grundlagen",
+      "Mathematik",
+      "ReLU",
+      "Sigmoid"
+    ],
+    "aliases": [
+      "Activation Functions",
+      "Nichtlinearität",
+      "Transferfunktion"
+    ],
+    "difficulties": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "filePath": "src/content/articles/03. Deep Learning/activation-functions.mdx"
+  },
+  {
+    "slug": "03.-deep-learning/backpropagation",
+    "title": "Backpropagation",
+    "description": "Das Herzstück des Lernens — wie Fehler durch das Netz fließen und die Intelligenz formen.",
+    "category": "dl",
+    "tags": [
+      "Deep Learning",
+      "Mathematik",
+      "Optimierung",
+      "Gradienten"
+    ],
+    "aliases": [
+      "Fehlerrückführung",
+      "Chain Rule",
+      "Kettenregel"
+    ],
+    "difficulties": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "filePath": "src/content/articles/03. Deep Learning/backpropagation.mdx"
+  },
+  {
+    "slug": "03.-deep-learning/neural-networks",
     "title": "Neuronale Netze",
     "description": "Vom biologischen Vorbild zur Superintelligenz — wie Schichten aus Neuronen komplexe Muster lernen.",
     "category": "dl",
@@ -244,7 +314,7 @@
     "filePath": "src/content/articles/03. Deep Learning/neural-networks.mdx"
   },
   {
-    "slug": "03. deep learning/neuron",
+    "slug": "03.-deep-learning/neuron",
     "title": "Neuron",
     "description": "Die Grundeinheit neuronaler Netze — vom biologischen Vorbild zum mathematischen Modell.",
     "category": "dl",
@@ -268,7 +338,7 @@
     "filePath": "src/content/articles/03. Deep Learning/neuron.mdx"
   },
   {
-    "slug": "04. genai/image-gen-sota",
+    "slug": "04.-genai/image-gen-sota",
     "title": "Flux.1 & SOTA Bild-KI",
     "description": "Vom Pixel-Rauschen zum Meisterwerk — wie Flow Matching und Flux.1 die generative Kunst im Jahr 2026 dominieren.",
     "category": "genai",
@@ -287,7 +357,7 @@
     "filePath": "src/content/articles/04. GenAI/image-gen-sota.mdx"
   },
   {
-    "slug": "04. genai/mcp",
+    "slug": "04.-genai/mcp",
     "title": "Model Context Protocol (MCP)",
     "description": "Ein einheitlicher Standard, um Large Language Models (LLMs) mit lokalen Werkzeugen, Datenbanken und APIs zu vernetzen.",
     "category": "genai",
@@ -310,7 +380,7 @@
     "filePath": "src/content/articles/04. GenAI/mcp.mdx"
   },
   {
-    "slug": "04. genai/media-evolution",
+    "slug": "04.-genai/media-evolution",
     "title": "Generative Medien 2026",
     "description": "Vom statischen Bild zum lebendigen Universum — Veo, Kling und Suno revolutionieren Film und Musik.",
     "category": "genai",
@@ -330,7 +400,7 @@
     "filePath": "src/content/articles/04. GenAI/media-evolution.mdx"
   },
   {
-    "slug": "04. genai/transformer",
+    "slug": "04.-genai/transformer",
     "title": "Transformer",
     "description": "Die Architektur hinter ChatGPT, BERT und Co. — von der Intuition bis zur Formel.",
     "category": "genai",
@@ -353,7 +423,54 @@
     "filePath": "src/content/articles/04. GenAI/transformer.mdx"
   },
   {
-    "slug": "09. deployment & hardware/nvidia-blackwell",
+    "slug": "05.-text-&-speech/embeddings",
+    "title": "Word Embeddings",
+    "description": "Wie Wörter zu Zahlen werden — die geometrische Sprache der KI.",
+    "category": "nlp",
+    "tags": [
+      "NLP",
+      "Vektoren",
+      "Semantik",
+      "Deep Learning"
+    ],
+    "aliases": [
+      "Embeddings",
+      "Worteinbettungen",
+      "Word2Vec",
+      "GloVe"
+    ],
+    "difficulties": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "filePath": "src/content/articles/05. Text & Speech/embeddings.mdx"
+  },
+  {
+    "slug": "06.-visual-ai/cnn",
+    "title": "Convolutional Neural Networks (CNN)",
+    "description": "Die Augen der KI — wie Faltungsnetzwerke lernen, Bilder zu verstehen und Objekte zu erkennen.",
+    "category": "cv",
+    "tags": [
+      "Computer Vision",
+      "Deep Learning",
+      "Bildverarbeitung",
+      "Feature Extraction"
+    ],
+    "aliases": [
+      "CNN",
+      "Faltungsnetzwerk",
+      "ConvNet"
+    ],
+    "difficulties": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "filePath": "src/content/articles/06. Visual AI/cnn.mdx"
+  },
+  {
+    "slug": "09.-deployment-&-hardware/nvidia-blackwell",
     "title": "NVIDIA: Blackwell & Blackwell-Ultra",
     "description": "Der Motor der KI-Revolution — wie NVIDIAs Blackwell-Architektur die Rechenleistung für AGI bereitstellt.",
     "category": "deployment",
@@ -373,7 +490,7 @@
     "filePath": "src/content/articles/09. Deployment & Hardware/nvidia-blackwell.mdx"
   },
   {
-    "slug": "10. ethics & safety/eu-ai-act",
+    "slug": "10.-ethics-&-safety/eu-ai-act",
     "title": "EU AI Act: Volle Anwendung 2026",
     "description": "Sicherheit durch Regulierung — wie das weltweit erste KI-Gesetz im Jahr 2026 die Entwicklung und den Einsatz von KI in Europa prägt.",
     "category": "ethics",
@@ -393,7 +510,7 @@
     "filePath": "src/content/articles/10. Ethics & Safety/eu-ai-act.mdx"
   },
   {
-    "slug": "10. ethics & safety/safety-alignment",
+    "slug": "10.-ethics-&-safety/safety-alignment",
     "title": "AI Safety & Alignment",
     "description": "Den Geist in der Flasche kontrollieren — wie wir sicherstellen, dass superintelligente Systeme die Ziele der Menschheit teilen.",
     "category": "ethics",
@@ -412,7 +529,7 @@
     "filePath": "src/content/articles/10. Ethics & Safety/safety-alignment.mdx"
   },
   {
-    "slug": "11. history & context/anthropic-claude",
+    "slug": "11.-history-&-context/anthropic-claude",
     "title": "Anthropic: Claude 4.7 & Restricted Safety",
     "description": "Sicherheit durch Design — wie Anthropic mit Claude 4.7 und 'Claude Mythos' neue Maßstäbe für Coding und ethische KI setzt.",
     "category": "history",
@@ -431,7 +548,7 @@
     "filePath": "src/content/articles/11. History & Context/anthropic-claude.mdx"
   },
   {
-    "slug": "11. history & context/china-ai",
+    "slug": "11.-history-&-context/china-ai",
     "title": "KI in China: Qwen 3.6 & ERNIE 5.0",
     "description": "Vom Verfolger zum Vorreiter — wie Alibaba, Baidu und Tencent die Grenzen der multimodalen KI und 3D-Generierung verschieben.",
     "category": "history",
@@ -451,7 +568,7 @@
     "filePath": "src/content/articles/11. History & Context/china-ai.mdx"
   },
   {
-    "slug": "11. history & context/google-gemini",
+    "slug": "11.-history-&-context/google-gemini",
     "title": "Google DeepMind: Gemini 3.1 & Veo",
     "description": "Native Multimodalität in Perfektion — wie Google mit Gemini 3.1 und Veo die Brücke zwischen Text und Video schlägt.",
     "category": "history",
@@ -471,7 +588,7 @@
     "filePath": "src/content/articles/11. History & Context/google-gemini.mdx"
   },
   {
-    "slug": "11. history & context/meta-muse",
+    "slug": "11.-history-&-context/meta-muse",
     "title": "Meta AI: Muse Spark & Strategiewechsel",
     "description": "Effizienz statt Größe — wie Meta mit Muse Spark eine neue Ära der mobilen und privaten KI einläutet.",
     "category": "history",
@@ -490,7 +607,7 @@
     "filePath": "src/content/articles/11. History & Context/meta-muse.mdx"
   },
   {
-    "slug": "11. history & context/openai-gpt5",
+    "slug": "11.-history-&-context/openai-gpt5",
     "title": "OpenAI: GPT-5.4 und die Agenten-Ära",
     "description": "Vom Chatbot zum autonomen Agenten — wie OpenAI mit GPT-5.4 und Rosalind die Grenzen der KI-Forschung verschiebt.",
     "category": "history",

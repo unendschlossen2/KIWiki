@@ -12,7 +12,7 @@ Trotz ihres Namens ist die logistische Regression kein reines Regressionsverfahr
 
 ---
 
-## Wahrscheinlichkeit statt Werte
+## Wahrscheinlichkeiten berechnen
 
 :::beginner
 Stell dir vor, ein Arzt möchte wissen, ob ein Patient basierend auf seinen Testergebnissen krank ist oder nicht. Ein reiner Zahlenwert hilft hier nicht weiter – wir brauchen eine Ja/Nein-Entscheidung.
@@ -78,6 +78,36 @@ Diese Funktion stammt aus der Informationstheorie und misst die Differenz zwisch
 - **Finanzen:** Kreditwürdigkeitsprüfung (Zahlungsausfall: Ja/Nein).
 - **Marketing:** Vorhersage der Abwanderungswahrscheinlichkeit (Churn-Modellierung).
 - **Spam-Filter:** Die klassische Anwendung zur Trennung von erwünschten und unerwünschten E-Mails.
+
+## Implementierung in Python
+
+In Python nutzen wir meist `LogisticRegression` aus dem Paket `linear_model`. Hier ist ein Beispiel für eine einfache Klassifikation:
+
+```python
+from sklearn.linear_model import LogisticRegression
+import numpy as np
+
+# 1. Daten vorbereiten (X: Features, y: Klassen 0 oder 1)
+# Beispiel: Studienstunden vs. Prüfung bestanden
+X = np.array([[1], [2], [3], [5], [6], [7]])
+y = np.array([0, 0, 0, 1, 1, 1])
+
+# 2. Modell erstellen und trainieren
+model = LogisticRegression()
+model.fit(X, y)
+
+# 3. Wahrscheinlichkeit und Klasse vorhersagen
+stunden = np.array([[4]])
+wahrscheinlichkeit = model.predict_proba(stunden)
+klasse = model.predict(stunden)
+
+print(f"Wahrscheinlichkeit für Nicht-Bestanden (0) / Bestanden (1): {wahrscheinlichkeit[0]}")
+print(f"Vorhersage für 4 Stunden: {'Bestanden' if klasse[0] == 1 else 'Nicht bestanden'}")
+```
+
+**Erklärung:**
+- `predict_proba(X)`: Gibt die genauen Wahrscheinlichkeiten für jede Klasse zurück (z.B. `[0.3, 0.7]`).
+- `predict(X)`: Gibt direkt die Klasse mit der höchsten Wahrscheinlichkeit zurück (0 oder 1).
 
 ---
 

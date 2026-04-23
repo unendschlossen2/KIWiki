@@ -4,8 +4,8 @@ export function slugifyCategory(cat: string): string {
     .replace(/[äöüÄÖÜß]/g, (c: string) =>
       (({ ä: "ae", ö: "oe", ü: "ue", Ä: "ae", Ö: "oe", Ü: "ue", ß: "ss" }) as Record<string, string>)[c] ?? c
     )
-    .replace(/&/g, "and")
     .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
 
@@ -23,8 +23,8 @@ export function slugifyPath(path: string): string {
         .replace(/[äöüÄÖÜß]/g, (c) =>
           (({ ä: "ae", ö: "oe", ü: "ue", Ä: "ae", Ö: "oe", Ü: "ue", ß: "ss" } as Record<string, string>)[c] ?? c)
         )
-        .replace(/&/g, "and")
         .replace(/[^a-z0-9]+/g, "-")
+        .replace(/-+/g, "-")
         .replace(/^-+|-+$/g, "")
     )
     .join("/");

@@ -16,8 +16,8 @@ function slugify(text: string): string {
         .replace(/[äöüÄÖÜß]/g, (c) =>
           (({ ä: "ae", ö: "oe", ü: "ue", Ä: "ae", Ö: "oe", Ü: "ue", ß: "ss" } as Record<string, string>)[c] ?? c)
         )
-        .replace(/&/g, "and")
         .replace(/[^a-z0-9]+/g, "-")
+        .replace(/-+/g, "-")
         .replace(/^-+|-+$/g, "")
     )
     .join("/");
@@ -42,7 +42,7 @@ function buildDictionary() {
 
           const relPath = path.relative(CONTENT_DIR, fullPath);
           const slug = slugify(relPath.replace(/\.mdx?$/, ""));
-          const url = `${BASE_URL}/${slug}`;
+          const url = `${BASE_URL}/${slug}/`;
 
           if (data.title) {
             dict.push({ keyword: data.title, url });
@@ -80,7 +80,7 @@ export function remarkCrossReference() {
     if (file.path) {
       const relPath = path.relative(CONTENT_DIR, file.path);
       const slug = slugify(relPath.replace(/\.mdx?$/, ""));
-      currentUrl = `${BASE_URL}/${slug}`;
+      currentUrl = `${BASE_URL}/${slug}/`;
     }
 
     const ignoredParents = new Set([
@@ -161,6 +161,21 @@ export function remarkCrossReference() {
           parent.children.splice(parentIndex, 1, ...newNodes);
           return [SKIP, parentIndex + newNodes.length];
         }
+      }
+    });
+    
+    // 4. Also fix MANUAL links that are missing the trailing slash
+    visitParents(tree, "link", (node: any) => {
+      const url = String(node.url);
+      // If it's an internal link starting with /KIWiki/ and doesn't end with / and doesn't have a dot (like a file extension)
+      if (
+        url.startsWith("/KIWiki/") && 
+        !url.endsWith("/") && 
+        !url.includes(".") && 
+        !url.includes("#") && 
+        !url.includes("?")
+      ) {
+        node.url = url + "/";
       }
     });
   };

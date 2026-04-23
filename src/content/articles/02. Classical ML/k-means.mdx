@@ -11,7 +11,7 @@ Das **K-Means Clustering** ist einer der populärsten Algorithmen im Bereich des
 
 ---
 
-## Das Prinzip der Gruppenbildung
+## Intuition: Ordnung finden ohne Vorwissen
 
 :::beginner
 Stell dir vor, du schüttest eine Kiste bunter Bausteine auf den Boden. Du kennst die Farben nicht, aber du willst sie in **3 Häufen** sortieren. 
@@ -58,6 +58,33 @@ In dieser Demo kannst du den K-Means Algorithmus Schritt für Schritt beobachten
 - **Wahl von k:** Wie viele Cluster gibt es wirklich? Man nutzt oft die **Ellbogen-Methode**, um das optimale $k$ zu finden.
 - **Ausreißer:** Einzelne Punkte, die sehr weit weg liegen, können die Zentroiden stark verfälschen.
 - **Nicht-sphärische Formen:** K-Means funktioniert am besten bei kreisförmigen (sphärischen) Clustern. Bei länglichen oder mondförmigen Clustern scheitert er oft (hier wären Algorithmen wie DBSCAN besser).
+
+## Implementierung in Python
+
+K-Means ist ideal, um in unbekannten Daten Gruppen zu entdecken.
+
+```python
+from sklearn.cluster import KMeans
+import numpy as np
+
+# 1. Daten vorbereiten (X: Features, keine Labels y!)
+X = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]])
+
+# 2. Modell erstellen (n_clusters = k)
+kmeans = KMeans(n_clusters=2, random_state=0)
+kmeans.fit(X)
+
+# 3. Ergebnisse abfragen
+print(f"Cluster-Zugehörigkeit: {kmeans.labels_}")
+print(f"Zentroiden (Mittelpunkte): \n{kmeans.cluster_centers_}")
+
+# 4. Einen neuen Punkt zuweisen
+print(f"Neuer Punkt (0,0) gehört zu Cluster: {kmeans.predict([[0, 0]])[0]}")
+```
+
+**Erklärung:**
+- `n_clusters`: Hier legst du fest, in wie viele Gruppen die Daten geteilt werden sollen.
+- `cluster_centers_`: Dies sind die Koordinaten der "Platzhalter" (Zentroiden), die am Ende im Zentrum ihrer jeweiligen Gruppe liegen.
 
 ---
 

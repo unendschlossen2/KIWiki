@@ -104,7 +104,7 @@ const anyActive = !!urlCategorySlug || !!currentCategory;
 												]}
 											>
 												<a
-													href={resolvePath(`/category/${slug}`)}
+													href={resolvePath(`/category/${slug}/`)}
 													class="flex items-center gap-3 flex-1 py-1 overflow-hidden"
 												>
 													<span
@@ -168,7 +168,7 @@ const anyActive = !!urlCategorySlug || !!currentCategory;
 												{catArticles.map((art) => (
 													<li>
 														<a
-															href={resolvePath(`/articles/${art.id.replace(/\.mdx?$/, "")}`)}
+															href={resolvePath(`/articles/${art.id.replace(/\.mdx?$/, "")}/`)}
 															class="flex items-center justify-between text-[0.8rem] font-semibold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 py-1 transition-colors border-l-2 border-transparent hover:border-blue-500/40 pl-3 -ml-3"
 														>
 															<span class="truncate">

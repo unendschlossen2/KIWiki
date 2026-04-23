@@ -1,0 +1,94 @@
+---
+title: "Convolutional Neural Networks (CNN)"
+description: "Die Augen der KI — wie Faltungsnetzwerke lernen, Bilder zu verstehen und Objekte zu erkennen."
+category: "cv"
+tags: ["Computer Vision", "Deep Learning", "Bildverarbeitung", "Feature Extraction"]
+aliases: ["CNN", "Faltungsnetzwerk", "ConvNet"]
+---
+
+# Convolutional Neural Networks (CNN)
+
+Convolutional Neural Networks (CNNs) sind die spezialisierten Architekturen, die der Künstlichen Intelligenz das "Sehen" beigebracht haben. Während herkömmliche neuronale Netze bei Bildern schnell an ihre Grenzen stoßen (da jedes Pixel eine eigene Verbindung bräuchte), nutzen CNNs mathematische Tricks, um räumliche Muster wie Kanten, Formen und schließlich ganze Objekte hocheffizient zu erkennen.
+
+---
+
+## Das Prinzip des Scannens
+
+:::beginner
+Stell dir vor, du betrachtest ein großes Suchbild ("Wo ist Walter?") durch eine kleine Lupe. Du schiebst die Lupe systematisch über das Bild und suchst nach ganz bestimmten Merkmalen — erst nach rot-weißen Streifen, dann nach einer Brille.
+
+Ein CNN macht genau das: Es nutzt kleine "Filter" (die Lupe), die über das Bild gleiten (**Convolution**). Jeder Filter sucht nach einem anderen Merkmal. Ein Filter findet vielleicht waagerechte Kanten, ein anderer runde Formen. Am Ende setzt das Netz diese Puzzleteile zusammen, um zu verstehen: "Das ist ein Hund."
+:::
+
+:::medium
+Ein CNN besteht im Kern aus drei Schicht-Typen:
+1. **Convolutional Layer**: Hier werden Filter (Kernel) über das Bild geschoben. Das Ergebnis ist eine "Feature Map", die anzeigt, wo im Bild ein bestimmtes Merkmal gefunden wurde.
+2. **Pooling Layer**: Diese Schichten reduzieren die Datenmenge (Downsampling), indem sie z. B. nur den Maximalwert aus einem kleinen Bereich behalten (**Max Pooling**). Das macht das Netz robuster gegenüber kleinen Verschiebungen des Objekts.
+3. **Fully Connected Layer**: Am Ende des Netzes werden die extrahierten Merkmale zusammengeführt, um die finale Klassifizierung (z. B. "Katze" oder "Auto") zu treffen.
+:::
+
+:::advanced
+Mathematisch ist die Faltung (Convolution) eine Operation auf zwei Funktionen. Bei Bildern diskretisieren wir dies: Ein Kernel $K$ (z. B. $3 \times 3$) wird über das Bild $I$ bewegt. Der Wert an Position $(i, j)$ der Feature Map $S$ berechnet sich als:
+
+$$
+S(i, j) = (I * K)(i, j) = \sum_{m} \sum_{n} I(i+m, j+n) \cdot K(m, n)
+$$
+
+Der Clou: Die Filterwerte im Kernel $K$ werden nicht von Menschen vorgegeben, sondern vom Netzwerk durch Backpropagation **gelernt**. So findet das Netz selbst heraus, welche visuellen Merkmale (Kanten, Texturen) für die jeweilige Aufgabe am wichtigsten sind.
+:::
+
+---
+
+## Interaktive Demo
+
+Hier siehst du, wie die **Convolution** (Faltung) in der Praxis funktioniert. Ein $3 \times 3$ Filter gleitet über das Eingabebild und berechnet für jede Position einen neuen Wert für die **Feature Map**. Wähle verschiedene Filter aus, um zu sehen, wie sie unterschiedliche Merkmale (Kanten, Schärfe) hervorheben.
+
+<CNNDemo client:load />
+
+---
+
+## Warum CNNs statt normaler Netze?
+
+:::medium
+Wenn du ein Bild von $224 \times 224$ Pixeln (Farbe) hättest, ergäbe das über 150.000 Eingabewerte. Ein vollvernetztes Neuron bräuchte für die erste Schicht allein 150.000 Gewichte. Das ist ineffizient und ignoriert die räumliche Struktur.
+CNNs nutzen zwei Konzepte:
+- **Local Connectivity**: Ein Neuron ist nur mit einem kleinen Bereich des Bildes verbunden.
+- **Shared Weights**: Ein Filter wird über das gesamte Bild verwendet. Wenn er eine Kante oben links erkennt, erkennt er sie auch unten rechts.
+:::
+
+---
+
+## Implementierung in Python
+
+Mit Keras (TensorFlow) lässt sich ein CNN sehr intuitiv aufbauen:
+
+```python
+from tensorflow.keras import layers, models
+
+# 1. CNN Architektur definieren
+model = models.Sequential([
+    # Erste Faltung: 32 Filter der Größe 3x3
+    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(64, 64, 3)),
+    layers.MaxPooling2D((2, 2)),
+    
+    # Zweite Faltung
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    
+    # In einen Vektor umwandeln und klassifizieren
+    layers.Flatten(),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(10, activation='softmax') # 10 Klassen
+])
+
+model.summary()
+```
+
+---
+
+## Zusammenfassung
+
+- **Lernen von Merkmalen**: CNNs lernen automatisch, worauf sie in einem Bild achten müssen.
+- **Hierarchie**: Erste Schichten sehen Kanten, mittlere Schichten Formen, tiefe Schichten ganze Objekte.
+- **Effizienz**: Durch geteilte Gewichte (Filter) sparen CNNs massiv an Parametern im Vergleich zu vollvernetzten Netzen.
+- **Einsatz**: Gesichtserkennung, autonomes Fahren, medizinische Bildanalyse und vieles mehr.

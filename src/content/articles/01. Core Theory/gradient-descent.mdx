@@ -1,0 +1,95 @@
+---
+title: "Gradientenabstieg"
+description: "Der Kompass der Optimierung — wie Maschinen Schritt für Schritt den Weg zum Ziel finden."
+category: "core"
+tags: ["Mathematik", "Optimierung", "Grundlagen", "Lernrate"]
+aliases: ["Gradient Descent", "SGD", "Adam", "Optimierung"]
+---
+
+# Gradientenabstieg
+
+Der Gradientenabstieg (Gradient Descent) ist der Motor fast aller Machine-Learning-Algorithmen. Er ist das Werkzeug, mit dem ein Modell seine Fehler minimiert. Ob es sich um eine einfache lineare Regression oder ein gigantisches Sprachmodell wie GPT-4 handelt — im Kern "wandert" das Modell eine mathematische Landschaft ab, um den tiefsten Punkt zu finden.
+
+---
+
+## Die Analogie des blinden Wanderers
+
+:::beginner
+Stell dir vor, du stehst auf einem nebligen Berg und willst ins Tal (den Punkt mit dem geringsten Fehler). Du kannst nur einen Meter weit sehen. Was tust du?
+
+Du tastest mit dem Fuß den Boden um dich herum ab und suchst die Richtung, in die es am steilsten bergab geht. Dort machst du einen Schritt. Dann tastest du wieder. Schritt für Schritt arbeitest du dich so nach unten, bis du im Tal ankommst.
+
+Genau das macht der **Gradientenabstieg**:
+1. Er schaut, in welche Richtung der Fehler kleiner wird (der Gradient).
+2. Er ändert die Gewichte des Modells ein kleines Stück in diese Richtung.
+3. Er wiederholt das so lange, bis der Fehler nicht mehr kleiner wird.
+:::
+
+:::medium
+Mathematisch gesehen ist der **Gradient** ein Vektor, der in die Richtung des steilsten Anstiegs einer Funktion zeigt. Da wir den Fehler minimieren wollen, gehen wir in die **entgegengesetzte Richtung** des Gradienten.
+
+Die wichtigste Stellschraube ist die **Lernrate** ($\eta$):
+- Ist sie zu groß, macht der Wanderer riesige Sprünge und "springt" über das Tal hinweg.
+- Ist sie zu klein, braucht er ewig, um unten anzukommen.
+:::
+
+:::advanced
+Gegeben ist eine differenzierbare Kostenfunktion $J(\wvec)$. Wir aktualisieren die Parameter $\wvec$ iterativ:
+
+$$
+\wvec_{t+1} = \wvec_t - \eta \cdot \nabla J(\wvec_t)
+$$
+
+In der Praxis nutzt man oft Varianten:
+- **Batch Gradient Descent**: Nutzt alle Datenpunkte für einen Schritt (sehr genau, aber langsam bei großen Daten).
+- **Stochastic Gradient Descent (SGD)**: Nutzt nur einen zufälligen Datenpunkt pro Schritt (schnell, aber sehr verrauscht).
+- **Mini-Batch Gradient Descent**: Der Goldstandard. Nutzt eine kleine Gruppe (Batch) von Daten.
+- **Adam (Adaptive Moment Estimation)**: Ein moderner Optimierer, der die Lernrate für jedes Gewicht individuell anpasst.
+:::
+
+---
+
+## Interaktive Demo
+
+Erlebe den Gradientenabstieg in Aktion. Du siehst eine Kostenfunktion (die "Landschaft") und einen Ball, der das Modell repräsentiert. Durch Klicken auf "Auto-Abstieg" berechnet der Algorithmus in jedem Schritt die Steigung (Tangente) und wandert entgegen dieser Richtung nach unten. Experimentiere mit der **Lernrate**, um zu sehen, wie sie die Geschwindigkeit und Stabilität beeinflusst.
+
+<GradientDescentDemo client:load />
+
+---
+
+## Häufige Probleme
+
+### Lokale Minima
+Manchmal landet der Wanderer in einer kleinen Mulde auf halber Höhe (lokales Minimum), obwohl es weiter unten ein viel tieferes Tal (globales Minimum) gibt. Moderne Optimierer nutzen Techniken wie **Momentum**, um genug Schwung zu haben, um aus solchen Mulden wieder herauszukommen.
+
+### Das Plateau
+Wenn die Landschaft sehr flach ist, wird der Gradient fast Null. Der Wanderer bewegt sich kaum noch vorwärts. Hier helfen adaptive Lernraten (wie bei Adam), die den Schritt vergrößern, wenn es zu langsam vorangeht.
+
+---
+
+## Implementierung in Python
+
+In Python nutzt man meist Optimierer aus Bibliotheken wie `torch.optim` oder `keras.optimizers`. Hier ist das Prinzip in reinem Python für eine einfache Funktion:
+
+```python
+# Wir wollen das Minimum von f(x) = x² finden
+# Die Ableitung (Gradient) ist f'(x) = 2x
+
+x = 10.0           # Startpunkt
+learning_rate = 0.1
+iterations = 20
+
+for i in range(iterations):
+    gradient = 2 * x
+    x = x - learning_rate * gradient
+    print("Schritt %d: x = %.4f, f(x) = %.4f" % (i, x, x**2))
+```
+
+---
+
+## Zusammenfassung
+
+- **Ziel**: Minimierung der Verlustfunktion (den Fehler so klein wie möglich machen).
+- **Gradient**: Zeigt die Richtung des steilsten Anstiegs; wir gehen in die Gegenrichtung.
+- **Lernrate**: Bestimmt die Schrittweite. Sie ist der wichtigste Hyperparameter.
+- **Basis**: Ohne Gradientenabstieg gäbe es kein modernes Maschinelles Lernen.

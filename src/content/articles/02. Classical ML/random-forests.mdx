@@ -12,7 +12,7 @@ Ein einzelner Entscheidungsbaum ist zwar leicht zu verstehen, neigt aber stark d
 
 ---
 
-## Die Kraft der Masse
+## Das Prinzip der Schwarmintelligenz
 
 :::beginner
 Stell dir vor, du möchtest wissen, ob ein Film gut ist. 
@@ -69,6 +69,35 @@ Ein wertvoller Nebenprodukt des Random Forest ist die **Feature Importance**. De
 :::advanced
 In der Praxis ist der Random Forest oft der erste Algorithmus, den man auf tabellarische Daten anwendet (Baseline). Er ist unempfindlich gegenüber Ausreißern und benötigt keine Skalierung der Eingabewerte (wie z.B. bei SVMs oder Neuronalen Netzen). Allerdings wird er heute oft von **Gradient Boosting** Modellen übertroffen, wenn es um die absolut letzte Prise Genauigkeit geht.
 :::
+
+## Implementierung in Python
+
+Dank `scikit-learn` ist ein ganzer Wald mit nur wenigen Zeilen Code erstellt:
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+import numpy as np
+
+# 1. Daten vorbereiten
+X = np.array([[25, 30000], [45, 80000], [20, 20000], [35, 50000]])
+y = np.array([0, 1, 0, 1])
+
+# 2. Modell erstellen (n_estimators = Anzahl der Bäume)
+rf = RandomForestClassifier(n_estimators=100, max_depth=5)
+rf.fit(X, y)
+
+# 3. Wichtigkeit der Features prüfen
+for name, importance in zip(['Alter', 'Einkommen'], rf.feature_importances_):
+    print(f"Merkmal {name}: {importance:.2f}")
+
+# 4. Vorhersage
+vorhersage = rf.predict([[40, 60000]])
+print(f"Vorhersage für neue Person: {vorhersage[0]}")
+```
+
+**Erklärung:**
+- `n_estimators`: Bestimmt, wie viele Bäume im Wald wachsen sollen. 100 ist ein guter Standardwert.
+- `feature_importances_`: Einer der nützlichsten Aspekte von Random Forests. Es zeigt dir schwarz auf weiß, welche Faktoren die Entscheidung am stärksten beeinflusst haben.
 
 ---
 

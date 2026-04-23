@@ -11,7 +11,7 @@ Während **Random Forests** darauf basieren, viele Bäume unabhängig voneinande
 
 ---
 
-## Das Prinzip der Korrektur
+## Die Strategie der stetigen Korrektur
 
 :::beginner
 Stell dir vor, du versuchst ein kompliziertes Lied auf dem Klavier zu lernen. 
@@ -64,6 +64,31 @@ Gradient Boosting Modelle, insbesondere **XGBoost**, **LightGBM** und **CatBoost
 1.  **Umgang mit fehlenden Werten:** Sie können automatisch lernen, wie mit Lücken in den Daten umzugehen ist.
 2.  **Effizienz:** LightGBM nutzt Techniken wie GOSS (Gradient-based One-Side Sampling), um riesige Datensätze in Bruchteilen von Sekunden zu verarbeiten.
 3.  **Flexibilität:** Sie können fast jede differenzierbare Verlustfunktion optimieren, egal ob für Regression, Klassifikation oder Ranking.
+
+## Implementierung in Python
+
+Für High-Performance-Anwendungen nutzt man meist `XGBoost` oder `LightGBM`. Hier ist ein einfaches Beispiel mit dem Standard-Booster aus `scikit-learn`:
+
+```python
+from sklearn.ensemble import GradientBoostingClassifier
+import numpy as np
+
+# 1. Daten vorbereiten
+X = np.array([[25, 30000], [45, 80000], [20, 20000], [35, 50000]])
+y = np.array([0, 1, 0, 1])
+
+# 2. Modell erstellen (n_estimators = Korrekturschritte)
+gb = GradientBoostingClassifier(n_estimators=50, learning_rate=0.1)
+gb.fit(X, y)
+
+# 3. Vorhersage
+vorhersage = gb.predict([[40, 60000]])
+print(f"Vorhersage: {vorhersage[0]}")
+```
+
+**Erklärung:**
+- `learning_rate`: Ein sehr wichtiger Wert beim Boosting. Er bestimmt, wie "vorsichtig" das Modell korrigiert. Eine niedrige Lernrate erfordert mehr Bäume, führt aber oft zu einer besseren Genauigkeit.
+- `n_estimators`: Die Anzahl der Korrekturbäume. Zu viele können zu Overfitting führen, da das Modell anfängt, das Rauschen in den Daten zu korrigieren.
 
 ---
 

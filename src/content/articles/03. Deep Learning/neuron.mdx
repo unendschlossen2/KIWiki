@@ -12,7 +12,7 @@ Neuronale Netze sind heute die Grundlage fast jeder modernen KI — von Bildklas
 
 ---
 
-## Was ist ein Neuron?
+## Die kleinste Entscheidungseinheit
 
 :::beginner
 Stell dir einen winzigen Entscheider vor. Er bekommt mehrere Informationen gleichzeitig (z. B. „Wie warm ist es?", „Regnet es?"), denkt kurz nach und gibt dann **eine einzige Antwort**: Ja oder Nein — zum Beispiel „Nimm einen Regenschirm mit".
@@ -150,11 +150,15 @@ ReLU hat sich im Deep Learning durchgesetzt, weil es **schnell zu berechnen** is
 Die Wahl der Aktivierungsfunktion beeinflusst sowohl die Konvergenzgeschwindigkeit als auch die Expressivität des Modells.
 :::
 
-## Interaktive Demo
+## Interaktive Anatomie eines Neurons
 
-Die Demo zeigt dir, wie ein einzelnes Neuron arbeitet. Dreh am **Gewicht**, um zu sehen, wie stark die Eingabe verstärkt wird. Verschieb den **Bias**, um den Punkt zu ändern, ab dem das Neuron „feuert". Und probier verschiedene **Aktivierungsfunktionen** aus — du wirst sehen, wie Sigmoid alles zwischen 0 und 1 quetscht, während ReLU einfach alles Negative abschneidet.
+In dieser Demo siehst du, wie ein einzelnes Neuron mehrere Informationen gleichzeitig verarbeitet. Jede Eingabe ($x$) wird mit einem individuellen Gewicht ($w$) multipliziert — das bestimmt, wie wichtig diese Information für das Neuron ist. Der **Bias** ($b$) ist wie eine Grundstimmung: Ein negativer Bias bedeutet, das Neuron ist "skeptisch" und braucht stärkere Signale, um zu feuern.
 
-<ActivationDemo client:load />
+<NeuronDemo client:load />
+
+<InfoBox type="tip" title="Tipp">
+  Wie die verschiedenen Entscheidungsregeln (Aktivierungsfunktionen) im Detail funktionieren, erfährst du im eigenen Artikel zu [Aktivierungsfunktionen](/KIWiki/articles/03-deep-learning/activation-functions).
+</InfoBox>
 
 ---
 
@@ -204,6 +208,37 @@ $$
 
 wobei $\circ$ das Hadamard-Produkt (elementweise Multiplikation) und $\mathbf{a}^{(l-1)}$ die Aktivierungen der vorherigen Schicht bezeichnen.
 :::
+
+## Implementierung in Python
+
+Ein einzelnes Neuron lässt sich ganz ohne Bibliotheken in reinem Python bauen:
+
+```python
+import math
+
+class Neuron:
+    def __init__(self, weights, bias):
+        self.weights = weights
+        self.bias = bias
+    
+    def activate(self, x):
+        # 1. Linearkombination: sum(w * x) + b
+        z = sum(w * xi for w, xi in zip(self.weights, x)) + self.bias
+        
+        # 2. Aktivierungsfunktion (hier Sigmoid)
+        return 1 / (1 + math.exp(-z))
+
+# Beispiel: Ein Neuron mit 2 Eingängen
+my_neuron = Neuron(weights=[0.5, -0.2], bias=0.1)
+output = my_neuron.activate([1.0, 0.5])
+
+print(f"Das Neuron feuert mit einer Stärke von: {output:.4f}")
+```
+
+**Erklärung:**
+- `weights`: Die Liste der Gewichte für jeden Eingang.
+- `bias`: Die "Trägheit" des Neurons.
+- `activate`: Der Prozess aus Multiplikation, Summation und Aktivierung.
 
 ---
 

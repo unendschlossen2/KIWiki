@@ -1,0 +1,109 @@
+---
+title: "Backpropagation"
+description: "Das Herzstück des Lernens — wie Fehler durch das Netz fließen und die Intelligenz formen."
+category: "dl"
+tags: ["Deep Learning", "Mathematik", "Optimierung", "Gradienten"]
+aliases: ["Fehlerrückführung", "Chain Rule", "Kettenregel"]
+---
+
+# Backpropagation
+
+Backpropagation (Fehlerrückführung) ist der Algorithmus, der das "Lernen" in neuronalen Netzen überhaupt erst ermöglicht. Ohne ihn wären neuronale Netze nur starre mathematische Konstrukte. Er ist der Mechanismus, mit dem das Netz erkennt: "Ich habe einen Fehler gemacht, und diese speziellen Gewichte sind daran schuld."
+
+---
+
+## Die Idee der Fehlerzuweisung
+
+:::beginner
+Stell dir vor, du spielst "Stille Post" in einer langen Schlange. Am Ende kommt ein falsches Wort heraus. Backpropagation ist der Prozess, bei dem man vom Ende der Schlange nach vorne geht und jedem sagt: "Du hast das Wort ein bisschen zu sehr verändert, sei beim nächsten Mal vorsichtiger."
+
+In einem neuronalen Netz wird der Fehler am Ausgang gemessen und dann Schicht für Schicht rückwärts (backwards) verteilt. Jedes Neuron erfährt so, wie viel es zum Gesamtmisere beigetragen hat und passt seine "Stellschrauben" (Gewichte) an.
+:::
+
+:::medium
+Technisch gesehen ist Backpropagation eine effiziente Anwendung der **Kettenregel** aus der Differentialrechnung. Wir berechnen den Gradienten der Verlustfunktion $\loss$ in Bezug auf jedes einzelne Gewicht im Netzwerk. 
+
+Der Prozess läuft in zwei Phasen ab:
+1. **Forward Pass**: Daten fließen durch das Netz, eine Vorhersage wird getroffen und der Fehler (Loss) berechnet.
+2. **Backward Pass**: Der Fehler wird von der Ausgabeschicht zurück zur Eingabeschicht propagiert, um die partiellen Ableitungen zu bestimmen.
+:::
+
+:::advanced
+Formal berechnet Backpropagation den Gradienten $\nabla \loss$ durch rekursive Anwendung der Kettenregel. Für ein Gewicht $w_{ij}^{(l)}$ in Schicht $l$ suchen wir:
+
+$$
+\frac{\partial \loss}{\partial w_{ij}^{(l)}} = \delta_i^{(l)} \cdot a_j^{(l-1)}
+$$
+
+Dabei ist $\delta_i^{(l)}$ der "Fehlerterm" des Neurons $i$ in Schicht $l$. Dieser berechnet sich aus dem Fehler der nachfolgenden Schicht:
+
+$$
+\delta^{(l)} = ((W^{(l+1)})^T \delta^{(l+1)}) \circ \sigma'(z^{(l)})
+$$
+
+Das Symbol $\circ$ steht für das Hadamard-Produkt (elementweise Multiplikation). Die Effizienz rührt daher, dass Zwischenergebnisse (die $\delta$-Werte) gespeichert und wiederverwendet werden, was die Komplexität von exponentiell auf linear in Bezug auf die Anzahl der Parameter senkt.
+:::
+
+---
+
+## Interaktive Demo
+
+In dieser Demo löst ein kleines Netz das berühmte **XOR-Problem** — eine Aufgabe, die ein einzelnes Neuron nicht bewältigen kann. Klicke auf **„Schritt lernen"**, um den gesamten Zyklus zu beobachten:
+
+1.  **Forward Pass** (→ blau): Die Eingaben fließen durch das Netz.
+2.  **Loss**: Der Fehler zwischen Vorhersage und Ziel wird gemessen.
+3.  **Backward Pass** (← rot): Die Gradienten fließen zurück und zeigen jedem Gewicht, wie es sich ändern muss.
+4.  **Update**: Die Gewichte werden angepasst.
+
+Mit **„Auto-Training"** kannst du zusehen, wie der Loss-Graph über viele Epochen gegen Null konvergiert.
+
+<BackpropagationDemo client:only="react" />
+
+---
+
+## Warum ist das so wichtig?
+
+Bevor Backpropagation populär wurde (durch Rumelhart, Hinton & Williams 1986), wusste man nicht effizient, wie man tiefe Netze mit vielen Schichten trainieren sollte. Backpropagation löste dieses Problem und legte den Grundstein für den heutigen Erfolg von Deep Learning.
+
+### Die Rolle der Aktivierungsfunktion
+Damit Backpropagation funktioniert, muss die Aktivierungsfunktion (wie ReLU oder Sigmoid) **differenzierbar** sein. Nur dann können wir eine Steigung (Gradienten) berechnen und wissen, in welche Richtung wir die Gewichte drehen müssen.
+
+---
+
+## Implementierung in Python
+
+In modernen Frameworks wie PyTorch passiert Backpropagation fast magisch durch "Autograd". Hier ist ein Prinzip-Beispiel, wie man es manuell für ein einzelnes Neuron skizzieren würde:
+
+```python
+# Pseudo-Code für einen Lernschritt
+def train_step(x, target, weights, bias, learning_rate):
+    # 1. Forward Pass
+    z = sum(w * xi for w, xi in zip(weights, x)) + bias
+    prediction = sigmoid(z)
+    
+    # 2. Fehler berechnen (Loss)
+    error = prediction - target
+    
+    # 3. Backward Pass (Gradienten berechnen)
+    # Ableitung der Loss-Funktion * Ableitung der Aktivierung
+    d_z = error * sigmoid_derivative(z)
+    
+    # Gradienten für Gewichte
+    d_weights = [d_z * xi for xi in x]
+    d_bias = d_z
+    
+    # 4. Gewichte anpassen
+    new_weights = [w - learning_rate * dw for w, dw in zip(weights, d_weights)]
+    new_bias = bias - learning_rate * d_bias
+    
+    return new_weights, new_bias
+```
+
+---
+
+## Zusammenfassung
+
+- **Fehlerfluss**: Backpropagation leitet den Fehler von hinten nach vorne durch das Netz.
+- **Mathematik**: Nutzt die Kettenregel, um die "Schuld" jedes Gewichts am Fehler zu berechnen.
+- **Effizienz**: Macht das Training von Netzen mit Millionen von Parametern erst praktikabel.
+- **Optimierung**: Die berechneten Gradienten werden meist vom **Gradientenabstieg** genutzt, um die Gewichte zu aktualisieren.

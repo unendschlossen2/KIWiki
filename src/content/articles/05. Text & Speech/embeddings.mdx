@@ -1,0 +1,97 @@
+---
+title: "Word Embeddings"
+description: "Wie Wörter zu Zahlen werden — die geometrische Sprache der KI."
+category: "nlp"
+tags: ["NLP", "Vektoren", "Semantik", "Deep Learning"]
+aliases: ["Embeddings", "Worteinbettungen", "Word2Vec", "GloVe"]
+---
+
+# Word Embeddings
+
+Computer können nicht lesen, sie können nur rechnen. Damit eine KI Sprache verstehen kann, müssen Wörter in Zahlen umgewandelt werden. Aber einfach jedem Wort eine Nummer zu geben (z. B. "Hund" = 1, "Katze" = 2), reicht nicht aus, da die Maschine so nicht weiß, dass "Hund" und "Katze" viel ähnlicher sind als "Hund" und "Kühlschrank". Hier kommen **Word Embeddings** ins Spiel.
+
+---
+
+## Wörter im Raum
+
+:::beginner
+Stell dir vor, du ordnest Wörter in einem riesigen Raum an. Wörter mit ähnlicher Bedeutung hängen nah beieinander.
+- "König" und "Königin" stehen in einer Ecke.
+- "Apfel" und "Birne" in einer anderen.
+- Der Abstand zwischen "Mann" und "Frau" ist fast derselbe wie zwischen "König" und "Königin".
+
+Ein Word Embedding ist genau das: Eine Liste von Zahlen (ein **Vektor**), die die Koordinaten eines Wortes in diesem bedeutungsvollen Raum beschreibt. Die KI "versteht" ein Wort, indem sie weiß, wo es im Verhältnis zu allen anderen Wörtern steht.
+:::
+
+:::medium
+Word Embeddings sind dichte Vektoren (meist 100 bis 1000 Dimensionen). Im Gegensatz zu einfachen Verfahren wie "One-Hot-Encoding" kodieren Embeddings die **Semantik**. 
+
+Ein berühmtes Beispiel für die mathematischen Eigenschaften dieser Vektoren ist:
+**Vektor("König") - Vektor("Mann") + Vektor("Frau") $\approx$ Vektor("Königin")**
+
+Die bekanntesten Algorithmen zur Erzeugung dieser Vektoren sind **Word2Vec** und **GloVe**. Sie lernen die Bedeutung eines Wortes durch seinen Kontext — also durch die Wörter, mit denen es häufig zusammen auftaucht ("You shall know a word by the company it keeps").
+:::
+
+:::advanced
+Mathematisch gesehen ist ein Word Embedding eine Abbildung von einem diskreten Raum (Vokabular) in einen kontinuierlichen Vektorraum $\R^d$. 
+
+Bei **Word2Vec** werden zwei Architekturen genutzt:
+1. **CBOW (Continuous Bag of Words)**: Sagt das Zielwort anhand des Kontexts voraus.
+2. **Skip-gram**: Sagt den Kontext anhand des Zielwortes voraus.
+
+Die Ähnlichkeit zwischen zwei Wörtern wird meist über die **Kosinus-Ähnlichkeit** gemessen, die den Winkel zwischen den Vektoren berechnet:
+
+$$
+\text{sim}(\mathbf{a}, \mathbf{b}) = \frac{\mathbf{a} \cdot \mathbf{b}}{\|\mathbf{a}\| \|\mathbf{b}\|}
+$$
+
+Moderne Transformer-Modelle nutzen **kontextualisierte Embeddings** (wie in BERT oder GPT). Hier hat dasselbe Wort je nach Satz ("Die Bank im Park" vs. "Die Bank im Finanzviertel") einen unterschiedlichen Vektor.
+:::
+
+---
+
+## Interaktive Demo
+
+In dieser Demo siehst du Wörter, die als Punkte in einem 2D-Raum (stark vereinfachtes Embedding) angeordnet sind. Beachte, wie semantisch verwandte Begriffe Cluster bilden. Klicke auf **"Analogie zeigen"**, um die mathematische Beziehung zwischen Geschlechtern und Titeln zu visualisieren.
+
+<EmbeddingDemo client:load />
+
+---
+
+## Warum brauchen wir das?
+
+:::medium
+- **Suche**: Eine Suchmaschine kann Ergebnisse finden, die das Suchwort nicht enthalten, aber semantisch passen (z. B. "Haustier" finden, wenn man nach "Hund" sucht).
+- **Übersetzung**: Die Struktur des "Bedeutungs-Raums" ist in vielen Sprachen ähnlich. Das hilft der KI, Wörter zwischen Sprachen zu übertragen.
+- **Sentiment-Analyse**: Die KI erkennt, dass "großartig", "fantastisch" und "toll" alle in der "positiven Ecke" des Raums liegen.
+:::
+
+---
+
+## Implementierung in Python
+
+Mit der Bibliothek `gensim` lassen sich vortrainierte Word-Embeddings sehr einfach nutzen:
+
+```python
+import gensim.downloader as api
+
+# 1. Vortrainiertes Modell laden (Glove mit 50 Dimensionen)
+model = api.load("glove-wiki-gigaword-50")
+
+# 2. Ähnlichkeit prüfen
+result = model.most_similar(positive=['king', 'woman'], negative=['man'], topn=1)
+print("King - Man + Woman = %s" % result[0][0])
+
+# 3. Distanz messen
+distance = model.similarity('cat', 'dog')
+print("Ähnlichkeit Katze/Hund: %.2f" % distance)
+```
+
+---
+
+## Zusammenfassung
+
+- **Vektoren**: Wörter werden als Listen von Zahlen dargestellt.
+- **Semantik**: Die Position im Raum spiegelt die Bedeutung wider.
+- **Kontext**: Die KI lernt die Bedeutung durch die Nachbarwörter im Training.
+- **Grundbaustein**: Embeddings sind der erste Schritt für fast jede moderne Sprach-KI (NLP).

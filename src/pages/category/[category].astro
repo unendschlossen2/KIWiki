@@ -8,6 +8,7 @@ import {
   CATEGORIES,
 } from "../../config/categories";
 import { DIFFICULTY_LABELS, DIFFICULTY_SHORT } from "../../config/difficulty";
+import { resolvePath } from "../../utils/path";
 
 export async function getStaticPaths() {
   const articles = (await getCollection("articles")).filter(
@@ -40,7 +41,7 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
 <Layout title={category}>
   <div class="category-hero">
     <div
-      class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-[1400px] mx-auto mb-4"
+      class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-[1400px] mb-4"
     >
       <h1 class="!mb-0 flex items-center gap-3 text-left shrink-0">
         <span class="text-4xl md:text-5xl">{getCategoryIcon(category)}</span>
@@ -90,7 +91,7 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
       </div>
     </div>
 
-    <div class="flex flex-col items-start max-w-[1400px] mx-auto mt-4 px-2">
+    <div class="flex flex-col items-start max-w-[1400px] mt-4 px-2">
       <p class="category-subtitle">
         {articles.length} Artikel in dieser Kategorie
       </p>
@@ -117,7 +118,7 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
             <p class="tile-description">
               Hier gelangst du zurück zur Übersicht aller Themen und Kategorien.
             </p>
-            <a href="/KIWiki/" class="tile-link stretched-link">
+            <a href={resolvePath("/")} class="tile-link stretched-link">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -210,7 +211,9 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
                   )}
 
                   <a
-                    href={`/KIWiki/articles/${slugifyPath(article.id.replace(/\.mdx?$/, ""))}`}
+                    href={resolvePath(
+                      `/articles/${slugifyPath(article.id.replace(/\.mdx?$/, ""))}/`,
+                    )}
                     class="tile-link stretched-link"
                   >
                     Artikel lesen{" "}
@@ -271,9 +274,8 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
     gap: 4rem;
     margin-top: 2rem;
     margin-bottom: 8rem;
-    position: relative;
     max-width: 1400px;
-    margin-left: auto;
+    margin-left: 0;
     margin-right: auto;
   }
 
