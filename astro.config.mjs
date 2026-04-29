@@ -103,9 +103,9 @@ export default defineConfig({
         remarkDirective,
         remarkDirectiveTransformer,
         [remarkComponentAutoImport, {
-          DifficultyContent: comp('design/DifficultyContentWrapper.astro'),
-          InfoBox: comp('design/InfoBox.tsx'),
-          DifficultySelector: comp('design/DifficultySelector.tsx'),
+          DifficultyContent: comp('ui/DifficultyContentWrapper.astro'),
+          InfoBox: comp('ui/InfoBox.tsx'),
+          DifficultySelector: comp('theme/DifficultySelector.tsx'),
           ActivationDemo: comp('demos/ActivationDemo.tsx'),
           TransformerDemo: comp('demos/TransformerDemo.tsx'),
           MCPDemo: comp('demos/MCPDemo.tsx'),
@@ -126,7 +126,7 @@ export default defineConfig({
           EmbeddingDemo: comp('demos/EmbeddingDemo.tsx'),
           GradientDescentDemo: comp('demos/GradientDescentDemo.tsx'),
           GradientBoostingDemo: comp('demos/GradientBoostingDemo.tsx'),
-          TableOfContents: comp('design/TableOfContents.tsx'),
+          TableOfContents: comp('navigation/TableOfContents.tsx'),
         }],
         remarkMath
       ],

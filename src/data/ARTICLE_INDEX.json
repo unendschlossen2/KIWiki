@@ -520,7 +520,12 @@
       "RLHF",
       "Superalignment"
     ],
-    "aliases": [],
+    "aliases": [
+      "KI Sicherheit",
+      "Ausrichtung",
+      "Constitutional AI",
+      "RLAIF"
+    ],
     "difficulties": [
       "easy",
       "medium",

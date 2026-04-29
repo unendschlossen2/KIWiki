@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import DemoWrapper from '../design/DemoWrapper';
-import MathField from '../design/Math';
+import DemoWrapper from '../layout/DemoWrapper';
+import MathField from '../ui/Math';
 
 interface Point {
   x: number;

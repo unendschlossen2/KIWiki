@@ -6,6 +6,7 @@ import {
   getCategoryDisplay,
   getCategoryIcon,
   CATEGORIES,
+  HEADER_CATEGORIES,
 } from "../../config/categories";
 import { DIFFICULTY_LABELS, DIFFICULTY_SHORT } from "../../config/difficulty";
 import { resolvePath } from "../../utils/path";
@@ -33,17 +34,31 @@ export async function getStaticPaths() {
 const { category, articles } = Astro.props;
 
 const categoryKey = Object.keys(CATEGORIES).find(
-  (k) => CATEGORIES[k].display === category,
+  (k) => slugifyCategory(CATEGORIES[k].display) === Astro.params.category,
 );
 const catData = categoryKey ? CATEGORIES[categoryKey] : null;
+
+// Find a suitable introduction article for this category from the 'info' collection
+const infoPages = await getCollection("info");
+const categoryIntro = infoPages.find((p) => p.id === `${categoryKey}-einfuehrung`);
+
+const introUrl = categoryIntro
+  ? resolvePath(`/info/${categoryIntro.id}/`)
+  : resolvePath("/info/ueber-das-projekt/");
+
+// Prepare only articles for the chunked rows (starting from row 2)
+const chunkedArticles = [];
+for (let i = 0; i < articles.length; i += 4) {
+  chunkedArticles.push(articles.slice(i, i + 4));
+}
 ---
 
 <Layout title={category}>
   <div class="category-hero">
     <div
-      class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-[1400px] mb-4"
+      class="flex flex-col md:flex-row items-center justify-center gap-6 max-w-[1400px] mx-auto mb-4"
     >
-      <h1 class="!mb-0 flex items-center gap-3 text-left shrink-0">
+      <h1 class="!mb-0 flex items-center gap-3 text-center shrink-0">
         <span class="text-4xl md:text-5xl">{getCategoryIcon(category)}</span>
         <span class="text-3xl md:text-4xl font-black">{category}</span>
       </h1>
@@ -91,14 +106,15 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
       </div>
     </div>
 
-    <div class="flex flex-col items-start max-w-[1400px] mt-4 px-2">
+    <div class="flex flex-col items-center max-w-[1400px] mx-auto mt-4 px-2">
       <p class="category-subtitle">
         {articles.length} Artikel in dieser Kategorie
       </p>
-      <div class="divider ml-0"></div>
+      <div class="divider"></div>
     </div>
   </div>
 
+  {/* Row 1: Back + About */}
   <section class="library-section">
     <div class="section-decor">
       <span class="section-index">01</span>
@@ -106,7 +122,7 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
     </div>
 
     <div class="library-content w-full">
-      <div class="article-grid" id="article-grid">
+      <div class="article-grid">
         <div class="library-tile featured-back-tile h-full">
           <div class="tile-icon-wrap">
             <span class="tile-emoji">🏠</span>
@@ -129,9 +145,11 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
                 stroke-width="2.5"
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                ><line x1="19" y1="12" x2="5" y2="12"></line><polyline
-                  points="12 19 5 12 12 5"></polyline></svg
-              > Hauptmenü öffnen
+              >
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+              </svg>{" "}
+              Hauptmenü öffnen
             </a>
           </div>
         </div>
@@ -150,98 +168,129 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
               <h3 class="tile-title flex-1">Über diese Kategorie</h3>
             </div>
             <p class="tile-description !-webkit-line-clamp-none">
-              {
-                catData?.descriptions?.easy ||
-                  catData?.description ||
-                  "Entdecke verschiedene Artikel und Ressourcen in dieser Kategorie."
-              }
+              {catData?.descriptions?.easy ||
+                catData?.description ||
+                "Entdecke verschiedene Artikel und Ressourcen in dieser Kategorie."}
             </p>
+            <a href={introUrl} class="tile-link stretched-link">
+              Einführung lesen{" "}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </a>
           </div>
         </div>
-
-        {
-          articles.map((article) => {
-            const slug = article.id;
-            const difficulties = article.data.difficulties;
-            const isRestricted = difficulties && difficulties.length < 3;
-
-            return (
-              <div
-                class="library-tile h-full"
-                data-difficulties={difficulties?.join(",")}
-              >
-                <div class="tile-icon-wrap">
-                  <span class="tile-emoji">📄</span>
-                </div>
-                <div class="tile-main">
-                  <div class="tile-top">
-                    <h3 class="tile-title flex-1">{article.data.title}</h3>
-                    {isRestricted && (
-                      <div class="difficulty-badges">
-                        {difficulties.includes("easy") && (
-                          <span
-                            class="badge badge-easy"
-                            title={DIFFICULTY_LABELS.easy}
-                          >
-                            {DIFFICULTY_SHORT.easy}
-                          </span>
-                        )}
-                        {difficulties.includes("medium") && (
-                          <span
-                            class="badge badge-medium"
-                            title={DIFFICULTY_LABELS.medium}
-                          >
-                            {DIFFICULTY_SHORT.medium}
-                          </span>
-                        )}
-                        {difficulties.includes("hard") && (
-                          <span
-                            class="badge badge-hard"
-                            title={DIFFICULTY_LABELS.hard}
-                          >
-                            {DIFFICULTY_SHORT.hard}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  {article.data.description && (
-                    <p class="tile-description">{article.data.description}</p>
-                  )}
-
-                  <a
-                    href={resolvePath(
-                      `/articles/${slugifyPath(article.id.replace(/\.mdx?$/, ""))}/`,
-                    )}
-                    class="tile-link stretched-link"
-                  >
-                    Artikel lesen{" "}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <>
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                        <polyline points="12 5 19 12 12 19" />
-                      </>
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            );
-          })
-        }
       </div>
     </div>
   </section>
+
+  {/* Row 2+: Articles */}
+  {
+    chunkedArticles.map((row, rowIndex) => (
+      <section class="library-section">
+        <div class="section-decor">
+          <span class="section-index">
+            {(rowIndex + 2).toString().padStart(2, "0")}
+          </span>
+          <div class="line-glow" />
+        </div>
+
+        <div class="library-content w-full">
+          <div class="article-grid">
+            {row.map((article) => {
+              const slug = article.id;
+              const difficulties = article.data.difficulties;
+              const isRestricted = difficulties && difficulties.length < 3;
+
+              return (
+                <div
+                  class="library-tile h-full"
+                  data-difficulties={difficulties?.join(",")}
+                >
+                  <div class="tile-icon-wrap">
+                    <span class="tile-emoji">📄</span>
+                  </div>
+                  <div class="tile-main">
+                    <div class="tile-top">
+                      <h3 class="tile-title flex-1">{article.data.title}</h3>
+                      {isRestricted && (
+                        <div class="difficulty-badges">
+                          {difficulties.includes("easy") && (
+                            <span
+                              class="badge badge-easy"
+                              title={DIFFICULTY_LABELS.easy}
+                            >
+                              {DIFFICULTY_SHORT.easy}
+                            </span>
+                          )}
+                          {difficulties.includes("medium") && (
+                            <span
+                              class="badge badge-medium"
+                              title={DIFFICULTY_LABELS.medium}
+                            >
+                              {DIFFICULTY_SHORT.medium}
+                            </span>
+                          )}
+                          {difficulties.includes("hard") && (
+                            <span
+                              class="badge badge-hard"
+                              title={DIFFICULTY_LABELS.hard}
+                            >
+                              {DIFFICULTY_SHORT.hard}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {article.data.description && (
+                      <p class="tile-description">{article.data.description}</p>
+                    )}
+
+                    <a
+                      href={resolvePath(
+                        `/articles/${slugifyPath(article.id.replace(/\.mdx?$/, ""))}/`,
+                      )}
+                      class="tile-link stretched-link"
+                    >
+                      Artikel lesen{" "}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <>
+                          <line x1="5" y1="12" x2="19" y2="12" />
+                          <polyline points="12 5 19 12 12 19" />
+                        </>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    ))
+  }
 </Layout>
 
 <style>
@@ -273,27 +322,25 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
     grid-template-columns: 100px 1fr;
     gap: 4rem;
     margin-top: 2rem;
-    margin-bottom: 8rem;
-    max-width: 1400px;
-    margin-left: 0;
-    margin-right: auto;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: none;
   }
 
   .category-info-tile {
-    grid-column: span 2;
+    grid-column: span 3;
     background: var(--bg-card) !important;
-    transition: border-color 0.4s ease;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* Disable hover animations specifically for this non-clickable tile */
   .category-info-tile:hover {
-    transform: none;
-    border-color: var(--border-color);
-    box-shadow: none;
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--primary-color);
+    box-shadow: 0 20px 40px -10px var(--shadow-hover);
   }
 
   .category-info-tile:hover .tile-icon-wrap {
-    transform: none;
+    transform: rotate(-5deg) scale(1.1);
   }
 
   .category-info-tile.accent-easy {
@@ -358,7 +405,7 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
 
   .article-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 2rem;
   }
 
@@ -491,22 +538,39 @@ const catData = categoryKey ? CATEGORIES[categoryKey] : null;
 </style>
 
 <script>
-  import { difficultyStore } from "../../components/design/difficultyStore";
+  import { difficultyStore } from "../../stores/difficultyStore";
 
   function updateGridVisibility(difficulty: string) {
-    const cards = document.querySelectorAll(
-      "#article-grid .library-tile:not(.featured-back-tile):not(.category-info-tile)",
-    );
+    const sections = document.querySelectorAll(".library-section");
 
-    cards.forEach((card) => {
-      const diffData = (card as HTMLElement).dataset.difficulties;
-      if (!diffData) return;
+    sections.forEach((section) => {
+      const cards = section.querySelectorAll(
+        ".library-tile:not(.featured-back-tile):not(.category-info-tile)",
+      );
+      let hasVisibleArticle = false;
 
-      const allowed = diffData.split(",");
-      if (allowed.includes(difficulty)) {
-        card.classList.remove("difficulty-hidden");
+      cards.forEach((card) => {
+        const diffData = (card as HTMLElement).dataset.difficulties;
+        // If no difficulties are defined, article is visible for everyone
+        const allowed = diffData ? diffData.split(",") : ["easy", "medium", "hard"];
+
+        if (allowed.includes(difficulty)) {
+          card.classList.remove("difficulty-hidden");
+          hasVisibleArticle = true;
+        } else {
+          card.classList.add("difficulty-hidden");
+        }
+      });
+
+      // If a row contains articles and ALL of them are hidden, hide the row.
+      // If it contains special tiles (back/info), it stays visible.
+      const specialTiles = section.querySelectorAll(
+        ".featured-back-tile, .category-info-tile",
+      );
+      if (cards.length > 0 && !hasVisibleArticle && specialTiles.length === 0) {
+        section.classList.add("difficulty-hidden");
       } else {
-        card.classList.add("difficulty-hidden");
+        section.classList.remove("difficulty-hidden");
       }
     });
   }

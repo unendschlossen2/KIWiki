@@ -1,5 +1,5 @@
 import React from 'react';
-import InfoTooltip from './InfoTooltip';
+import InfoTooltip from '../ui/InfoTooltip';
 
 interface DemoWrapperProps {
   title: string;
@@ -10,7 +10,7 @@ interface DemoWrapperProps {
 
 const DemoWrapper: React.FC<DemoWrapperProps> = ({ title, tooltip, children, controls }) => {
   return (
-    <div className="not-prose max-w-5xl mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 font-sans my-12 overflow-hidden">
+    <div className="not-prose max-w-7xl mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 font-sans my-12 overflow-hidden">
       {/* Header with Dots */}
       <div className="bg-slate-800 dark:bg-slate-900 text-white px-6 py-4 border-b border-slate-700 dark:border-slate-600 flex justify-between items-center relative z-20">
         <div className="flex items-center">

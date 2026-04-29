@@ -1,5 +1,5 @@
 import { useStore } from "@nanostores/react";
-import { difficultyStore } from "./difficultyStore";
+import { difficultyStore } from "../../stores/difficultyStore";
 import { DIFFICULTY_LABELS, DIFFICULTIES } from "../../config/difficulty";
 import { useState, useEffect } from "react";
 

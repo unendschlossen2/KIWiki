@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MathField from '../design/Math';
-import InfoTooltip from '../design/InfoTooltip';
+import MathField from '../ui/Math';
+import InfoTooltip from '../ui/InfoTooltip';
 
 const KERNELS = {
     'Kantenerkennung': [

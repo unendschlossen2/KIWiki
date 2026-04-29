@@ -51,27 +51,30 @@ const groupedArticles = articles.reduce(
 					</h1>
 
 					<div class="difficulty-showcase">
-						<div
-							class="showcase-badge badge-easy"
+						<button
+							class="showcase-badge badge-easy cursor-pointer hover:scale-105 transition-transform"
 							data-difficulty="easy"
+							title="Niveau auf Einsteiger setzen"
 						>
 							<span class="text-3xl">🌱</span>
 							<div class="showcase-label">Einsteiger</div>
-						</div>
-						<div
-							class="showcase-badge badge-medium"
+						</button>
+						<button
+							class="showcase-badge badge-medium cursor-pointer hover:scale-105 transition-transform"
 							data-difficulty="medium"
+							title="Niveau auf Fortgeschritten setzen"
 						>
 							<span class="text-3xl">🚀</span>
 							<div class="showcase-label">Fortgeschritten</div>
-						</div>
-						<div
-							class="showcase-badge badge-hard"
+						</button>
+						<button
+							class="showcase-badge badge-hard cursor-pointer hover:scale-105 transition-transform"
 							data-difficulty="hard"
+							title="Niveau auf Experte setzen"
 						>
 							<span class="text-3xl">🧠</span>
 							<div class="showcase-label">Experte</div>
-						</div>
+						</button>
 					</div>
 				</div>
 
@@ -84,19 +87,36 @@ const groupedArticles = articles.reduce(
 	</section>
 
 	<section class="hero-about">
-		<div
-			class="about-card bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
-		>
-			<div class="about-icon bg-white dark:bg-slate-800">ℹ️</div>
-			<div class="about-content">
-				<h3 class="about-title">Über das Projekt</h3>
-				<p class="about-text">
-					Erfahre mehr über die Vision hinter KIWiki und wie dieses
-					Projekt Wissen vermittelt.
-				</p>
-				<a href={resolvePath("/ueber/")} class="about-link stretched-link">
-					Mehr erfahren →
-				</a>
+		<div class="about-grid">
+			<div
+				class="about-card bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+			>
+				<div class="about-icon bg-white dark:bg-slate-800">ℹ️</div>
+				<div class="about-content">
+					<h3 class="about-title">Über das Projekt</h3>
+					<p class="about-text">
+						Erfahre mehr über die Vision hinter KIWiki und wie dieses
+						Projekt Wissen vermittelt.
+					</p>
+					<a href={resolvePath("/info/ueber-das-projekt/")} class="about-link stretched-link">
+						Mehr erfahren →
+					</a>
+				</div>
+			</div>
+
+			<div
+				class="about-card bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
+			>
+				<div class="about-icon bg-white dark:bg-slate-800">💡</div>
+				<div class="about-content">
+					<h3 class="about-title">So funktioniert's</h3>
+					<p class="about-text">
+						Lerne, wie du die interaktiven Funktionen und Schwierigkeitsstufen optimal nutzt.
+					</p>
+					<a href={resolvePath("/info/anleitung/")} class="about-link stretched-link">
+						Anleitung öffnen →
+					</a>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -108,7 +128,7 @@ const groupedArticles = articles.reduce(
 					class={`library-section section-split-${index % 2 === 0 ? "left" : "right"}`}
 				>
 					<div class="section-decor">
-						<span class="section-index">0{index + 1}</span>
+						<span class="section-index">{(index + 1).toString().padStart(2, '0')}</span>
 						<div class="line-glow" />
 					</div>
 
@@ -201,17 +221,26 @@ const groupedArticles = articles.reduce(
 		width: 100%;
 	}
 
+	.hero-about .about-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 2rem;
+		max-width: 1300px;
+		margin: 0 auto;
+	}
+
+	@media (min-width: 1024px) {
+		.hero-about .about-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
 	.hero-main {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		text-align: center;
 		gap: 2.5rem;
-		max-width: 1300px;
-		margin: 0 auto;
-	}
-
-	.hero-about .about-card {
 		max-width: 1300px;
 		margin: 0 auto;
 	}
@@ -618,7 +647,7 @@ const groupedArticles = articles.reduce(
 </style>
 
 <script>
-	import { difficultyStore } from "../components/design/difficultyStore";
+	import { difficultyStore } from "../stores/difficultyStore";
 
 	function updateHeroBadges(difficulty: string) {
 		const badges = document.querySelectorAll(".showcase-badge");
@@ -641,6 +670,17 @@ const groupedArticles = articles.reduce(
 		unsubscribe = difficultyStore.subscribe((newDifficulty) => {
 			// Trigger immediate update
 			updateHeroBadges(newDifficulty);
+		});
+
+		// Add click listeners to badges
+		const badges = document.querySelectorAll(".showcase-badge");
+		badges.forEach((badge) => {
+			badge.addEventListener("click", () => {
+				const diff = (badge as HTMLElement).dataset.difficulty;
+				if (diff) {
+					difficultyStore.set(diff as any);
+				}
+			});
 		});
 
 		// Initial sweep

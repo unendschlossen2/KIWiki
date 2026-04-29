@@ -22,14 +22,26 @@ export async function getStaticPaths() {
 }
 
 const { tag, articles } = Astro.props;
+
+// Prepare all tiles for the grid
+const allTiles = [
+	{ type: "back" as const },
+	...articles.map((a) => ({ type: "article" as const, data: a })),
+];
+
+// Chunk tiles into rows of 4
+const chunkedTiles = [];
+for (let i = 0; i < allTiles.length; i += 4) {
+	chunkedTiles.push(allTiles.slice(i, i + 4));
+}
 ---
 
 <Layout title={`Tag: #${tag}`}>
 	<div class="category-hero">
 		<div
-			class="flex flex-col md:flex-row items-center justify-start gap-6 max-w-[1400px] mb-4"
+			class="flex flex-col md:flex-row items-center justify-center gap-6 max-w-[1400px] mx-auto mb-4"
 		>
-			<h1 class="!mb-0 flex items-center gap-3 text-left">
+			<h1 class="!mb-0 flex items-center gap-3 text-center">
 				<span class="text-4xl md:text-5xl">🏷️</span>
 				<span class="text-3xl md:text-4xl font-black">#{tag}</span>
 			</h1>
@@ -78,159 +90,188 @@ const { tag, articles } = Astro.props;
 		</div>
 
 		<div
-			class="flex flex-col items-start max-w-[1400px] mt-4 px-2"
+			class="flex flex-col items-center max-w-[1400px] mx-auto mt-4 px-2"
 		>
 			<p class="category-subtitle">
 				{articles.length} Artikel mit diesem Tag
 			</p>
-			<div class="divider ml-0"></div>
+			<div class="divider"></div>
 		</div>
 	</div>
 
-	<section class="library-section">
-		<div class="section-decor">
-			<span class="section-index">01</span>
-			<div class="line-glow"></div>
-		</div>
-
-		<div class="library-content w-full">
-			<div class="article-grid" id="article-grid">
-				<div class="library-tile featured-back-tile">
-					<div class="tile-icon-wrap">
-						<span class="tile-emoji">🏠</span>
-					</div>
-					<div class="tile-main">
-						<div class="tile-top">
-							<h3 class="tile-title">Zurück zur Startseite</h3>
-						</div>
-						<p class="tile-description">
-							Hier gelangst du zurück zur Übersicht aller Themen
-							und Kategorien.
-						</p>
-						<a href={resolvePath("/")} class="tile-link stretched-link">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2.5"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								><line x1="19" y1="12" x2="5" y2="12"
-								></line><polyline points="12 19 5 12 12 5"
-								></polyline></svg
-							> Hauptmenü öffnen
-						</a>
-					</div>
+	{
+		chunkedTiles.map((row, rowIndex) => (
+			<section class="library-section">
+				<div class="section-decor">
+					<span class="section-index">
+						{(rowIndex + 1).toString().padStart(2, "0")}
+					</span>
+					<div class="line-glow" />
 				</div>
 
-				{
-					articles.map((article) => {
-						const slug = article.id.replace(/\.mdx?$/, "");
-						const difficulties = article.data.difficulties;
-						const isRestricted =
-							difficulties && difficulties.length < 3;
-
-						return (
-							<div
-								class="library-tile"
-								data-difficulties={difficulties?.join(",")}
-							>
-								<div class="tile-icon-wrap">
-									<span class="tile-emoji">📄</span>
-								</div>
-								<div class="tile-main">
-									<div class="tile-top">
-										<h3 class="tile-title flex-1">
-											{article.data.title}
-										</h3>
-										{isRestricted && (
-											<div class="difficulty-badges">
-												{difficulties.includes(
-													"easy",
-												) && (
-													<span
-														class="badge badge-easy"
-														title={
-															DIFFICULTY_LABELS.easy
-														}
-													>
-														{DIFFICULTY_SHORT.easy}
-													</span>
-												)}
-												{difficulties.includes(
-													"medium",
-												) && (
-													<span
-														class="badge badge-medium"
-														title={
-															DIFFICULTY_LABELS.medium
-														}
-													>
-														{
-															DIFFICULTY_SHORT.medium
-														}
-													</span>
-												)}
-												{difficulties.includes(
-													"hard",
-												) && (
-													<span
-														class="badge badge-hard"
-														title={
-															DIFFICULTY_LABELS.hard
-														}
-													>
-														{DIFFICULTY_SHORT.hard}
-													</span>
-												)}
+				<div class="library-content w-full">
+					<div class="article-grid">
+						{row.map((tile) => {
+							if (tile.type === "back") {
+								return (
+									<div class="library-tile featured-back-tile">
+										<div class="tile-icon-wrap">
+											<span class="tile-emoji">🏠</span>
+										</div>
+										<div class="tile-main">
+											<div class="tile-top">
+												<h3 class="tile-title">
+													Zurück zur Startseite
+												</h3>
 											</div>
-										)}
+											<p class="tile-description">
+												Hier gelangst du zurück zur
+												Übersicht aller Themen und
+												Kategorien.
+											</p>
+											<a
+												href={resolvePath("/")}
+												class="tile-link stretched-link"
+											>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													width="16"
+													height="16"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="2.5"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+												>
+													<line
+														x1="19"
+														y1="12"
+														x2="5"
+														y2="12"
+													/>
+													<polyline points="12 19 5 12 12 5" />
+												</svg>{" "}
+												Hauptmenü öffnen
+											</a>
+										</div>
 									</div>
+								);
+							}
 
-									{article.data.description && (
-										<p class="tile-description">
-											{article.data.description}
-										</p>
-									)}
+							if (tile.type !== "article") return null;
 
-									<a
-										href={resolvePath(`/articles/${slugifyPath(article.id.replace(/\.mdx?$/, ""))}/`)}
-										class="tile-link stretched-link"
-									>
-										Artikel lesen{" "}
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="16"
-											height="16"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="2.5"
-											stroke-linecap="round"
-											stroke-linejoin="round"
+							const article = tile.data;
+							const slug = article.id.replace(/\.mdx?$/, "");
+							const difficulties = article.data.difficulties;
+							const isRestricted =
+								difficulties && difficulties.length < 3;
+
+							return (
+								<div
+									class="library-tile"
+									data-difficulties={difficulties?.join(",")}
+								>
+									<div class="tile-icon-wrap">
+										<span class="tile-emoji">📄</span>
+									</div>
+									<div class="tile-main">
+										<div class="tile-top">
+											<h3 class="tile-title flex-1">
+												{article.data.title}
+											</h3>
+											{isRestricted && (
+												<div class="difficulty-badges">
+													{difficulties.includes(
+														"easy",
+													) && (
+														<span
+															class="badge badge-easy"
+															title={
+																DIFFICULTY_LABELS.easy
+															}
+														>
+															{
+																DIFFICULTY_SHORT.easy
+															}
+														</span>
+													)}
+													{difficulties.includes(
+														"medium",
+													) && (
+														<span
+															class="badge badge-medium"
+															title={
+																DIFFICULTY_LABELS.medium
+															}
+														>
+															{
+																DIFFICULTY_SHORT.medium
+															}
+														</span>
+													)}
+													{difficulties.includes(
+														"hard",
+													) && (
+														<span
+															class="badge badge-hard"
+															title={
+																DIFFICULTY_LABELS.hard
+															}
+														>
+															{
+																DIFFICULTY_SHORT.hard
+															}
+														</span>
+													)}
+												</div>
+											)}
+										</div>
+
+										{article.data.description && (
+											<p class="tile-description">
+												{article.data.description}
+											</p>
+										)}
+
+										<a
+											href={resolvePath(
+												`/articles/${slugifyPath(article.id.replace(/\.mdx?$/, ""))}/`,
+											)}
+											class="tile-link stretched-link"
 										>
-											<>
-												<line
-													x1="5"
-													y1="12"
-													x2="19"
-													y2="12"
-												/>
-												<polyline points="12 5 19 12 12 19" />
-											</>
-										</svg>
-									</a>
+											Artikel lesen{" "}
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="16"
+												height="16"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2.5"
+												stroke-linecap="round"
+												stroke-linejoin="round"
+											>
+												<>
+													<line
+														x1="5"
+														y1="12"
+														x2="19"
+														y2="12"
+													/>
+													<polyline points="12 5 19 12 12 19" />
+												</>
+											</svg>
+										</a>
+									</div>
 								</div>
-							</div>
-						);
-					})
-				}
-			</div>
-		</div>
-	</section>
+							);
+						})}
+					</div>
+				</div>
+			</section>
+		))
+	}
 </Layout>
 
 <style>
@@ -262,10 +303,9 @@ const { tag, articles } = Astro.props;
 		grid-template-columns: 100px 1fr;
 		gap: 4rem;
 		margin-top: 2rem;
-		position: relative;
-		max-width: 1400px;
-		margin-left: 0;
-		margin-right: auto;
+		margin-bottom: 2rem;
+		width: 100%;
+		max-width: none;
 	}
 
 	@media (max-width: 768px) {
@@ -309,7 +349,7 @@ const { tag, articles } = Astro.props;
 
 	.article-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+		grid-template-columns: repeat(4, 1fr);
 		gap: 2rem;
 	}
 
@@ -433,25 +473,43 @@ const { tag, articles } = Astro.props;
 </style>
 
 <script>
-	import { difficultyStore } from "../../components/design/difficultyStore";
+	import { difficultyStore } from "../../stores/difficultyStore";
 
 	function updateGridVisibility(difficulty: string) {
-		// 1. Spezifischerer Selektor: Suche nur im Grid der jeweiligen Unterseite
-		const cards = document.querySelectorAll(
-			"#article-grid .library-tile:not(.featured-back-tile)",
-		);
+		const sections = document.querySelectorAll(".library-section");
 
-		cards.forEach((card) => {
-			const diffData = (card as HTMLElement).dataset.difficulties;
+		sections.forEach((section) => {
+			const cards = section.querySelectorAll(
+				".library-tile:not(.featured-back-tile)",
+			);
+			let hasVisibleArticle = false;
 
-			// 2. Sicherheits-Check: Kacheln ohne Schwierigkeits-Daten ignorieren
-			if (!diffData) return;
+			cards.forEach((card) => {
+				const diffData = (card as HTMLElement).dataset.difficulties;
+				// If no difficulties are defined, article is visible for everyone
+				const allowed = diffData ? diffData.split(",") : ["easy", "medium", "hard"];
 
-			const allowed = diffData.split(",");
-			if (allowed.includes(difficulty)) {
-				card.classList.remove("difficulty-hidden");
+				if (allowed.includes(difficulty)) {
+					card.classList.remove("difficulty-hidden");
+					hasVisibleArticle = true;
+				} else {
+					card.classList.add("difficulty-hidden");
+				}
+			});
+
+			// If a row contains articles and ALL of them are hidden, hide the row.
+			// If it contains special tiles (back), it stays visible.
+			const specialTiles = section.querySelectorAll(
+				".featured-back-tile",
+			);
+			if (
+				cards.length > 0 &&
+				!hasVisibleArticle &&
+				specialTiles.length === 0
+			) {
+				section.classList.add("difficulty-hidden");
 			} else {
-				card.classList.add("difficulty-hidden");
+				section.classList.remove("difficulty-hidden");
 			}
 		});
 	}

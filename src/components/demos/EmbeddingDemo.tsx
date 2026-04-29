@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import InfoTooltip from '../design/InfoTooltip';
+import InfoTooltip from '../ui/InfoTooltip';
 
 const WORD_VECTORS = [
     { word: 'König', x: 2, y: 8, color: '#f59e0b' },

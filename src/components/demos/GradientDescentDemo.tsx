@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import InfoTooltip from '../design/InfoTooltip';
+import InfoTooltip from '../ui/InfoTooltip';
 
 export default function GradientDescentDemo() {
     const [x, setX] = useState(-7);

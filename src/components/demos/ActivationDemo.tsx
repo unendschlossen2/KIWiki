@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import MathField from '../design/Math';
-import InfoTooltip from '../design/InfoTooltip';
+import MathField from '../ui/Math';
+import InfoTooltip from '../ui/InfoTooltip';
 
 // Interaktive Demo: Zeigt, wie ein einzelnes Neuron eine Eingabe transformiert.
 export default function App() {

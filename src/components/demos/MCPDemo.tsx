@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import InfoTooltip from '../design/InfoTooltip';
+import InfoTooltip from '../ui/InfoTooltip';
 
 const SCENARIOS = {
   db_search: {

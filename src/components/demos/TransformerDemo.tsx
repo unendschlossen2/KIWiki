@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import MathField from '../design/Math';
-import InfoTooltip from '../design/InfoTooltip';
+import MathField from '../ui/Math';
+import InfoTooltip from '../ui/InfoTooltip';
 
 /* ─── Preset sentences ─── */
 const SENTENCES = [

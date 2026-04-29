@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 }
 
 import { slugifyTag } from "../../utils/slugify";
-import TagPill from "../../components/design/TagPill.astro";
+import TagPill from "../../components/ui/TagPill.astro";
 
 const { article } = Astro.props;
 const { Content } = await render(article);

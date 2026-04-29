@@ -1,5 +1,5 @@
 import { useStore } from "@nanostores/react";
-import { themeStore } from "./themeStore";
+import { themeStore } from "../../stores/themeStore";
 import { Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
 

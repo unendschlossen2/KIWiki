@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useStore } from '@nanostores/react';
-import { difficultyStore } from './difficultyStore';
+import { difficultyStore } from "../../stores/difficultyStore";
 
 interface Heading {
   id: string;

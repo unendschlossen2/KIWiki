@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import MathField from '../design/Math';
-import InfoTooltip from '../design/InfoTooltip';
+import MathField from '../ui/Math';
+import InfoTooltip from '../ui/InfoTooltip';
 
 export default function NeuronDemo() {
     const [x1, setX1] = useState(0.8);

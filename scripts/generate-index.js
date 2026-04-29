@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const articlesDir = path.join(__dirname, '../src/content/articles');
-const outputFile = path.join(__dirname, '../ARTICLE_INDEX.json');
+const outputFile = path.join(__dirname, '../src/data/ARTICLE_INDEX.json');
 
 function getAllMdxFiles(dirPath, arrayOfFiles = []) {
     if (!fs.existsSync(dirPath)) return arrayOfFiles;

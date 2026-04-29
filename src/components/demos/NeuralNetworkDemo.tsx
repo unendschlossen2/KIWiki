@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import DemoWrapper from '../design/DemoWrapper';
+import DemoWrapper from '../layout/DemoWrapper';
 
 // ─── Helpers ───────────────────────────────────────────────────────────
 const sigmoid = (x: number) => 1 / (1 + Math.exp(-Math.max(-12, Math.min(12, x))));
@@ -66,11 +66,12 @@ const NeuralNetworkDemo: React.FC = () => {
 
   // Preset scenarios — guaranteed to produce sensible results
   const PRESETS = [
-    { name: '🎯 Ausgewogen', values: [0.5, 0.5, 0.7, 0.4, 0.5] },
+    { name: '🎯 Ausgewogen', values: [0.25, 0.28, 0.65, 0.31, 0.25] },
     { name: '💰 Reich & Sicher', values: [0.9, 0.9, 0.95, 0.5, 0.9] },
-    { name: '⚠️ Riskant', values: [0.1, 0.2, 0.3, 0.3, 0.1] },
+    { name: '⚠️ Riskant', values: [0.1, 0.2, 0.3, 0.4, 0.1] },
     { name: '👴 Senior', values: [0.7, 0.3, 0.8, 0.9, 0.5] },
-    { name: '📈 Aufsteiger', values: [0.2, 0.8, 0.6, 0.2, 0.3] },
+    { name: '🎓 Student', values: [0.04, 0.1, 0.3, 0.22, 0.1] },
+    { name: '🎓 Student (mit Eltern als Bürgen)', values: [0.04, 0.1, 0.3, 0.22, 1] },
   ];
 
   // State

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import DemoWrapper from '../design/DemoWrapper';
+import DemoWrapper from '../layout/DemoWrapper';
 
 const sigmoid = (x: number) => 1 / (1 + Math.exp(-Math.max(-12, Math.min(12, x))));
 

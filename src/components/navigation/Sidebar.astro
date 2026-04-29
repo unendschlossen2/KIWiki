@@ -36,13 +36,14 @@ else if (path.startsWith("/articles/")) {
   if (article) activeCategory = getCategoryDisplay(article.data.category);
 }
 
-// 2. Filter grouped articles to only show ONE active category
+// 2. Filter grouped articles. 
+// If an activeCategory is detected (on category/article pages), we only show that one.
+// On the homepage (no activeCategory), we show everything.
 const groupedArticles = allArticles.reduce(
   (acc, article) => {
     const category = getCategoryDisplay(article.data.category);
 
-    // Only show if it matches the active category
-    if (activeCategory && category === activeCategory) {
+    if (!activeCategory || category === activeCategory) {
       if (!acc[category]) acc[category] = [];
       acc[category].push(article);
     }
@@ -388,13 +389,15 @@ const groupedArticles = allArticles.reduce(
 </style>
 
 <script>
-  import { difficultyStore } from "./difficultyStore";
+  import { difficultyStore } from "../../stores/difficultyStore";
 
   function updateSidebarVisibility(difficulty: string) {
     const items = document.querySelectorAll(".sidebar-item");
     items.forEach((item) => {
-      const allowed =
-        (item as HTMLElement).dataset.difficulties?.split(",") || [];
+      const diffData = (item as HTMLElement).dataset.difficulties;
+      // If no difficulties are defined, article is visible for everyone
+      const allowed = diffData ? diffData.split(",") : ["easy", "medium", "hard"];
+      
       if (allowed.includes(difficulty)) {
         item.classList.remove("difficulty-hidden");
       } else {

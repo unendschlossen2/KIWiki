@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import DemoWrapper from '../design/DemoWrapper';
+import DemoWrapper from '../layout/DemoWrapper';
 
 interface Point {
   x: number;

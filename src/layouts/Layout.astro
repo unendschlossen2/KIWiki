@@ -1,14 +1,12 @@
 ---
-import DifficultySelector from "../components/design/DifficultySelector.tsx";
-import TableOfContents from "../components/design/TableOfContents.tsx";
-import SearchModal from "../components/design/SearchModal.tsx";
-import Sidebar from "../components/design/Sidebar.astro";
-import CategoryDropdown from "../components/design/CategoryDropdown.astro";
-import TagDropdown from "../components/design/TagDropdown.astro";
-import ThemeToggle from "../components/design/ThemeToggle.tsx";
-import { ClientRouter } from "astro:transitions";
-import { resolvePath } from "../utils/path";
+import BaseHead from "../components/layout/BaseHead.astro";
+import Navbar from "../components/navigation/Navbar.astro";
+import Footer from "../components/layout/Footer.astro";
+import SearchModal from "../components/search/SearchModal.tsx";
+import Sidebar from "../components/navigation/Sidebar.astro";
+import TableOfContents from "../components/navigation/TableOfContents.tsx";
 import "../styles/global.css";
+import "../styles/layout.css";
 
 interface Props {
 	title?: string;
@@ -23,6 +21,7 @@ const {
 	frontmatter,
 	category: propCategory,
 } = Astro.props;
+
 const title = frontmatter?.title || propTitle || "KIWiki";
 const description =
 	frontmatter?.description ||
@@ -34,7 +33,7 @@ const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
 
 const isRoot = pathname === (base || "/");
 const isArticle = pathname.includes(`${base}/articles/`);
-const isUeber = pathname.includes(`${base}/ueber`);
+const isUeber = pathname.includes(`${base}/info/ueber-das-projekt`);
 const isCategory = pathname.includes(`${base}/category/`);
 const isTag = pathname.includes(`${base}/tag/`);
 
@@ -44,176 +43,11 @@ const isFullWidth = isRoot || isCategory || isTag;
 
 <!doctype html>
 <html lang="de" data-difficulty="easy" data-base={base}>
-	<head>
-		<script is:inline>
-			// Persistence — runs on every page load & View Transition
-			(function () {
-				function readDifficulty() {
-					try {
-						var s = localStorage.getItem("kiwiki-difficulty");
-						if (s) {
-							var d = s.replace(/"/g, "");
-							if (d === "easy" || d === "medium" || d === "hard")
-								return d;
-						}
-					} catch (e) {}
-					return "easy";
-				}
-
-				function readTheme() {
-					try {
-						var t = localStorage.getItem("kiwiki-theme");
-						if (t) return t.replace(/"/g, "");
-					} catch (e) {}
-					return "light";
-				}
-
-				function applySettings(doc) {
-					var diff = readDifficulty();
-					var theme = readTheme();
-					doc.documentElement.setAttribute("data-difficulty", diff);
-					var favicon = doc.querySelector('link[rel="icon"]');
-					var basePath = doc.documentElement.dataset.base || "/";
-					var cleanBase = basePath.endsWith("/")
-						? basePath.slice(0, -1)
-						: basePath;
-					if (theme === "dark") {
-						doc.documentElement.classList.add("dark");
-						if (favicon)
-							favicon.href = cleanBase + "/assets/logo-dark.png";
-					} else {
-						doc.documentElement.classList.remove("dark");
-						if (favicon)
-							favicon.href = cleanBase + "/assets/logo.png";
-					}
-				}
-
-				// 1. Apply immediately
-				applySettings(document);
-
-				// 2. Register astro:before-swap
-				if (!window._kiwikiSwapInit) {
-					window._kiwikiSwapInit = true;
-					document.addEventListener(
-						"astro:before-swap",
-						function (ev) {
-							applySettings(ev.newDocument);
-						},
-					);
-				}
-			})();
-		</script>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link
-			rel="icon"
-			type="image/png"
-			href={resolvePath("/assets/logo.png")}
-		/>
-		<link rel="icon" href={resolvePath("/favicon.ico")} />
-		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content={description} />
-		<link
-			rel="stylesheet"
-			href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
-		/>
-		<title>{title}</title>
-		<ClientRouter />
-	</head>
+	<BaseHead title={title} description={description} />
 	<body
 		class="min-h-screen pt-20 bg-slate-50 dark:bg-slate-800 selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-blue-900 dark:selection:text-blue-100 transition-colors duration-300"
 	>
-		<nav
-			id="main-nav"
-			class="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-300"
-		>
-			<!-- Reading Progress (Only on articles) -->
-			{
-				isArticle && (
-					<div
-						id="reading-progress"
-						class="fixed top-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-150 ease-out z-[60]"
-						style="width: 0%;"
-					/>
-				)
-			}
-
-			<div
-				class="max-w-screen-2xl mx-auto px-6 h-20 flex items-center gap-6 relative z-10"
-			>
-				<!-- Left Area: Home & Categories -->
-				<div class="flex items-center gap-4 shrink-0">
-					<a
-						href={resolvePath("/")}
-						class="flex items-center justify-center w-11 h-11 rounded-xl bg-slate-100 hover:bg-white dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-all border border-transparent dark:border-slate-700/50 shadow-sm hover:shadow group"
-						aria-label="Zur Startseite"
-						title="Startseite"
-					>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							class="group-hover:scale-110 transition-transform duration-200"
-							><path
-								d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
-							></path><polyline points="9 22 9 12 15 12 15 22"
-							></polyline></svg
-						>
-					</a>
-
-					<CategoryDropdown
-						currentCategory={propCategory || frontmatter?.category}
-					/>
-					<TagDropdown />
-				</div>
-
-				<!-- Center Area: Search Bar -->
-				<div class="flex-1 flex justify-center max-w-2xl px-4">
-					<button
-						onclick="window.openSearchModal && window.openSearchModal()"
-						onmouseover="window.prefetchSearchIndex && window.prefetchSearchIndex()"
-						onpointerenter="window.prefetchSearchIndex && window.prefetchSearchIndex()"
-						class="flex items-center gap-3 px-6 py-3 w-full rounded-2xl bg-slate-100/80 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 text-base font-medium transition-all border border-transparent hover:border-blue-500/30 dark:border-slate-700/50 dark:hover:border-blue-400/30 shadow-sm hover:shadow-md group overflow-hidden"
-						aria-label="Suchen"
-					>
-						<svg
-							width="20"
-							height="20"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="2.5"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							class="lucide lucide-search group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
-							><circle cx="11" cy="11" r="8"></circle><path
-								d="m21 21-4.3-4.3"></path></svg
-						>
-						<span class="flex-1 text-left opacity-70"
-							>Suche nach Artikeln, Themen oder Begriffen...</span
-						>
-						<kbd
-							class="hidden md:inline-block font-sans text-[0.65rem] font-black uppercase tracking-widest bg-white dark:bg-slate-900 px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 shadow-sm"
-							>Ctrl K</kbd
-						>
-					</button>
-				</div>
-
-				<!-- Right Area: Difficulty & Theme -->
-				<div
-					class="flex items-center gap-4 shrink-0 min-w-[120px] justify-end"
-				>
-					<ThemeToggle client:only="react" />
-					<DifficultySelector client:only="react" />
-				</div>
-			</div>
-		</nav>
+		<Navbar isArticle={isArticle} category={propCategory || frontmatter?.category} />
 
 		<SearchModal client:only="react" />
 		{showSidebar && <Sidebar />}
@@ -245,11 +79,7 @@ const isFullWidth = isRoot || isCategory || isTag;
 					<slot />
 				</article>
 
-				<footer
-					class="mt-24 pt-8 border-t border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-sm pb-12 transition-colors duration-300"
-				>
-					<p>© 2026 KIWiki Project • Built by Pero Juric</p>
-				</footer>
+				<Footer />
 			</main>
 
 			{
@@ -260,6 +90,50 @@ const isFullWidth = isRoot || isCategory || isTag;
 				)
 			}
 		</div>
+
+		<script>
+			import { difficultyStore } from "../stores/difficultyStore";
+
+			let unsubscribe: () => void;
+
+			function initDifficultySync() {
+				if (unsubscribe) unsubscribe();
+				unsubscribe = difficultyStore.subscribe((newDifficulty) => {
+					document.documentElement.setAttribute(
+						"data-difficulty",
+						newDifficulty,
+					);
+				});
+			}
+
+			document.addEventListener("astro:page-load", initDifficultySync);
+		</script>
+
+		<script>
+			document.addEventListener("astro:page-load", () => {
+				const progressBar = document.getElementById("reading-progress");
+
+				const updateScroll = () => {
+					const windowHeight = window.innerHeight;
+					const documentHeight =
+						document.documentElement.scrollHeight - windowHeight;
+					const scrollTop = window.scrollY;
+
+					if (progressBar && documentHeight > 0) {
+						const progress = Math.min(
+							(scrollTop / documentHeight) * 100,
+							100,
+						);
+						progressBar.style.width = `${progress}%`;
+					}
+				};
+
+				if (progressBar) {
+					window.addEventListener("scroll", updateScroll, { passive: true });
+					window.requestAnimationFrame(updateScroll);
+				}
+			});
+		</script>
 	</body>
 </html>
 
@@ -279,163 +153,6 @@ const isFullWidth = isRoot || isCategory || isTag;
 		background: var(--border-hover);
 	}
 
-	/* Layout: sidebar + main + toc */
-	.layout-wrapper {
-		display: flex;
-		max-width: 1400px;
-		margin: 0 auto;
-		padding: 3rem 1.5rem;
-		gap: 2rem;
-	}
-
-	@media (min-width: 1024px) {
-		.layout-wrapper.has-sidebar {
-			margin-left: 260px; /* sidebar width */
-			padding: 3rem 2rem;
-		}
-	}
-
-	.layout-wrapper.full-width {
-		max-width: 100%;
-	}
-
-	.main-content {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.toc-aside {
-		display: none;
-	}
-
-	@media (min-width: 1280px) {
-		.toc-aside {
-			display: block;
-			width: 220px;
-			flex-shrink: 0;
-			position: sticky;
-			top: 100px;
-			max-height: calc(100vh - 120px);
-			overflow-y: auto;
-		}
-	}
-
-	/* ToC Styles */
-	.toc-container {
-		font-size: 0.8rem;
-	}
-
-	.toc-header {
-		font-weight: 700;
-		font-size: 0.7rem;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		color: var(--text-muted);
-		margin-bottom: 0.75rem;
-		padding-bottom: 0.5rem;
-		border-bottom: 1px solid var(--border-color);
-	}
-
-	.toc-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-
-	.toc-link {
-		display: block;
-		padding: 4px 0 4px 12px;
-		color: var(--text-secondary);
-		text-decoration: none;
-		border-left: 2px solid transparent;
-		transition: all 0.15s;
-		line-height: 1.4;
-	}
-
-	.toc-link:hover {
-		color: var(--text-primary);
-		border-left-color: var(--border-hover);
-	}
-
-	.toc-link.toc-active {
-		color: var(--primary-color);
-		border-left-color: var(--primary-color);
-		font-weight: 600;
-	}
-
-	.toc-link.toc-sub {
-		padding-left: 24px;
-		font-size: 0.75rem;
-	}
-
-	.toc-link.toc-title {
-		font-weight: 700;
-		color: var(--text-primary);
-		padding-left: 0;
-		border-left: none;
-		margin-bottom: 8px;
-		font-size: 0.85rem;
-	}
-	.toc-link.toc-title:hover {
-		color: var(--primary-color);
-	}
-	.toc-link.toc-title.toc-active {
-		color: var(--primary-color);
-		border-left: none;
-	}
-</style>
-
-<script>
-	import { difficultyStore } from "../components/design/difficultyStore";
-
-	let unsubscribe: () => void;
-
-	function initDifficultySync() {
-		// Altes Abonnement aufräumen
-		if (unsubscribe) unsubscribe();
-
-		// Sync nanostore to document attribute
-		unsubscribe = difficultyStore.subscribe((newDifficulty) => {
-			document.documentElement.setAttribute(
-				"data-difficulty",
-				newDifficulty,
-			);
-		});
-	}
-
-	// Initialize on page load (Astro View Transitions handle swap)
-	document.addEventListener("astro:page-load", initDifficultySync);
-</script>
-
-<script>
-	document.addEventListener("astro:page-load", () => {
-		const progressBar = document.getElementById("reading-progress");
-
-		const updateScroll = () => {
-			const windowHeight = window.innerHeight;
-			const documentHeight =
-				document.documentElement.scrollHeight - windowHeight;
-			const scrollTop = window.scrollY;
-
-			// Reading Progress update
-			if (progressBar && documentHeight > 0) {
-				const progress = Math.min(
-					(scrollTop / documentHeight) * 100,
-					100,
-				);
-				progressBar.style.width = `${progress}%`;
-			}
-		};
-
-		// Only bind scroll if there's a progress bar to update
-		if (progressBar) {
-			window.addEventListener("scroll", updateScroll, { passive: true });
-			window.requestAnimationFrame(updateScroll);
-		}
-	});
-</script>
-
-<style>
 	html,
 	body {
 		margin: 0;

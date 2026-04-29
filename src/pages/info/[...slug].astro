@@ -1,0 +1,22 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const infoPages = await getCollection("info");
+  return infoPages.map((page) => ({
+    params: { slug: page.id },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+
+<Layout frontmatter={{ title: page.data.title }}>
+  <div class="prose prose-slate dark:prose-invert max-w-none">
+    <h1>{page.data.title}</h1>
+    <Content />
+  </div>
+</Layout>
