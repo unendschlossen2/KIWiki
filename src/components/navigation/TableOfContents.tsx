@@ -21,14 +21,25 @@ const TableOfContents: React.FC = () => {
     const elements = Array.from(article.querySelectorAll('h2, h3')).filter(el => !el.hasAttribute('data-toc-skip'));
     const found: Heading[] = [];
 
-    // Add main title first
-    if (titleEl && titleEl.textContent) {
-      if (!titleEl.id) titleEl.id = 'page-title';
-      found.push({
-        id: titleEl.id,
-        text: titleEl.textContent,
-        level: 1,
+    const getCleanText = (el: Element): string => {
+      const clone = el.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll('[data-toc-ignore], .cursor-help, svg, button').forEach((node) => {
+        node.remove();
       });
+      return clone.textContent?.trim() || '';
+    };
+
+    // Add main title first
+    if (titleEl) {
+      const text = getCleanText(titleEl);
+      if (text) {
+        if (!titleEl.id) titleEl.id = 'page-title';
+        found.push({
+          id: titleEl.id,
+          text,
+          level: 1,
+        });
+      }
     }
 
     elements.forEach((el) => {
@@ -39,11 +50,12 @@ const TableOfContents: React.FC = () => {
       // Only include headings that are actually visible
       const htmlEl = el as HTMLElement;
       if (htmlEl.offsetParent !== null || htmlEl.offsetHeight > 0) {
-        const id = el.id || el.textContent?.toLowerCase().replace(/\s+/g, '-') || '';
+        const text = getCleanText(el);
+        const id = el.id || text.toLowerCase().replace(/\s+/g, '-') || '';
         if (!el.id) el.id = id;
         found.push({
           id,
-          text: el.textContent || '',
+          text,
           level: parseInt(el.tagName.charAt(1)),
         });
       }

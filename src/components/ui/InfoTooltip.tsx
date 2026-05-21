@@ -29,7 +29,7 @@ export default function InfoTooltip({ content, position = 'top' }: InfoTooltipPr
   }
 
   return (
-    <div className="group relative inline-flex items-center ml-2">
+    <div className="group relative inline-flex items-center ml-2" data-toc-ignore>
       <div className="cursor-help w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center text-[10px] font-bold border border-slate-300 dark:border-slate-600 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
         i
       </div>
