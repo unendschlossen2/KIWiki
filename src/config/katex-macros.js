@@ -17,4 +17,8 @@ export const katexMacros = {
   '\\xvec': '\\mathbf{x}',
   '\\wvec': '\\mathbf{w}',
   '\\bvec': '\\mathbf{b}',
+  '\\hvec': '\\mathbf{h}',
+  '\\yvec': '\\mathbf{y}',
+  '\\Wvec': '\\mathbf{W}',
+  '\\gvec': '\\mathbf{g}',
 };

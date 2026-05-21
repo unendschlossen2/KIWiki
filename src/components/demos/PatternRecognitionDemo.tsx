@@ -68,15 +68,15 @@ const PatternRecognitionDemo: React.FC = () => {
     return [
       // Input (9) -> Hidden (8)
       [
-        [6, 0, 0, 0, 0, 0, 0, 0], // P0 -> Row1
-        [6, 0, 0, 0, 0, 0, 0, 2], // P1 -> Row1, Cross
-        [6, 0, 0, 0, 0, 0, 0, 0], // P2 -> Row1
-        [0, 6, 0, 0, 0, 0, 0, 2], // P3 -> Row2, Cross
-        [0, 0, 0, 0, 0, 0, 8, 4], // P4 -> Cross-A (center), Cross-B
-        [0, 6, 0, 0, 0, 0, 0, 2], // P5 -> Row2, Cross
-        [0, 0, 6, 0, 0, 0, 0, 0], // P6 -> Row3
-        [0, 0, 6, 0, 0, 0, 0, 2], // P7 -> Row3, Cross
-        [0, 0, 6, 0, 0, 0, 0, 0], // P8 -> Row3
+        [6, 0, 0, 6, 0, 0, 0, 0], // P0 -> Row1, Col1
+        [6, 0, 0, 0, 6, 0, 4, 0], // P1 -> Row1, Col2, Cross
+        [6, 0, 0, 0, 0, 6, 0, 0], // P2 -> Row1, Col3
+        [0, 6, 0, 6, 0, 0, 4, 0], // P3 -> Row2, Col1, Cross
+        [0, 6, 0, 0, 6, 0, 6, 8], // P4 -> Row2, Col2, Cross, Point
+        [0, 6, 0, 0, 0, 6, 4, 0], // P5 -> Row2, Col3, Cross
+        [0, 0, 6, 6, 0, 0, 0, 0], // P6 -> Row3, Col1
+        [0, 0, 6, 0, 6, 0, 4, 0], // P7 -> Row3, Col2, Cross
+        [0, 0, 6, 0, 0, 6, 0, 0], // P8 -> Row3, Col3
       ],
       // Hidden (8) -> Output (3: Horiz, Vert, Cross/Point)
       [
@@ -183,8 +183,8 @@ const PatternRecognitionDemo: React.FC = () => {
               key={i}
               onClick={() => togglePixel(i)}
               className={`w-10 h-10 rounded-lg border-2 transition-all duration-200 ${val === 1
-                  ? 'bg-indigo-600 border-indigo-400 shadow-[0_0_15px_rgba(79,70,229,0.3)]'
-                  : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-indigo-300'
+                ? 'bg-indigo-600 border-indigo-400 shadow-[0_0_15px_rgba(79,70,229,0.3)]'
+                : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-indigo-300'
                 }`}
             />
           ))}

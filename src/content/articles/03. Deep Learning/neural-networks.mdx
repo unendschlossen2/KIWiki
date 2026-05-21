@@ -1,123 +1,303 @@
 ---
 title: "Neuronale Netze"
-description: "Vom biologischen Vorbild zur Superintelligenz — wie Schichten aus Neuronen komplexe Muster lernen."
+description: "Vom biologischen Vorbild zum lernenden Modell — wie Schichten aus Neuronen komplexe Muster erkennen."
 category: "dl"
-tags: ["Deep Learning", "Architektur", "Backpropagation", "Gewichte"]
+tags: ["Deep Learning", "Architektur", "Backpropagation", "Gewichte", "Aktivierungsfunktionen"]
+aliases: ["Artificial Neural Networks", "ANN", "Künstliche Neuronale Netze", "MLP", "Feedforward Network"]
 ---
 
 # Neuronale Netze
 
-Künstliche Neuronale Netze (Artificial Neural Networks, ANN) sind das Rückgrat der modernen KI-Revolution. Inspiriert von der Vernetzung der Neuronen im menschlichen Gehirn, bestehen sie aus Schichten von Recheneinheiten, die durch das Anpassen von Millionen kleiner Regler (**Gewichte**) lernen, Aufgaben wie Bilderkennung oder Sprachübersetzung zu meistern.
+Künstliche neuronale Netze, auf Englisch **Artificial Neural Networks** oder kurz **ANN**, gehören zu den wichtigsten Modellklassen im modernen Deep Learning. Sie bestehen aus vielen einfachen Recheneinheiten, die in **Schichten** organisiert sind. Durch das Anpassen von **Gewichten** und **Biases** lernen sie, aus Eingaben wie Pixeln, Messwerten oder Wörtern sinnvolle Ausgaben zu erzeugen.
+
+Neuronale Netze werden heute unter anderem für Bilderkennung, Spracherkennung, Übersetzung, Empfehlungssysteme, medizinische Diagnostik und große Sprachmodelle eingesetzt.
 
 ---
 
-## Hierarchie der Mustererkennung
+## Grundidee: Lernen durch gewichtete Verbindungen
 
 :::beginner
-Stell dir eine Fabrik mit mehreren Abteilungen vor:
-1.  **Input-Schicht:** Hier kommen die Rohmaterialien (z. B. Pixel eines Bildes) an.
-2.  **Verborgene Schichten (Hidden Layers):** Hier wird das Material bearbeitet. Jede Schicht erkennt etwas komplexere Muster (z. B. Linien, dann Formen, dann Gesichter).
-3.  **Output-Schicht:** Hier wird das fertige Produkt geliefert (z. B. die Entscheidung "Das ist eine Katze").
+Stell dir ein neuronales Netz wie eine Fabrik mit mehreren Abteilungen vor:
 
-Jede Verbindung zwischen den Stationen hat ein **Gewicht**, das bestimmt, wie wichtig eine Information für den nächsten Schritt ist.
+1. **Input-Schicht:** Hier kommen die Rohdaten an, zum Beispiel Pixel eines Bildes oder Angaben zu einem Kredit.
+2. **Verborgene Schichten:** Hier werden die Informationen Schritt für Schritt verarbeitet. Eine Schicht erkennt einfache Muster, spätere Schichten kombinieren diese zu komplexeren Mustern.
+3. **Output-Schicht:** Am Ende steht eine Entscheidung oder Vorhersage, zum Beispiel „Katze“, „Hund“ oder „Kredit genehmigt“.
+
+Zwischen den Neuronen liegen **Gewichte**. Ein Gewicht bestimmt, wie stark eine Information weitergegeben wird. Ist ein Gewicht groß, ist diese Verbindung wichtig. Ist es klein oder negativ, spielt sie wenig oder sogar gegenteilig eine Rolle.
 :::
 
 :::medium
-Ein neuronales Netz besteht aus einer Eingabeschicht, einer Ausgabeschicht und einer beliebigen Anzahl von **Hidden Layers**. Je mehr Schichten ein Netz hat, desto "tiefer" ist es – daher der Begriff **Deep Learning**.
+Ein neuronales Netz besteht typischerweise aus einer Eingabeschicht, einer Ausgabeschicht und einer oder mehreren **Hidden Layers**. Je mehr verarbeitende Schichten ein Netz besitzt, desto „tiefer“ ist es. Daher stammt der Begriff **Deep Learning**.
 
-Jedes Neuron in einer Schicht berechnet eine gewichtete Summe seiner Eingaben, addiert einen Bias und schickt das Ergebnis durch eine **Aktivierungsfunktion** (wie ReLU oder Sigmoid). Dies ermöglicht es dem Netz, nicht-lineare Zusammenhänge zu lernen, was mit einfacher Regression unmöglich wäre.
+Ein einzelnes Neuron berechnet zunächst eine gewichtete Summe seiner Eingaben:
+
+$$
+z = \sum_i w_i x_i + b
+$$
+
+Danach wird dieser Wert durch eine **Aktivierungsfunktion** geschickt:
+
+$$
+a = \sigmoid(z)
+$$
+
+Ohne Aktivierungsfunktionen wäre ein mehrschichtiges Netz letztlich nur eine große lineare Funktion. Aktivierungsfunktionen wie $\relu$, $\sigmoid$ oder $\tanh$ ermöglichen es dem Netz, **nicht-lineare Zusammenhänge** zu lernen.
 :::
 
 :::advanced
-Ein vorwärtsgerichtetes Netz (Feedforward Neural Network) berechnet den Output $\mathbf{a}^{(L)}$ der Schicht $L$ wie folgt:
+Ein Feedforward-Netz berechnet die Aktivierungen einer Schicht $l$ typischerweise durch
 
 $$
-\mathbf{a}^{(L)} = \sigma(\mathbf{W}^{(L)} \mathbf{a}^{(L-1)} + \mathbf{b}^{(L)})
+\mathbf{a}^{(l)} = \sigmoid\left(\mathbf{W}^{(l)} \mathbf{a}^{(l-1)} + \mathbf{b}^{(l)}\right)
 $$
 
-- $\mathbf{W}^{(L)}$ ist die Gewichtsmatrix.
-- $\mathbf{b}^{(L)}$ ist der Bias-Vektor.
-- $\sigma$ ist die Aktivierungsfunktion.
+Dabei ist:
 
-Das Training erfolgt durch das Minimieren einer Kostenfunktion $J(\mathbf{W}, \mathbf{b})$ mittels **Gradientenabstieg**. Das Herzstück ist dabei der **Backpropagation**-Algorithmus, der die Kettenregel der Differentialrechnung nutzt, um den Fehler vom Output zurück durch alle Schichten zu propagieren und die Gewichte entsprechend anzupassen.
+- $\mathbf{a}^{(l-1)}$ der Aktivierungsvektor der vorherigen Schicht,
+- $\mathbf{W}^{(l)}$ die Gewichtsmatrix,
+- $\mathbf{b}^{(l)}$ der Bias-Vektor,
+- $\sigmoid$ eine nicht-lineare Aktivierungsfunktion.
+
+Das Training besteht darin, eine Verlustfunktion $\loss$ zu minimieren. Für binäre Klassifikation wird häufig die Binary Cross-Entropy verwendet:
+
+$$
+\loss = -\frac{1}{N} \sum_{i=1}^{N}
+\left[
+y_i \log(\hat{y}_i) + (1-y_i)\log(1-\hat{y}_i)
+\right]
+$$
+
+Die Parameter werden meist mit Varianten des Gradientenabstiegs aktualisiert:
+
+$$
+\theta \leftarrow \theta - \eta \grad_\theta \loss
+$$
+
+Der zentrale Algorithmus dafür ist **Backpropagation**. Er nutzt die Kettenregel der Differentialrechnung, um effizient zu berechnen, wie stark jedes Gewicht zum Fehler beigetragen hat.
 :::
 
 ---
 
-## Interaktive Demo 1: Multivariater Kredit-Check
+## Warum mehrere Schichten?
 
-In dieser erweiterten Praxis-Demo verarbeitet das Netz nun **5 verschiedene Faktoren** gleichzeitig. Dies kommt einem echten Szenario deutlich näher, da Schichten aus Neuronen gerade dann glänzen, wenn sie komplexe Abhängigkeiten zwischen vielen Variablen finden müssen.
+:::beginner
+Mehrere Schichten helfen dem Netz, Informationen schrittweise zusammenzusetzen. Bei einem Bild könnten frühe Schichten einfache Linien erkennen. Spätere Schichten kombinieren Linien zu Formen. Noch spätere Schichten erkennen daraus Objekte wie Augen, Räder oder Gesichter.
+:::
 
-- **Inputs:** Ersparnisse, Einkommen, Kreditscore, Alter und Sicherheiten.
-- **Beobachtung:** Achte darauf, wie sich die Signale in den Hidden Layers vermischen. Ein einzelnes Neuron in der Mitte kann nun "verstehen", dass z.B. ein niedriges Einkommen durch hohe Sicherheiten ausgeglichen wird.
+:::medium
+Die Stärke tiefer Netze liegt in der **hierarchischen Merkmalsrepräsentation**. Statt dass Menschen alle relevanten Merkmale manuell definieren müssen, lernt das Netz interne Repräsentationen selbst.
 
-<NeuralNetworkDemo client:only="react" />
+Beispiele:
+
+- In der Bildverarbeitung: Pixel → Kanten → Formen → Objekte
+- In der Sprache: Zeichen → Wörter → Satzstruktur → Bedeutung
+- Bei Kreditdaten: Einzelwerte → Risikofaktoren → Gesamtbewertung
+:::
+
+:::advanced
+Tiefe Netzwerke können Funktionen oft effizienter darstellen als flache Netzwerke mit sehr vielen Neuronen. Jede Schicht transformiert den Eingaberaum in eine neue Repräsentation. Dadurch können Entscheidungsgrenzen entstehen, die mit einfachen linearen Modellen nicht möglich wären.
+
+Allerdings steigt mit der Tiefe auch die Schwierigkeit des Trainings. Typische Herausforderungen sind:
+
+- verschwindende oder explodierende Gradienten,
+- Überanpassung an Trainingsdaten,
+- ungünstige Initialisierung,
+- hoher Rechenaufwand,
+- erschwerte Interpretierbarkeit.
+:::
 
 ---
 
-## Interaktive Demo 2: Mustererkennung (MNIST-Light)
+## Interaktive Demo: Multivariater Kredit-Check
 
-Der wohl ikonischste Einsatzbereich von Deep Learning ist die **Computer Vision**. Hier rechtfertigt sich die Schichten-Architektur durch die Hierarchie der Merkmale:
-1.  Die erste Schicht sieht nur einzelne Pixel.
-2.  Die zweite Schicht kombiniert diese zu Linien oder Kanten.
-3.  Die finale Schicht erkennt das Objekt.
+In dieser Demo verarbeitet ein kleines neuronales Netz fünf Eingabefaktoren gleichzeitig:
 
-**Zeichne ein Muster in das Raster (z.B. eine horizontale Linie oder ein Kreuz) und schau, ob das Netz es erkennt:**
+- **Ersparnisse**
+- **Einkommen**
+- **Kreditscore**
+- **Alter**
+- **Sicherheiten**
 
-<PatternRecognitionDemo client:only="react" />
+Das Netz gibt am Ende einen Score aus, der als vereinfachte Kreditentscheidung interpretiert wird.
 
-:::info
-### Das "Black Box" Problem
-Obwohl wir im Diagramm genau sehen können, welches Neuron wie stark feuert, ist es bei echten Netzen mit Millionen von Parametern extrem schwierig zu sagen, *warum* genau eine Entscheidung getroffen wurde. Das ist eines der größten Forschungsfelder der KI: **Explainable AI (XAI)**.
+<InfoBox type="note" title="Didaktischer Hinweis">
+  Die Demo verwendet fest eingestellte, handkonstruierte Gewichte. Sie zeigt also den Forward Pass und die Rolle von Gewichten, Biases und Aktivierungen — sie trainiert das Netz nicht live.
+</InfoBox>
+
+:::beginner
+Bewege die Regler oder wähle ein Szenario aus. Achte darauf, wie sich die Aktivierungen in den Schichten verändern. Helle oder stark gefärbte Neuronen bedeuten: Dieses Neuron ist gerade besonders aktiv.
 :::
+
+:::medium
+Die Demo zeigt, dass ein Netz mehrere Faktoren kombinieren kann. Ein einzelner Wert entscheidet nicht zwangsläufig allein. Zum Beispiel können geringe Ersparnisse teilweise durch hohe Sicherheiten ausgeglichen werden.
+:::
+
+:::advanced
+Klicke auf ein Neuron, um seine Berechnung zu sehen. Für jedes Neuron wird eine gewichtete Summe
+
+$$
+z = b + \sum_i x_i w_i
+$$
+
+berechnet und anschließend durch die Sigmoid-Funktion transformiert:
+
+$$
+\sigmoid(z) = \frac{1}{1 + e^{-z}}
+$$
+
+Die Ausgabe liegt dadurch zwischen 0 und 1 und kann als Score interpretiert werden.
+:::
+
+<NeuralNetworkDemo client:load />
+
+---
+
+## Interaktive Demo: Mustererkennung
+
+Ein klassischer Einsatzbereich neuronaler Netze ist **Computer Vision**. Dort lernen Netze, visuelle Muster aus Pixeln zu erkennen.
+
+Zeichne ein einfaches Muster in das Raster, zum Beispiel eine horizontale Linie, eine vertikale Linie oder ein Kreuz, und beobachte, wie das Netz es einordnet.
+
+<PatternRecognitionDemo client:load />
+
+<InfoBox type="info" title="Das Black-Box-Problem">
+  Bei kleinen Demo-Netzen kann man einzelne Neuronen noch gut untersuchen. Bei echten Modellen mit Millionen oder Milliarden Parametern ist es jedoch oft schwer zu erklären, warum genau eine bestimmte Entscheidung getroffen wurde. Dieses Forschungsfeld heißt Explainable AI, kurz XAI.
+</InfoBox>
+
+---
+
+## Training: Wie ein Netz aus Fehlern lernt
+
+:::beginner
+Ein neuronales Netz startet meistens mit zufälligen Gewichten. Am Anfang macht es daher viele Fehler. Beim Training vergleicht es seine Vorhersage mit der richtigen Antwort. Danach verändert es seine Gewichte ein kleines Stück in die Richtung, die den Fehler kleiner macht.
+:::
+
+:::medium
+Der Trainingsprozess besteht aus vier Schritten:
+
+1. **Forward Pass:** Eingaben laufen durch das Netz bis zur Ausgabe.
+2. **Loss berechnen:** Die Ausgabe wird mit der Zielantwort verglichen.
+3. **Backpropagation:** Das Netz berechnet, welche Gewichte wie stark zum Fehler beigetragen haben.
+4. **Update:** Ein Optimierer wie SGD oder Adam passt die Gewichte an.
+
+Dieser Ablauf wird über viele Beispiele und viele Epochen wiederholt.
+:::
+
+:::advanced
+Backpropagation berechnet Gradienten für alle Parameter durch wiederholte Anwendung der Kettenregel. Für eine Schicht gilt vereinfacht:
+
+$$
+\frac{\partial \loss}{\partial \mathbf{W}^{(l)}} =
+\frac{\partial \loss}{\partial \mathbf{z}^{(l)}} 
+\left(\mathbf{a}^{(l-1)}\right)^T
+$$
+
+Moderne Frameworks wie PyTorch, TensorFlow und JAX nutzen automatische Differentiation, um diese Gradienten effizient zu berechnen.
+:::
+
+---
+
+## Häufige Architekturtypen
+
+Neuronale Netze gibt es in vielen Varianten. Einige wichtige Typen sind:
+
+- **Multi-Layer Perceptron:** Klassisches vollständig verbundenes Netz für tabellarische Daten oder einfache Aufgaben.
+- **Convolutional Neural Network:** Besonders geeignet für Bilder und räumliche Strukturen.
+- **Recurrent Neural Network:** Früher häufig für Sequenzen und Zeitreihen genutzt.
+- **Transformer:** Heute zentral für Sprachmodelle, multimodale Modelle und viele moderne Foundation Models.
+- **Autoencoder:** Lernt kompakte Repräsentationen von Daten.
+- **Graph Neural Network:** Verarbeitet Daten mit Graphstruktur, zum Beispiel soziale Netzwerke oder Moleküle.
 
 ---
 
 ## Meilensteine des Deep Learning
 
-- **Perzeptron (1950er):** Die erste künstliche Recheneinheit.
-- **Multi-Layer Perceptron (MLP):** Einführung der Hidden Layers.
-- **Deep Learning Durchbruch (2012):** AlexNet gewinnt den ImageNet-Wettbewerb und zeigt die Überlegenheit tiefer Netze.
-- **Transformers (2017):** Die Architektur, die LLMs wie GPT-4 erst möglich machte.
+- **1943:** McCulloch und Pitts formulieren ein frühes mathematisches Neuronenmodell.
+- **1950er:** Das Perzeptron wird als einfache lernende Recheneinheit bekannt.
+- **1980er:** Backpropagation wird für mehrschichtige Netze populär.
+- **1998:** LeNet zeigt den Erfolg neuronaler Netze bei handschriftlicher Ziffernerkennung.
+- **2012:** AlexNet gewinnt ImageNet deutlich und löst den modernen Deep-Learning-Boom aus.
+- **2017:** Transformer werden vorgestellt und verändern NLP grundlegend.
+- **2020er:** Große Sprachmodelle und multimodale Foundation Models skalieren neuronale Netze auf Milliarden Parameter.
+
+---
 
 ## Implementierung in Python
 
-Für Deep Learning nutzt man heute meist `PyTorch` oder `TensorFlow/Keras`. Hier ist ein einfaches Netz in Keras:
+Für Deep Learning werden heute häufig `PyTorch` oder `TensorFlow/Keras` verwendet. Das folgende Beispiel zeigt ein kleines Keras-Netz für binäre Klassifikation.
 
 ```python
+import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
-# 1. Architektur definieren
-model = models.Sequential([
-    layers.Dense(16, activation='relu', input_shape=(10,)), # Hidden Layer 1
-    layers.Dense(8, activation='relu'),                     # Hidden Layer 2
-    layers.Dense(1, activation='sigmoid')                   # Output Layer
-])
+# Reproduzierbarkeit
+np.random.seed(42)
+tf.random.set_seed(42)
 
-# 2. Modell konfigurieren
-model.compile(optimizer='adam',
-              loss='binary_crossentropy',
-              metrics=['accuracy'])
-
-# 3. Trainieren (mit zufälligen Daten)
-import numpy as np
+# Beispiel-Daten: 100 Trainingsbeispiele mit je 10 Merkmalen
 X_train = np.random.random((100, 10))
 y_train = np.random.randint(2, size=(100, 1))
 
-model.fit(X_train, y_train, epochs=10)
+# 1. Architektur definieren
+model = models.Sequential([
+    layers.Input(shape=(10,)),
+    layers.Dense(16, activation="relu"),
+    layers.Dense(8, activation="relu"),
+    layers.Dense(1, activation="sigmoid")
+])
+
+# 2. Modell konfigurieren
+model.compile(
+    optimizer="adam",
+    loss="binary_crossentropy",
+    metrics=["accuracy"]
+)
+
+# 3. Trainieren
+model.fit(X_train, y_train, epochs=10, verbose=1)
+
+# 4. Vorhersage für ein neues Beispiel
+x_new = np.random.random((1, 10))
+prediction = model.predict(x_new)
+
+print("Vorhergesagte Wahrscheinlichkeit:", prediction[0][0])
 ```
 
 **Erklärung:**
-- `Dense`: Eine Standard-Schicht, in der jedes Neuron mit jedem der vorherigen Schicht verbunden ist.
-- `activation`: Hier legst du fest, wie die Neuronen "feuern" (z.B. `relu`).
-- `optimizer`: Der Algorithmus, der den Gradientenabstieg steuert (z.B. `adam`).
+
+- `Dense`: Eine vollständig verbundene Schicht.
+- `activation="relu"`: Aktivierungsfunktion für Hidden Layers.
+- `activation="sigmoid"`: Ausgabe zwischen 0 und 1 für binäre Klassifikation.
+- `optimizer="adam"`: Beliebter Optimierer für Gradientenabstieg.
+- `binary_crossentropy`: Verlustfunktion für Ja/Nein-Entscheidungen.
+
+---
+
+## Grenzen und Risiken
+
+Neuronale Netze sind mächtig, aber nicht automatisch zuverlässig.
+
+Wichtige Grenzen:
+
+- Sie benötigen oft viele Daten.
+- Sie können Trainingsdaten auswendig lernen.
+- Sie können auf veränderte Datenverteilungen empfindlich reagieren.
+- Sie sind oft schwer interpretierbar.
+- Sie können Verzerrungen aus Trainingsdaten übernehmen.
+- Sie liefern manchmal überzeugende, aber falsche Ergebnisse.
+
+<InfoBox type="warning" title="Wichtig">
+  Ein neuronales Netz erkennt statistische Muster. Es „versteht“ seine Aufgabe nicht automatisch wie ein Mensch. Besonders bei sicherheitskritischen Anwendungen sind Validierung, Monitoring und menschliche Kontrolle entscheidend.
+</InfoBox>
 
 ---
 
 ## Zusammenfassung
 
-- **Schichten-Architektur:** Daten fließen von Input zu Output.
-- **Lernfähige Gewichte:** Wissen wird in der Stärke der Verbindungen gespeichert.
-- **Aktivierungsfunktionen:** Verleihen dem Netz die Fähigkeit, komplexe, nicht-lineare Muster zu verstehen.
-- **Backpropagation:** Der mathematische Trick, mit dem das Netz aus seinen Fehlern lernt.
+- **Neuronale Netze** bestehen aus Schichten miteinander verbundener Recheneinheiten.
+- **Gewichte und Biases** bestimmen, wie stark Informationen weitergegeben werden.
+- **Aktivierungsfunktionen** ermöglichen nicht-lineare Mustererkennung.
+- **Deep Learning** nutzt viele Schichten, um hierarchische Repräsentationen zu lernen.
+- **Backpropagation** berechnet, wie Parameter angepasst werden müssen.
+- **Interaktive Demos** helfen, Forward Pass, Aktivierungen und Entscheidungen sichtbar zu machen.

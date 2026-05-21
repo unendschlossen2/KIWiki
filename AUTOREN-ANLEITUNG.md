@@ -9,24 +9,26 @@ Dieses Dokument erklärt, wie man neue Artikel für das KIWiki erstellt und pfle
 ```
 src/
 ├── content/
-│   ├── config.ts          ← Zod-Schema (Frontmatter-Validierung)
 │   └── articles/          ← HIER neue Artikel anlegen
-│       └── neuron.mdx     ← Beispielartikel
-├── components/            ← React- und Astro-Komponenten
+├── components/            ← Funktionsorientierte Komponenten
+│   ├── ui/                ← Basis-Elemente (InfoBox, MathField, etc.)
+│   ├── navigation/        ← Sidebar, Navbar, Dropdowns
+│   ├── layout/            ← DemoWrapper, BaseHead, Footer
+│   ├── theme/             ← DifficultySelector, ThemeToggle
+│   ├── search/            ← SearchModal
+│   └── demos/             ← Interaktive Experimente
 ├── config/
 │   └── katex-macros.js    ← Zentrale Mathe-Makros
+├── stores/                ← Globaler State (Difficulty, Theme)
+├── data/
+│   └── ARTICLE_INDEX.json ← Suchindex für die KI (generiert)
 ├── layouts/
-│   └── Layout.astro       ← Haupt-Layout (Navbar, Sidebar, ToC)
-└── pages/
-    ├── index.astro        ← Die neue Startseite mit Kategorien
-    ├── ueber.mdx          ← "Über das Projekt" Seite
-    └── articles/
-        └── [...slug].astro ← Dynamische Route für alle Artikel
-
-scripts/
-└── generate-index.js   ← Generiert den Artikel-Index für die KI
-
-ARTICLE_INDEX.json       ← Statischer Artikel-Index (automatisch generiert)
+│   └── Layout.astro       ← Haupt-Layout-Wrapper
+├── pages/
+│   ├── index.astro        ← Startseite
+│   └── articles/
+│       └── [...slug].astro ← Dynamische Route für alle Artikel
+├── content.config.ts      ← Zod-Schema & Content-Loader
 ```
 
 ---
@@ -187,9 +189,7 @@ Falls du eine **neue** React-Komponente (Demo) erstellt hast, musst du sie in `a
 
 ---
 
-## 7. Automatische Index-Aktualisierung
-
-Du musst dich nicht mehr manuell um den Suchindex kümmern! Das Wiki verfügt über eine Integration, die den Index (`ARTICLE_INDEX.json`) automatisch aktualisiert, wenn:
+Du musst dich nicht mehr manuell um den Suchindex kümmern! Das Wiki verfügt über eine Integration, die den Index (`src/data/ARTICLE_INDEX.json`) automatisch aktualisiert, wenn:
 - Du den Entwicklungs-Server startest (`npm run dev`).
 - Du einen Artikel speicherst (der Index wird im Hintergrund neu generiert).
 - Die Seite für die Produktion gebaut wird (`npm run build`).
@@ -212,9 +212,15 @@ $$
 $$
 ```
 
-### Zentrale Makros
-
 In `src/config/katex-macros.js` sind häufig verwendete Abkürzungen definiert: `\R`, `\N`, `\loss`, `\grad`, `\sigmoid`, `\softmax`, `\relu`, `\xvec`, `\wvec`, `\bvec`.
+
+### 8.4 Backslashes und Escaping
+> [!IMPORTANT]
+> Verwende in MDX-Dateien **einfache Backslashes** (`\`) für LaTeX-Befehle und Makros (z. B. `\sum`, `\sigma`, `\loss`). 
+> Doppelte Backslashes (`\\`) werden vom MDX-Parser falsch interpretiert und führen dazu, dass die Formeln nicht gerendert werden.
+
+### 8.5 Makros bevorzugen
+Nutze wann immer möglich die zentralen Makros aus `katex-macros.js`. Dies sorgt für ein einheitliches Schriftbild (z. B. `\sigmoid` statt `\sigma` oder `\relu` statt `\text{ReLU}`).
 
 ---
 
@@ -239,7 +245,8 @@ In `src/config/katex-macros.js` sind häufig verwendete Abkürzungen definiert: 
 - [ ] Datei in `src/content/articles/` erstellt (`.mdx`)
 - [ ] `title` und `category` im Frontmatter gesetzt
 - [ ] Inhalt mit `:::beginner`, `:::medium`, `:::advanced` strukturiert
-- [ ] Mathe-Formeln mit `$...$` oder `$$...$$` geschrieben
+- [ ] Mathe-Formeln mit `$...$` oder `$$...$$` geschrieben (nur **einfache** Backslashes!)
+- [ ] Zentrale Makros für Mathe verwendet (wo möglich)
 - [ ] Bei Demos: `## Interaktive Demo` als Headline gesetzt
 - [ ] Keine f-Strings in Python-Code-Blöcken verwendet
 - [ ] `npm run build` läuft ohne Fehler

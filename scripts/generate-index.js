@@ -30,8 +30,10 @@ export function generateSearchIndex() {
 
         for (const file of files) {
             const content = fs.readFileSync(file, 'utf8');
+            const filename = path.basename(file).toLowerCase();
+            if (filename.startsWith('_') || filename.startsWith('temp') || filename.startsWith('test')) continue;
+
             const { data } = matter(content);
-            if (path.basename(file).startsWith('_')) continue;
 
             const relativePath = path.relative(articlesDir, file);
             // Clean slug generation logic to match the app's slugify logic

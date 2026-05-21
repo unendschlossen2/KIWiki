@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import fs from 'node:fs';
 
 import react from '@astrojs/react';
 
@@ -89,6 +90,38 @@ function remarkDirectiveTransformer() {
   };
 }
 
+const demoComponents = {
+  DifficultyContent: comp('ui/DifficultyContentWrapper.astro'),
+  InfoBox: comp('ui/InfoBox.tsx'),
+  DifficultySelector: comp('theme/DifficultySelector.tsx'),
+  ActivationDemo: comp('demos/ActivationDemo.tsx'),
+  TransformerDemo: comp('demos/TransformerDemo.tsx'),
+  MCPDemo: comp('demos/MCPDemo.tsx'),
+  LinearRegressionDemo: comp('demos/LinearRegressionDemo.tsx'),
+  LogisticRegressionDemo: comp('demos/LogisticRegressionDemo.tsx'),
+  DecisionTreeDemo: comp('demos/DecisionTreeDemo.tsx'),
+  RandomForestDemo: comp('demos/RandomForestDemo.tsx'),
+  KMeansDemo: comp('demos/KMeansDemo.tsx'),
+  KNNDemo: comp('demos/KNNDemo.tsx'),
+  SVMDemo: comp('demos/SVMDemo.tsx'),
+  NaiveBayesDemo: comp('demos/NaiveBayesDemo.tsx'),
+  PCADemo: comp('demos/PCADemo.tsx'),
+  NeuralNetworkDemo: comp('demos/NeuralNetworkDemo.tsx'),
+  BackpropagationDemo: comp('demos/BackpropagationDemo.tsx'),
+  PatternRecognitionDemo: comp('demos/PatternRecognitionDemo.tsx'),
+  NeuronDemo: comp('demos/NeuronDemo.tsx'),
+  CNNDemo: comp('demos/CNNDemo.tsx'),
+  EmbeddingDemo: comp('demos/EmbeddingDemo.tsx'),
+  GradientDescentDemo: comp('demos/GradientDescentDemo.tsx'),
+  GradientBoostingDemo: comp('demos/GradientBoostingDemo.tsx'),
+  TableOfContents: comp('navigation/TableOfContents.tsx'),
+};
+
+if (fs.existsSync(path.join(__dirname, 'src/components/demos/TempDemo.tsx'))) {
+  // @ts-ignore
+  demoComponents.TempDemo = comp('demos/TempDemo.tsx');
+}
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://unendschlossen2.github.io',
@@ -102,32 +135,7 @@ export default defineConfig({
         remarkCrossReference,
         remarkDirective,
         remarkDirectiveTransformer,
-        [remarkComponentAutoImport, {
-          DifficultyContent: comp('ui/DifficultyContentWrapper.astro'),
-          InfoBox: comp('ui/InfoBox.tsx'),
-          DifficultySelector: comp('theme/DifficultySelector.tsx'),
-          ActivationDemo: comp('demos/ActivationDemo.tsx'),
-          TransformerDemo: comp('demos/TransformerDemo.tsx'),
-          MCPDemo: comp('demos/MCPDemo.tsx'),
-          LinearRegressionDemo: comp('demos/LinearRegressionDemo.tsx'),
-          LogisticRegressionDemo: comp('demos/LogisticRegressionDemo.tsx'),
-          DecisionTreeDemo: comp('demos/DecisionTreeDemo.tsx'),
-          RandomForestDemo: comp('demos/RandomForestDemo.tsx'),
-          KMeansDemo: comp('demos/KMeansDemo.tsx'),
-          KNNDemo: comp('demos/KNNDemo.tsx'),
-          SVMDemo: comp('demos/SVMDemo.tsx'),
-          NaiveBayesDemo: comp('demos/NaiveBayesDemo.tsx'),
-          PCADemo: comp('demos/PCADemo.tsx'),
-          NeuralNetworkDemo: comp('demos/NeuralNetworkDemo.tsx'),
-          BackpropagationDemo: comp('demos/BackpropagationDemo.tsx'),
-          PatternRecognitionDemo: comp('demos/PatternRecognitionDemo.tsx'),
-          NeuronDemo: comp('demos/NeuronDemo.tsx'),
-          CNNDemo: comp('demos/CNNDemo.tsx'),
-          EmbeddingDemo: comp('demos/EmbeddingDemo.tsx'),
-          GradientDescentDemo: comp('demos/GradientDescentDemo.tsx'),
-          GradientBoostingDemo: comp('demos/GradientBoostingDemo.tsx'),
-          TableOfContents: comp('navigation/TableOfContents.tsx'),
-        }],
+        [remarkComponentAutoImport, demoComponents],
         remarkMath
       ],
       rehypePlugins: [[rehypeKatex, { macros: katexMacros }]],

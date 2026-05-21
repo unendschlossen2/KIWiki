@@ -8,6 +8,7 @@ dist/
 node_modules/
 
 # logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -23,3 +24,20 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 .vscode/
+
+# local scratch files
+scratch/
+
+# xiaomi generation script
+scripts/xiaomi_*.py
+.xiaomi_generation.py
+.xiaomi_chat.py
+
+# author instructions
+AI-GUIDELINES.md
+
+# temporary and test article/demo files
+src/components/demos/Temp*
+src/components/demos/test*
+src/content/articles/temp*
+src/content/articles/test*

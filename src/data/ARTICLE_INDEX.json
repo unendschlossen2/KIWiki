@@ -297,15 +297,22 @@
   {
     "slug": "03.-deep-learning/neural-networks",
     "title": "Neuronale Netze",
-    "description": "Vom biologischen Vorbild zur Superintelligenz — wie Schichten aus Neuronen komplexe Muster lernen.",
+    "description": "Vom biologischen Vorbild zum lernenden Modell — wie Schichten aus Neuronen komplexe Muster erkennen.",
     "category": "dl",
     "tags": [
       "Deep Learning",
       "Architektur",
       "Backpropagation",
-      "Gewichte"
+      "Gewichte",
+      "Aktivierungsfunktionen"
     ],
-    "aliases": [],
+    "aliases": [
+      "Artificial Neural Networks",
+      "ANN",
+      "Künstliche Neuronale Netze",
+      "MLP",
+      "Feedforward Network"
+    ],
     "difficulties": [
       "easy",
       "medium",
